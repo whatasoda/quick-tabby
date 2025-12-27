@@ -1,44 +1,83 @@
+/**
+ * QuickTabby Background Service Worker
+ *
+ * Entry point for the background script using the new service architecture.
+ */
+
+import { createChromeAPI } from "../infrastructure/chrome/index.ts";
+import { createThumbnailStore } from "../infrastructure/indexed-db/index.ts";
 import {
-  initializeMRUTracker,
-  getMRUTabs,
-  switchToTab,
-} from "./mru-tracker.ts";
-import {
-  initializeCommands,
-  getLaunchInfo,
-  clearLaunchInfo,
-  setPopupPort,
-} from "./commands.ts";
-import {
-  initThumbnailCache,
-  captureAndStoreThumbnail,
-} from "./thumbnail-cache.ts";
+  createSettingsService,
+  createMRUTrackerService,
+  createThumbnailCacheService,
+  createCommandHandlerService,
+} from "../services/index.ts";
 import type { MessageType, MessageResponse } from "../shared/types.ts";
 
+// =============================================================================
+// Service Setup with Dependency Injection
+// =============================================================================
+
+const chromeAPI = createChromeAPI();
+const thumbnailStore = createThumbnailStore();
+
+const settingsService = createSettingsService({
+  storage: chromeAPI.storage,
+});
+
+const thumbnailCache = createThumbnailCacheService({
+  tabs: chromeAPI.tabs,
+  thumbnailStore,
+});
+
+const mruTracker = createMRUTrackerService({
+  storage: chromeAPI.storage,
+  tabs: chromeAPI.tabs,
+  windows: chromeAPI.windows,
+  thumbnailCache,
+});
+
+const commandHandler = createCommandHandlerService({
+  action: chromeAPI.action,
+  commands: chromeAPI.commands,
+  settingsService,
+});
+
+// =============================================================================
+// Initialization
+// =============================================================================
+
 (async () => {
-  await initializeMRUTracker();
-  await initThumbnailCache();
-  initializeCommands();
+  await thumbnailCache.initialize();
+  await mruTracker.initialize();
+  commandHandler.initialize();
   console.log("QuickTabby background service worker initialized");
 })();
 
-// Handle popup port connection
-chrome.runtime.onConnect.addListener((port) => {
+// =============================================================================
+// Port Connection Handling
+// =============================================================================
+
+chromeAPI.runtime.onConnect.addListener((port) => {
   if (port.name === "popup") {
-    setPopupPort(port);
+    commandHandler.setPopupPort(port);
     port.onDisconnect.addListener(() => {
-      setPopupPort(null);
+      commandHandler.setPopupPort(null);
     });
   }
 });
 
-chrome.runtime.onMessage.addListener(
+// =============================================================================
+// Message Handling
+// =============================================================================
+
+chromeAPI.runtime.onMessage.addListener(
   (
-    message: MessageType,
-    _sender: chrome.runtime.MessageSender,
-    sendResponse: (response: MessageResponse) => void
+    message: unknown,
+    _sender,
+    sendResponse: (response: unknown) => void
   ) => {
-    handleMessage(message)
+    handleMessage(message as MessageType)
       .then(sendResponse)
       .catch((error) => {
         sendResponse({
@@ -51,25 +90,28 @@ chrome.runtime.onMessage.addListener(
   }
 );
 
-async function handleMessage(
-  message: MessageType
-): Promise<MessageResponse> {
+async function handleMessage(message: MessageType): Promise<MessageResponse> {
   switch (message.type) {
     case "GET_MRU_TABS": {
-      const tabs = await getMRUTabs(message.windowOnly, message.windowId);
+      const tabs = await mruTracker.getMRUTabs(
+        message.windowOnly ?? false,
+        message.windowId
+      );
       return { type: "MRU_TABS", tabs };
     }
+
     case "SWITCH_TO_TAB": {
-      await switchToTab(message.tabId);
+      await mruTracker.switchToTab(message.tabId);
       return { type: "SUCCESS" };
     }
+
     case "CAPTURE_CURRENT_TAB": {
-      const [tab] = await chrome.tabs.query({
+      const [tab] = await chromeAPI.tabs.query({
         active: true,
         windowId: message.windowId,
       });
       if (tab?.id && tab.windowId) {
-        await captureAndStoreThumbnail(
+        await thumbnailCache.captureAndStore(
           tab.id,
           tab.windowId,
           message.thumbnailConfig
@@ -77,22 +119,27 @@ async function handleMessage(
       }
       return { type: "SUCCESS" };
     }
+
     case "GET_LAUNCH_INFO": {
-      return { type: "LAUNCH_INFO", info: getLaunchInfo() };
+      return { type: "LAUNCH_INFO", info: commandHandler.getLaunchInfo() };
     }
+
     case "CLEAR_LAUNCH_INFO": {
-      clearLaunchInfo();
+      commandHandler.clearLaunchInfo();
       return { type: "SUCCESS" };
     }
+
     case "POPUP_OPENED":
     case "POPUP_CLOSING":
     case "CLOSE_POPUP": {
       // These are handled via port connection, not message passing
       return { type: "SUCCESS" };
     }
+
     default: {
+      // Exhaustive check: this should never be reached if all cases are handled
       const _exhaustive: never = message;
-      return { type: "ERROR", message: `Unknown message type: ${(_exhaustive as MessageType).type}` };
+      throw new Error(`Unhandled message type: ${JSON.stringify(_exhaustive)}`);
     }
   }
 }
