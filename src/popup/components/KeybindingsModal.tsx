@@ -72,8 +72,8 @@ const styles = {
     cursor: "pointer",
     background: "none",
     border: "none",
-    padding: "xs sm",
-    borderRadius: "sm",
+    padding: "sm md",
+    borderRadius: "md",
     _hover: {
       background: "surfaceHover",
     },

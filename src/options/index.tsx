@@ -120,7 +120,7 @@ const styles = {
     color: "white",
   }),
   recordBtn: css({
-    padding: "xs sm",
+    padding: "sm md",
     fontSize: "12px",
     background: "borderLight",
     border: "1px solid token(colors.border)",
@@ -169,7 +169,7 @@ const styles = {
   linkButton: css({
     display: "inline-block",
     marginTop: "md",
-    padding: "sm lg",
+    padding: "md lg",
     background: "primary",
     color: "white",
     textDecoration: "none",
