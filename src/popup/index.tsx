@@ -17,6 +17,7 @@ import type {
 } from "../shared/types.ts";
 import { TabList } from "./components/TabList.tsx";
 import { KeybindingsModal } from "./components/KeybindingsModal.tsx";
+import { FiHelpCircle, FiSettings } from "solid-icons/fi";
 import {
   loadSettings,
   POPUP_SIZES,
@@ -423,21 +424,14 @@ function App() {
             onClick={() => setShowKeybindingsModal(true)}
             title="キーボードショートカット"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="10" />
-              <path d="M12 16v-4" />
-              <path d="M12 8h.01" />
-            </svg>
+            <FiHelpCircle size={16} />
           </button>
           <button
             class={styles.iconButton}
             onClick={openSettings}
             title="設定"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="3" />
-              <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
-            </svg>
+            <FiSettings size={16} />
           </button>
         </div>
       </div>
