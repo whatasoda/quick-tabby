@@ -7,6 +7,7 @@ import {
   initializeCommands,
   getLaunchInfo,
   clearLaunchInfo,
+  setPopupOpen,
 } from "./commands.ts";
 import {
   initThumbnailCache,
@@ -71,6 +72,18 @@ async function handleMessage(
     }
     case "CLEAR_LAUNCH_INFO": {
       clearLaunchInfo();
+      return { type: "SUCCESS" };
+    }
+    case "POPUP_OPENED": {
+      setPopupOpen(true);
+      return { type: "SUCCESS" };
+    }
+    case "POPUP_CLOSING": {
+      setPopupOpen(false);
+      return { type: "SUCCESS" };
+    }
+    case "CLOSE_POPUP": {
+      // This is sent TO the popup, not handled here
       return { type: "SUCCESS" };
     }
     default: {

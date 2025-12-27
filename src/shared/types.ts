@@ -39,7 +39,10 @@ export type MessageType =
   | { type: "SWITCH_TO_TAB"; tabId: number }
   | { type: "CAPTURE_CURRENT_TAB"; windowId?: number; thumbnailConfig?: ThumbnailConfig }
   | { type: "GET_LAUNCH_INFO" }
-  | { type: "CLEAR_LAUNCH_INFO" };
+  | { type: "CLEAR_LAUNCH_INFO" }
+  | { type: "POPUP_OPENED" }
+  | { type: "POPUP_CLOSING" }
+  | { type: "CLOSE_POPUP"; selectFocused: boolean };
 
 export type MessageResponse =
   | { type: "MRU_TABS"; tabs: TabInfo[] }

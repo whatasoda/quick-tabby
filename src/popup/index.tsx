@@ -14,8 +14,6 @@ import type {
   MessageType,
   MessageResponse,
   Settings,
-  CommandName,
-  Keybinding,
 } from "../shared/types.ts";
 import { TabList } from "./components/TabList.tsx";
 import { KeybindingsModal } from "./components/KeybindingsModal.tsx";
@@ -30,7 +28,6 @@ import {
   matchesKeybinding,
   applyTheme,
   setupThemeListener,
-  parseShortcut,
 } from "../shared/settings.ts";
 
 const styles = {
@@ -240,11 +237,6 @@ function App() {
   const [currentWindowId, setCurrentWindowId] = createSignal<number | null>(
     null
   );
-  const [launchCommand, setLaunchCommand] =
-    createSignal<CommandName>("_execute_action");
-  const [launchShortcut, setLaunchShortcut] = createSignal<Keybinding | null>(
-    null
-  );
   const [tabs, { refetch }] = createResource(
     () => {
       const wid = currentWindowId();
@@ -273,27 +265,7 @@ function App() {
   function handleKeyDown(e: KeyboardEvent) {
     const tabList = tabs();
     const currentSettings = settings();
-    if (!currentSettings) return;
-
-    // Check for shortcut re-press (close popup)
-    const shortcut = launchShortcut();
-    if (shortcut && matchesKeybinding(e, shortcut)) {
-      e.preventDefault();
-      const cmd = launchCommand();
-      const cmdSettings = currentSettings.commandSettings[cmd];
-      if (cmdSettings?.selectOnClose && tabList && tabList.length > 0) {
-        // Select focused tab before closing
-        const tab = tabList[selectedIndex()];
-        if (tab) {
-          switchToTab(tab.id); // switchToTab closes the window
-          return;
-        }
-      }
-      window.close();
-      return;
-    }
-
-    if (!tabList || tabList.length === 0) return;
+    if (!currentSettings || !tabList || tabList.length === 0) return;
 
     const { keybindings } = currentSettings;
 
@@ -345,11 +317,31 @@ function App() {
 
   let cleanupThemeListener: (() => void) | undefined;
 
+  // Handle close popup message from background
+  function handleCloseMessage(message: MessageType) {
+    if (message.type === "CLOSE_POPUP") {
+      if (message.selectFocused) {
+        const tabList = tabs();
+        const tab = tabList?.[selectedIndex()];
+        if (tab) {
+          switchToTab(tab.id);
+          return;
+        }
+      }
+      window.close();
+    }
+  }
+
   onMount(async () => {
-    const [currentWindow, loadedSettings, commands] = await Promise.all([
+    // Notify background that popup is open
+    chrome.runtime.sendMessage({ type: "POPUP_OPENED" });
+
+    // Listen for close messages
+    chrome.runtime.onMessage.addListener(handleCloseMessage);
+
+    const [currentWindow, loadedSettings] = await Promise.all([
       chrome.windows.getCurrent(),
       loadSettings(),
-      chrome.commands.getAll(),
     ]);
 
     // Check for launch info (from mode-fixed shortcuts)
@@ -358,18 +350,13 @@ function App() {
     })) as MessageResponse | null | undefined;
 
     let initialWindowOnly = false;
-    let command: CommandName = "_execute_action";
 
     if (
       launchInfoResponse?.type === "LAUNCH_INFO" &&
-      launchInfoResponse.info.command !== null
+      launchInfoResponse.info.mode !== null
     ) {
-      // Use the command from launch info
-      command = launchInfoResponse.info.command;
-      // Use the override mode
-      if (launchInfoResponse.info.mode !== null) {
-        initialWindowOnly = launchInfoResponse.info.mode === "currentWindow";
-      }
+      // Use the override mode from shortcut
+      initialWindowOnly = launchInfoResponse.info.mode === "currentWindow";
       // Clear the info after use
       await chrome.runtime.sendMessage({ type: "CLEAR_LAUNCH_INFO" });
     } else {
@@ -386,14 +373,6 @@ function App() {
           initialWindowOnly = await loadMode();
           break;
       }
-    }
-
-    setLaunchCommand(command);
-
-    // Get the shortcut for the launch command
-    const cmd = commands.find((c) => c.name === command);
-    if (cmd?.shortcut) {
-      setLaunchShortcut(parseShortcut(cmd.shortcut));
     }
 
     setWindowOnly(initialWindowOnly);
@@ -425,6 +404,8 @@ function App() {
 
   onCleanup(() => {
     document.removeEventListener("keydown", handleKeyDown);
+    chrome.runtime.onMessage.removeListener(handleCloseMessage);
+    chrome.runtime.sendMessage({ type: "POPUP_CLOSING" });
     cleanupThemeListener?.();
   });
 

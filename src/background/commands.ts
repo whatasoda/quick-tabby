@@ -1,7 +1,11 @@
-import type { LaunchInfo } from "../shared/types.ts";
+import type { LaunchInfo, CommandName } from "../shared/types.ts";
+import { loadSettings } from "../shared/settings.ts";
 
 // Store launch info for when popup opens (which command triggered it)
 let launchInfo: LaunchInfo = { mode: null, command: null };
+
+// Track if popup is currently open
+let isPopupOpen = false;
 
 export function getLaunchInfo(): LaunchInfo {
   return launchInfo;
@@ -11,18 +15,36 @@ export function clearLaunchInfo(): void {
   launchInfo = { mode: null, command: null };
 }
 
-async function handleOpenPopupAllWindows(): Promise<void> {
-  launchInfo = { mode: "all", command: "open-popup-all-windows" };
+export function setPopupOpen(open: boolean): void {
+  isPopupOpen = open;
+}
+
+export function getPopupOpen(): boolean {
+  return isPopupOpen;
+}
+
+async function sendCloseMessage(command: CommandName): Promise<boolean> {
+  const settings = await loadSettings();
+  const selectFocused = settings.commandSettings[command]?.selectOnClose ?? true;
+
   try {
-    await chrome.action.openPopup();
+    await chrome.runtime.sendMessage({ type: "CLOSE_POPUP", selectFocused });
+    return true;
   } catch {
-    // openPopup may fail in older Chrome versions, clear the info
-    clearLaunchInfo();
+    // Popup might have already closed
+    return false;
   }
 }
 
-async function handleOpenPopupCurrentWindow(): Promise<void> {
-  launchInfo = { mode: "currentWindow", command: "open-popup-current-window" };
+async function handleCommand(command: CommandName, mode: "all" | "currentWindow"): Promise<void> {
+  if (isPopupOpen) {
+    // Popup is open, send close message
+    await sendCloseMessage(command);
+    return;
+  }
+
+  // Open popup with specified mode
+  launchInfo = { mode, command };
   try {
     await chrome.action.openPopup();
   } catch {
@@ -35,10 +57,10 @@ export function initializeCommands(): void {
   chrome.commands.onCommand.addListener(async (command) => {
     switch (command) {
       case "open-popup-all-windows":
-        await handleOpenPopupAllWindows();
+        await handleCommand("open-popup-all-windows", "all");
         break;
       case "open-popup-current-window":
-        await handleOpenPopupCurrentWindow();
+        await handleCommand("open-popup-current-window", "currentWindow");
         break;
     }
   });
