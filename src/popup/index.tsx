@@ -16,6 +16,8 @@ import type {
   Settings,
 } from "../shared/types.ts";
 import { TabList } from "./components/TabList.tsx";
+import { KeybindingsModal } from "./components/KeybindingsModal.tsx";
+import { FiHelpCircle, FiSettings } from "solid-icons/fi";
 import {
   loadSettings,
   POPUP_SIZES,
@@ -141,24 +143,29 @@ const styles = {
   }),
   footer: css({
     display: "flex",
-    justifyContent: "center",
-    gap: "lg",
-    padding: "sm lg",
+    justifyContent: "flex-end",
+    gap: "xs",
+    padding: "xs sm",
     borderTop: "1px solid token(colors.border)",
     background: "surfaceAlt",
   }),
-  hint: css({
-    fontSize: "sm",
-    color: "text.secondary",
-  }),
-  kbd: css({
-    display: "inline-block",
-    padding: "2px 6px",
-    fontFamily: "monospace",
-    fontSize: "xs",
-    background: "surfaceHover",
+  iconButton: css({
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "28px",
+    height: "28px",
+    padding: 0,
+    border: "none",
+    background: "transparent",
     borderRadius: "sm",
-    margin: "0 2px",
+    cursor: "pointer",
+    color: "text.secondary",
+    transition: "all 0.15s",
+    _hover: {
+      background: "surfaceHover",
+      color: "text.primary",
+    },
   }),
 };
 
@@ -212,6 +219,7 @@ function App() {
   const [windowOnly, setWindowOnly] = createSignal(false);
   const [selectedIndex, setSelectedIndex] = createSignal(1);
   const [settings, setSettings] = createSignal<Settings | null>(null);
+  const [showKeybindingsModal, setShowKeybindingsModal] = createSignal(false);
   const [currentWindowId, setCurrentWindowId] = createSignal<number | null>(
     null
   );
@@ -296,6 +304,10 @@ function App() {
     if (tabList && tabList[index]) {
       switchToTab(tabList[index].id);
     }
+  }
+
+  function openSettings() {
+    chrome.runtime.openOptionsPage();
   }
 
   onMount(async () => {
@@ -407,17 +419,32 @@ function App() {
         </Show>
 
         <div class={styles.footer}>
-          <span class={styles.hint}>
-            <span class={styles.kbd}>j</span>/<span class={styles.kbd}>k</span> navigate
-          </span>
-          <span class={styles.hint}>
-            <span class={styles.kbd}>Enter</span> switch
-          </span>
-          <span class={styles.hint}>
-            <span class={styles.kbd}>Tab</span> toggle mode
-          </span>
+          <button
+            class={styles.iconButton}
+            onClick={() => setShowKeybindingsModal(true)}
+            title="キーボードショートカット"
+          >
+            <FiHelpCircle size={16} />
+          </button>
+          <button
+            class={styles.iconButton}
+            onClick={openSettings}
+            title="設定"
+          >
+            <FiSettings size={16} />
+          </button>
         </div>
       </div>
+
+      <Show when={showKeybindingsModal() && settings()}>
+        {(currentSettings) => (
+          <KeybindingsModal
+            settings={currentSettings()}
+            onClose={() => setShowKeybindingsModal(false)}
+            onOpenSettings={openSettings}
+          />
+        )}
+      </Show>
     </div>
   );
 }
