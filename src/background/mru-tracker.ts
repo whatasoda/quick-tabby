@@ -1,6 +1,5 @@
 import type { MRUState, TabInfo } from "../shared/types.ts";
 
-const MIN_DWELL_TIME = 750;
 const MAX_MRU_SIZE = 50;
 const STORAGE_KEY = "mruState";
 
@@ -8,10 +7,6 @@ let state: MRUState = {
   global: [],
   byWindow: {},
 };
-
-let lastActivatedTabId: number | null = null;
-let lastActivatedTime = 0;
-let pendingAddTimeout: ReturnType<typeof setTimeout> | null = null;
 
 async function saveState(): Promise<void> {
   await chrome.storage.session.set({ [STORAGE_KEY]: state });
@@ -53,46 +48,15 @@ function removeFromMRU(tabId: number): void {
   saveState();
 }
 
-function scheduleAddTab(tabId: number, windowId: number): void {
-  if (pendingAddTimeout) {
-    clearTimeout(pendingAddTimeout);
-  }
-
-  pendingAddTimeout = setTimeout(() => {
-    addToMRU(tabId, windowId);
-    pendingAddTimeout = null;
-  }, MIN_DWELL_TIME);
-}
-
 export function handleTabActivated(
   activeInfo: chrome.tabs.TabActiveInfo
 ): void {
-  const now = Date.now();
   const { tabId, windowId } = activeInfo;
-
-  if (lastActivatedTabId !== null && now - lastActivatedTime >= MIN_DWELL_TIME) {
-    if (pendingAddTimeout) {
-      clearTimeout(pendingAddTimeout);
-      pendingAddTimeout = null;
-    }
-    addToMRU(lastActivatedTabId, windowId);
-  }
-
-  lastActivatedTabId = tabId;
-  lastActivatedTime = now;
-  scheduleAddTab(tabId, windowId);
+  addToMRU(tabId, windowId);
 }
 
 export function handleTabRemoved(tabId: number): void {
   removeFromMRU(tabId);
-
-  if (lastActivatedTabId === tabId) {
-    lastActivatedTabId = null;
-    if (pendingAddTimeout) {
-      clearTimeout(pendingAddTimeout);
-      pendingAddTimeout = null;
-    }
-  }
 }
 
 export function handleWindowRemoved(windowId: number): void {
@@ -168,8 +132,6 @@ async function initializeExistingTabs(): Promise<void> {
 
       if (tab.active) {
         addToMRU(tab.id, window.id);
-        lastActivatedTabId = tab.id;
-        lastActivatedTime = Date.now();
       }
     }
   }

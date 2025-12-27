@@ -39,7 +39,7 @@ async function saveMode(windowOnly: boolean): Promise<void> {
 
 function App() {
   const [windowOnly, setWindowOnly] = createSignal(false);
-  const [selectedIndex, setSelectedIndex] = createSignal(0);
+  const [selectedIndex, setSelectedIndex] = createSignal(1);
   const [initialized, setInitialized] = createSignal(false);
   const [tabs, { refetch }] = createResource(
     () => (initialized() ? windowOnly() : null),
@@ -49,7 +49,7 @@ function App() {
   function toggleMode() {
     const newMode = !windowOnly();
     setWindowOnly(newMode);
-    setSelectedIndex(0);
+    setSelectedIndex(1);
     saveMode(newMode);
   }
 
