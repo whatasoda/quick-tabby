@@ -7,7 +7,7 @@ import {
   initializeCommands,
   getLaunchInfo,
   clearLaunchInfo,
-  setPopupOpen,
+  setPopupPort,
 } from "./commands.ts";
 import {
   initThumbnailCache,
@@ -21,6 +21,16 @@ import type { MessageType, MessageResponse } from "../shared/types.ts";
   initializeCommands();
   console.log("QuickTabby background service worker initialized");
 })();
+
+// Handle popup port connection
+chrome.runtime.onConnect.addListener((port) => {
+  if (port.name === "popup") {
+    setPopupPort(port);
+    port.onDisconnect.addListener(() => {
+      setPopupPort(null);
+    });
+  }
+});
 
 chrome.runtime.onMessage.addListener(
   (
@@ -74,16 +84,10 @@ async function handleMessage(
       clearLaunchInfo();
       return { type: "SUCCESS" };
     }
-    case "POPUP_OPENED": {
-      setPopupOpen(true);
-      return { type: "SUCCESS" };
-    }
-    case "POPUP_CLOSING": {
-      setPopupOpen(false);
-      return { type: "SUCCESS" };
-    }
+    case "POPUP_OPENED":
+    case "POPUP_CLOSING":
     case "CLOSE_POPUP": {
-      // This is sent TO the popup, not handled here
+      // These are handled via port connection, not message passing
       return { type: "SUCCESS" };
     }
     default: {

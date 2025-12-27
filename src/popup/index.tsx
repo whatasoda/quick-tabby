@@ -316,9 +316,10 @@ function App() {
   }
 
   let cleanupThemeListener: (() => void) | undefined;
+  let port: chrome.runtime.Port | undefined;
 
   // Handle close popup message from background
-  function handleCloseMessage(message: MessageType) {
+  function handlePortMessage(message: { type: string; selectFocused?: boolean }) {
     if (message.type === "CLOSE_POPUP") {
       if (message.selectFocused) {
         const tabList = tabs();
@@ -333,11 +334,9 @@ function App() {
   }
 
   onMount(async () => {
-    // Notify background that popup is open
-    chrome.runtime.sendMessage({ type: "POPUP_OPENED" });
-
-    // Listen for close messages
-    chrome.runtime.onMessage.addListener(handleCloseMessage);
+    // Connect to background to track popup state
+    port = chrome.runtime.connect({ name: "popup" });
+    port.onMessage.addListener(handlePortMessage);
 
     const [currentWindow, loadedSettings] = await Promise.all([
       chrome.windows.getCurrent(),
@@ -404,8 +403,7 @@ function App() {
 
   onCleanup(() => {
     document.removeEventListener("keydown", handleKeyDown);
-    chrome.runtime.onMessage.removeListener(handleCloseMessage);
-    chrome.runtime.sendMessage({ type: "POPUP_CLOSING" });
+    port?.disconnect();
     cleanupThemeListener?.();
   });
 

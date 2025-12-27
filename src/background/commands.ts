@@ -4,8 +4,8 @@ import { loadSettings } from "../shared/settings.ts";
 // Store launch info for when popup opens (which command triggered it)
 let launchInfo: LaunchInfo = { mode: null, command: null };
 
-// Track if popup is currently open
-let isPopupOpen = false;
+// Track popup connection
+let popupPort: chrome.runtime.Port | null = null;
 
 export function getLaunchInfo(): LaunchInfo {
   return launchInfo;
@@ -15,29 +15,36 @@ export function clearLaunchInfo(): void {
   launchInfo = { mode: null, command: null };
 }
 
-export function setPopupOpen(open: boolean): void {
-  isPopupOpen = open;
+export function setPopupPort(port: chrome.runtime.Port | null): void {
+  popupPort = port;
 }
 
-export function getPopupOpen(): boolean {
-  return isPopupOpen;
+export function getPopupPort(): chrome.runtime.Port | null {
+  return popupPort;
+}
+
+export function isPopupOpen(): boolean {
+  return popupPort !== null;
 }
 
 async function sendCloseMessage(command: CommandName): Promise<boolean> {
+  if (!popupPort) return false;
+
   const settings = await loadSettings();
   const selectFocused = settings.commandSettings[command]?.selectOnClose ?? true;
 
   try {
-    await chrome.runtime.sendMessage({ type: "CLOSE_POPUP", selectFocused });
+    popupPort.postMessage({ type: "CLOSE_POPUP", selectFocused });
     return true;
   } catch {
     // Popup might have already closed
+    popupPort = null;
     return false;
   }
 }
 
 async function handleCommand(command: CommandName, mode: "all" | "currentWindow"): Promise<void> {
-  if (isPopupOpen) {
+  if (isPopupOpen()) {
     // Popup is open, send close message
     await sendCloseMessage(command);
     return;
