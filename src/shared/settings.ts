@@ -79,16 +79,27 @@ export function keybindingToString(binding: Keybinding): string {
   return parts.join("+");
 }
 
+// Chrome popup max width is 800px
+// Fixed 1:2 ratio for tab list:preview
+const MAX_POPUP_WIDTH = 800;
+const BORDER_WIDTH = 1;
+const TAB_LIST_WIDTH = 266;
+const PREVIEW_WIDTH = MAX_POPUP_WIDTH - TAB_LIST_WIDTH - BORDER_WIDTH; // 533
+
 export const POPUP_SIZES = {
-  small: { width: 300, height: 400 },
-  medium: { width: 350, height: 500 },
-  large: { width: 450, height: 600 },
+  small: { height: 400 },
+  medium: { height: 500 },
+  large: { height: 600 },
 } as const;
 
-// Calculate preview panel width based on popup height and 14:9 aspect ratio
-export function getPreviewWidth(popupSize: PopupSize): number {
-  const height = POPUP_SIZES[popupSize].height;
-  const thumbnailHeight = height - 80; // padding (24px) + info section (~56px)
-  const thumbnailWidth = Math.round(thumbnailHeight * (14 / 9));
-  return thumbnailWidth + 24; // left + right padding
+export function getPreviewWidth(): number {
+  return PREVIEW_WIDTH;
+}
+
+export function getTabListWidth(): number {
+  return TAB_LIST_WIDTH;
+}
+
+export function getMaxPopupWidth(): number {
+  return MAX_POPUP_WIDTH;
 }

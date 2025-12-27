@@ -1,6 +1,7 @@
 :root {
   --popup-width: 350px;
   --popup-height: 500px;
+  --tab-list-width: 266px;
 }
 
 * {
@@ -182,8 +183,8 @@ kbd {
 }
 
 .popup-container.preview-enabled .main-content {
-  flex: 1;
-  min-width: 0;
+  width: var(--tab-list-width);
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
 }

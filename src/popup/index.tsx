@@ -18,6 +18,8 @@ import {
   loadSettings,
   POPUP_SIZES,
   getPreviewWidth,
+  getTabListWidth,
+  getMaxPopupWidth,
   THUMBNAIL_QUALITIES,
   matchesKeybinding,
 } from "../shared/settings.ts";
@@ -55,24 +57,17 @@ async function saveMode(windowOnly: boolean): Promise<void> {
 
 function applyPopupSize(settings: Settings) {
   const size = POPUP_SIZES[settings.popupSize];
-  const previewWidth = getPreviewWidth(settings.popupSize);
+  const tabListWidth = getTabListWidth();
+  const previewWidth = getPreviewWidth();
 
-  // Add preview width to total popup width when preview is enabled
-  // Include border width (1px) for the preview panel separator
-  const borderWidth = 1;
   const totalWidth = settings.previewModeEnabled
-    ? size.width + previewWidth + borderWidth
-    : size.width;
+    ? getMaxPopupWidth()
+    : tabListWidth;
 
   document.documentElement.style.setProperty("--popup-width", `${totalWidth}px`);
-  document.documentElement.style.setProperty(
-    "--popup-height",
-    `${size.height}px`
-  );
-  document.documentElement.style.setProperty(
-    "--preview-width",
-    `${previewWidth}px`
-  );
+  document.documentElement.style.setProperty("--popup-height", `${size.height}px`);
+  document.documentElement.style.setProperty("--preview-width", `${previewWidth}px`);
+  document.documentElement.style.setProperty("--tab-list-width", `${tabListWidth}px`);
 }
 
 function App() {
