@@ -6,8 +6,14 @@ import {
   onCleanup,
   Show,
 } from "solid-js";
-import type { TabInfo, MessageType, MessageResponse } from "../shared/types.ts";
+import type {
+  TabInfo,
+  MessageType,
+  MessageResponse,
+  Settings,
+} from "../shared/types.ts";
 import { TabList } from "./components/TabList.tsx";
+import { loadSettings, POPUP_SIZES } from "../shared/settings.ts";
 
 async function fetchMRUTabs(
   windowOnly: boolean,
@@ -40,9 +46,19 @@ async function saveMode(windowOnly: boolean): Promise<void> {
   await chrome.storage.local.set({ [MODE_STORAGE_KEY]: windowOnly });
 }
 
+function applyPopupSize(settings: Settings) {
+  const size = POPUP_SIZES[settings.popupSize];
+  document.documentElement.style.setProperty("--popup-width", `${size.width}px`);
+  document.documentElement.style.setProperty(
+    "--popup-height",
+    `${size.height}px`
+  );
+}
+
 function App() {
   const [windowOnly, setWindowOnly] = createSignal(false);
   const [selectedIndex, setSelectedIndex] = createSignal(1);
+  const [settings, setSettings] = createSignal<Settings | null>(null);
   const [currentWindowId, setCurrentWindowId] = createSignal<number | null>(
     null
   );
@@ -101,11 +117,15 @@ function App() {
   }
 
   onMount(async () => {
-    const [savedMode, currentWindow] = await Promise.all([
+    const [savedMode, currentWindow, loadedSettings] = await Promise.all([
       loadMode(),
       chrome.windows.getCurrent(),
+      loadSettings(),
     ]);
     setWindowOnly(savedMode);
+    setSettings(loadedSettings);
+    applyPopupSize(loadedSettings);
+
     if (currentWindow.id !== undefined) {
       setCurrentWindowId(currentWindow.id);
     }
