@@ -33,14 +33,16 @@ const styles = {
   popupContainer: css({
     display: "flex",
     flexDirection: "column",
-    height: "100%",
+    flex: 1,
+    minHeight: 0,
   }),
   popupContainerPreviewEnabled: css({
     flexDirection: "row",
   }),
   mainContent: css({
     width: "var(--tab-list-width)",
-    flexShrink: 0,
+    flex: 1,
+    minHeight: 0,
     display: "flex",
     flexDirection: "column",
   }),
@@ -126,6 +128,7 @@ const styles = {
     padding: "xs sm",
     borderTop: "1px solid token(colors.border)",
     background: "surfaceAlt",
+    marginTop: "auto",
   }),
   footerLeft: css({
     display: "flex",

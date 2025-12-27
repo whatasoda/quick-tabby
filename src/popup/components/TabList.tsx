@@ -13,7 +13,7 @@ interface TabListProps {
 const tabListStyle = css({
   flex: 1,
   overflowY: "auto",
-  maxHeight: "calc(var(--popup-height) - 120px)",
+  minHeight: 0,
 });
 
 export function TabList(props: TabListProps) {
