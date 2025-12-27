@@ -75,8 +75,16 @@ export function matchesKeybinding(
   event: KeyboardEvent,
   binding: Keybinding
 ): boolean {
-  const keyMatches =
-    event.key === binding.key || event.key.toLowerCase() === binding.key;
+  // For single character keys, use event.code to handle Alt/Option key combinations
+  // (on Mac, Alt+Q produces "œ" in event.key, but event.code is still "KeyQ")
+  let keyMatches: boolean;
+  if (binding.key.length === 1) {
+    const expectedCode = `Key${binding.key.toUpperCase()}`;
+    keyMatches = event.code === expectedCode;
+  } else {
+    keyMatches = event.key === binding.key || event.key.toLowerCase() === binding.key;
+  }
+
   const ctrlMatches = !!binding.ctrl === event.ctrlKey;
   const altMatches = !!binding.alt === event.altKey;
   const shiftMatches = !!binding.shift === event.shiftKey;
