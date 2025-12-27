@@ -41,7 +41,7 @@ const styles = {
     bottom: 0,
     fontSize: "10px",
     fontWeight: 500,
-    color: "text.muted",
+    color: "text.secondary",
     background: "borderLight",
     padding: "2px 6px",
     borderTopLeftRadius: "md",
