@@ -6,6 +6,7 @@
   "scripts": {
     "prepare": "panda codegen",
     "dev": "panda codegen && vite",
+    "dev:preview": "panda codegen && vite --config vite.config.dev.ts",
     "build": "panda codegen && vite build",
     "test": "bun test"
   },
