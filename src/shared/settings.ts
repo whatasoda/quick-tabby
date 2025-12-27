@@ -1,4 +1,4 @@
-import type { Settings, Keybinding, PopupSize, ThemePreference, DefaultMode, CommandName } from "./types.ts";
+import type { Settings, Keybinding, KeybindingList, PopupSize, ThemePreference, DefaultMode, CommandName } from "./types.ts";
 
 const SETTINGS_KEY = "quicktabby:settings";
 
@@ -9,11 +9,11 @@ export const DEFAULT_SETTINGS: Settings = {
   defaultMode: "lastUsed",
   themePreference: "auto",
   keybindings: {
-    moveDown: { key: "j" },
-    moveUp: { key: "k" },
-    confirm: { key: "Enter" },
-    cancel: { key: "Escape" },
-    toggleMode: { key: "Tab" },
+    moveDown: [{ key: "j" }],
+    moveUp: [{ key: "k" }],
+    confirm: [{ key: "Enter" }],
+    cancel: [{ key: "Escape" }],
+    toggleMode: [{ key: "Tab" }],
   },
   commandSettings: {
     "_execute_action": { selectOnClose: true },
@@ -28,8 +28,18 @@ export const THUMBNAIL_QUALITIES = {
   ultra: { size: 800, captureQuality: 95, resizeQuality: 0.95 },
 } as const;
 
-interface LegacySettings extends Partial<Settings> {
+// Legacy keybindings format (single keybinding per action)
+interface LegacyKeybindings {
+  moveDown?: Keybinding;
+  moveUp?: Keybinding;
+  confirm?: Keybinding;
+  cancel?: Keybinding;
+  toggleMode?: Keybinding;
+}
+
+interface LegacySettings extends Partial<Omit<Settings, "keybindings">> {
   enableModeToggle?: boolean;
+  keybindings?: LegacyKeybindings | Settings["keybindings"];
 }
 
 export async function loadSettings(): Promise<Settings> {
@@ -51,15 +61,30 @@ export async function loadSettings(): Promise<Settings> {
     await chrome.storage.local.set({ [SETTINGS_KEY]: migratedSettings });
   }
 
+  // Migration: convert single keybindings to arrays
+  let migratedKeybindings: Settings["keybindings"] = { ...DEFAULT_SETTINGS.keybindings };
+  if (stored.keybindings) {
+    const keys = ["moveDown", "moveUp", "confirm", "cancel", "toggleMode"] as const;
+    for (const key of keys) {
+      const binding = stored.keybindings[key];
+      if (binding) {
+        if (Array.isArray(binding)) {
+          // Already migrated - use as is
+          migratedKeybindings[key] = binding;
+        } else if (typeof binding === "object" && "key" in binding) {
+          // Legacy single keybinding - wrap in array
+          migratedKeybindings[key] = [binding];
+        }
+      }
+    }
+  }
+
   // Merge with defaults to handle missing fields
   return {
     ...DEFAULT_SETTINGS,
     ...stored,
     defaultMode: defaultMode ?? DEFAULT_SETTINGS.defaultMode,
-    keybindings: {
-      ...DEFAULT_SETTINGS.keybindings,
-      ...stored.keybindings,
-    },
+    keybindings: migratedKeybindings,
     commandSettings: {
       ...DEFAULT_SETTINGS.commandSettings,
       ...stored.commandSettings,
@@ -111,6 +136,17 @@ export function keybindingToString(binding: Keybinding): string {
 
   parts.push(keyDisplay);
   return parts.join("+");
+}
+
+export function matchesAnyKeybinding(
+  event: KeyboardEvent,
+  bindings: KeybindingList
+): boolean {
+  return bindings.some((binding) => matchesKeybinding(event, binding));
+}
+
+export function keybindingsToString(bindings: KeybindingList): string {
+  return bindings.map(keybindingToString).join(" / ");
 }
 
 // Chrome popup max width is 800px

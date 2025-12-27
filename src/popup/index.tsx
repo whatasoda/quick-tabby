@@ -24,7 +24,7 @@ import {
   getTabListWidth,
   getMaxPopupWidth,
   THUMBNAIL_QUALITIES,
-  matchesKeybinding,
+  matchesAnyKeybinding,
   applyTheme,
   setupThemeListener,
 } from "../shared/settings.ts";
@@ -271,19 +271,19 @@ export function App() {
     const { keybindings } = currentSettings;
 
     // Also allow arrow keys as built-in navigation
-    if (matchesKeybinding(e, keybindings.moveDown) || e.key === "ArrowDown") {
+    if (matchesAnyKeybinding(e, keybindings.moveDown) || e.key === "ArrowDown") {
       e.preventDefault();
       setSelectedIndex((i) => Math.min(i + 1, tabList.length - 1));
       return;
     }
 
-    if (matchesKeybinding(e, keybindings.moveUp) || e.key === "ArrowUp") {
+    if (matchesAnyKeybinding(e, keybindings.moveUp) || e.key === "ArrowUp") {
       e.preventDefault();
       setSelectedIndex((i) => Math.max(i - 1, 0));
       return;
     }
 
-    if (matchesKeybinding(e, keybindings.confirm)) {
+    if (matchesAnyKeybinding(e, keybindings.confirm)) {
       e.preventDefault();
       const tab = tabList[selectedIndex()];
       if (tab) {
@@ -292,13 +292,13 @@ export function App() {
       return;
     }
 
-    if (matchesKeybinding(e, keybindings.cancel)) {
+    if (matchesAnyKeybinding(e, keybindings.cancel)) {
       e.preventDefault();
       window.close();
       return;
     }
 
-    if (matchesKeybinding(e, keybindings.toggleMode)) {
+    if (matchesAnyKeybinding(e, keybindings.toggleMode)) {
       e.preventDefault();
       toggleMode();
       return;

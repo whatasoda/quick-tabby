@@ -65,6 +65,8 @@ export interface Keybinding {
   meta?: boolean;
 }
 
+export type KeybindingList = Keybinding[];
+
 export interface Settings {
   popupSize: PopupSize;
   previewModeEnabled: boolean;
@@ -72,11 +74,11 @@ export interface Settings {
   defaultMode: DefaultMode;
   themePreference: ThemePreference;
   keybindings: {
-    moveDown: Keybinding;
-    moveUp: Keybinding;
-    confirm: Keybinding;
-    cancel: Keybinding;
-    toggleMode: Keybinding;
+    moveDown: KeybindingList;
+    moveUp: KeybindingList;
+    confirm: KeybindingList;
+    cancel: KeybindingList;
+    toggleMode: KeybindingList;
   };
   commandSettings: Record<CommandName, CommandSettings>;
 }

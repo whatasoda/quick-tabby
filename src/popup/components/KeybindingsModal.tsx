@@ -60,6 +60,12 @@ const styles = {
     borderRadius: "sm",
     color: "text.primary",
   }),
+  kbdGroup: css({
+    display: "flex",
+    gap: "4px",
+    flexWrap: "wrap",
+    justifyContent: "flex-end",
+  }),
   footer: css({
     display: "flex",
     justifyContent: "flex-end",
@@ -121,10 +127,14 @@ export function KeybindingsModal(props: KeybindingsModalProps) {
       <div class={styles.modal}>
         <div class={styles.title}>キーボードショートカット</div>
         <div class={styles.table}>
-          {keybindings().map(([key, binding]) => (
+          {keybindings().map(([key, bindings]) => (
             <div class={styles.row}>
               <span class={styles.label}>{KEYBINDING_LABELS[key]}</span>
-              <span class={styles.kbd}>{keybindingToString(binding)}</span>
+              <div class={styles.kbdGroup}>
+                {bindings.map((binding) => (
+                  <span class={styles.kbd}>{keybindingToString(binding)}</span>
+                ))}
+              </div>
             </div>
           ))}
         </div>

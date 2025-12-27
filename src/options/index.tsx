@@ -8,6 +8,7 @@ import type {
   ThemePreference,
   DefaultMode,
   Keybinding,
+  KeybindingList,
   CommandName,
 } from "../shared/types.ts";
 import {
@@ -119,6 +120,52 @@ const styles = {
     color: "white",
     _hover: {
       background: "primary",
+    },
+  }),
+  keybindingChip: css({
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "4px",
+    fontFamily: "monospace",
+    background: "surfaceHover",
+    padding: "4px 8px",
+    borderRadius: "md",
+    fontSize: "12px",
+  }),
+  keybindingRemoveBtn: css({
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "14px",
+    height: "14px",
+    padding: 0,
+    border: "none",
+    background: "transparent",
+    cursor: "pointer",
+    color: "text.secondary",
+    borderRadius: "full",
+    _hover: {
+      background: "borderLight",
+      color: "text.primary",
+    },
+  }),
+  keybindingChipGroup: css({
+    display: "flex",
+    flexWrap: "wrap",
+    gap: "6px",
+    alignItems: "center",
+  }),
+  addKeybindingBtn: css({
+    padding: "4px 10px",
+    fontSize: "12px",
+    background: "transparent",
+    border: "1px dashed token(colors.border)",
+    borderRadius: "md",
+    cursor: "pointer",
+    color: "text.secondary",
+    _hover: {
+      background: "surfaceHover",
+      borderStyle: "solid",
     },
   }),
   shortcutList: css({
@@ -239,17 +286,28 @@ export function App() {
     showSaved();
   }
 
-  async function updateKeybinding(
+  async function updateKeybindings(
     key: keyof Settings["keybindings"],
-    binding: Keybinding
+    bindings: KeybindingList
   ) {
     const newSettings = {
       ...settings(),
-      keybindings: { ...settings().keybindings, [key]: binding },
+      keybindings: { ...settings().keybindings, [key]: bindings },
     };
     setSettings(newSettings);
     await saveSettings(newSettings);
     showSaved();
+  }
+
+  function addKeybinding(key: keyof Settings["keybindings"], binding: Keybinding) {
+    const current = settings().keybindings[key];
+    updateKeybindings(key, [...current, binding]);
+  }
+
+  function removeKeybinding(key: keyof Settings["keybindings"], index: number) {
+    const current = settings().keybindings[key];
+    if (current.length <= 1) return; // Don't allow removing the last keybinding
+    updateKeybindings(key, current.filter((_, i) => i !== index));
   }
 
   async function updateCommandSetting(
@@ -299,7 +357,7 @@ export function App() {
       meta: e.metaKey,
     };
 
-    updateKeybinding(key, binding);
+    addKeybinding(key, binding);
     setRecordingKey(null);
   }
 
@@ -450,16 +508,44 @@ export function App() {
           {([key, label]) => (
             <div class={styles.settingRow}>
               <div class={styles.settingLabel}>{label}</div>
-              <div
-                class={`${styles.keybindingDisplay} ${recordingKey() === key ? styles.keybindingDisplayRecording : ""}`}
-                tabIndex={0}
-                onClick={() => startRecording(key)}
-                onKeyDown={(e) => handleKeyDown(e, key)}
-                onBlur={() => setRecordingKey(null)}
-              >
-                {recordingKey() === key
-                  ? "Press key..."
-                  : keybindingToString(settings().keybindings[key])}
+              <div class={styles.keybindingChipGroup}>
+                <For each={settings().keybindings[key]}>
+                  {(binding, index) => (
+                    <div class={styles.keybindingChip}>
+                      <span>{keybindingToString(binding)}</span>
+                      <Show when={settings().keybindings[key].length > 1}>
+                        <button
+                          class={styles.keybindingRemoveBtn}
+                          onClick={() => removeKeybinding(key, index())}
+                          title="Remove keybinding"
+                        >
+                          ×
+                        </button>
+                      </Show>
+                    </div>
+                  )}
+                </For>
+                <Show
+                  when={recordingKey() === key}
+                  fallback={
+                    <button
+                      class={styles.addKeybindingBtn}
+                      onClick={() => startRecording(key)}
+                    >
+                      + Add
+                    </button>
+                  }
+                >
+                  <div
+                    class={`${styles.keybindingChip} ${styles.keybindingDisplayRecording}`}
+                    tabIndex={0}
+                    onKeyDown={(e) => handleKeyDown(e, key)}
+                    onBlur={() => setRecordingKey(null)}
+                    ref={(el) => el?.focus()}
+                  >
+                    Press key...
+                  </div>
+                </Show>
               </div>
             </div>
           )}
