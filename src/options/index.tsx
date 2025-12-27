@@ -4,6 +4,7 @@ import type {
   Settings,
   PopupSize,
   PreviewSize,
+  ThumbnailQuality,
   Keybinding,
 } from "../shared/types.ts";
 import {
@@ -161,6 +162,29 @@ function App() {
                       onChange={() => updateSetting("previewSize", size)}
                     />
                     {size.charAt(0).toUpperCase() + size.slice(1)}
+                  </label>
+                )}
+              </For>
+            </div>
+          </div>
+          <div class="setting-row sub-setting">
+            <div>
+              <div class="setting-label">Thumbnail Quality</div>
+              <div class="setting-description">
+                Higher quality uses more storage
+              </div>
+            </div>
+            <div class="radio-group">
+              <For each={["standard", "high"] as ThumbnailQuality[]}>
+                {(quality) => (
+                  <label class="radio-option">
+                    <input
+                      type="radio"
+                      name="thumbnailQuality"
+                      checked={settings().thumbnailQuality === quality}
+                      onChange={() => updateSetting("thumbnailQuality", quality)}
+                    />
+                    {quality.charAt(0).toUpperCase() + quality.slice(1)}
                   </label>
                 )}
               </For>

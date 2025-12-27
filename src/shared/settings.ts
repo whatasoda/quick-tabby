@@ -6,6 +6,7 @@ export const DEFAULT_SETTINGS: Settings = {
   popupSize: "medium",
   previewModeEnabled: false,
   previewSize: "medium",
+  thumbnailQuality: "standard",
   enableModeToggle: true,
   keybindings: {
     moveDown: { key: "j" },
@@ -17,9 +18,14 @@ export const DEFAULT_SETTINGS: Settings = {
 };
 
 export const PREVIEW_SIZES = {
-  small: { width: 140 },
-  medium: { width: 180 },
-  large: { width: 240 },
+  small: { width: 320 },
+  medium: { width: 400 },
+  large: { width: 480 },
+} as const;
+
+export const THUMBNAIL_QUALITIES = {
+  standard: { size: 200, captureQuality: 70, resizeQuality: 0.8 },
+  high: { size: 400, captureQuality: 85, resizeQuality: 0.9 },
 } as const;
 
 export async function loadSettings(): Promise<Settings> {

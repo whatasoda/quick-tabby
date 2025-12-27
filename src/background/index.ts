@@ -54,7 +54,11 @@ async function handleMessage(
         windowId: message.windowId,
       });
       if (tab?.id && tab.windowId) {
-        await captureAndStoreThumbnail(tab.id, tab.windowId);
+        await captureAndStoreThumbnail(
+          tab.id,
+          tab.windowId,
+          message.thumbnailConfig
+        );
       }
       return { type: "SUCCESS" };
     }

@@ -18,6 +18,7 @@ import {
   loadSettings,
   POPUP_SIZES,
   PREVIEW_SIZES,
+  THUMBNAIL_QUALITIES,
   matchesKeybinding,
 } from "../shared/settings.ts";
 
@@ -172,9 +173,11 @@ function App() {
     document.addEventListener("keydown", handleKeyDown);
 
     // Capture current tab and refresh to get updated thumbnail
+    const thumbnailConfig = THUMBNAIL_QUALITIES[loadedSettings.thumbnailQuality];
     const captureMessage: MessageType = {
       type: "CAPTURE_CURRENT_TAB",
       windowId: currentWindow.id,
+      thumbnailConfig,
     };
     chrome.runtime.sendMessage(captureMessage).then(() => {
       refetch();
