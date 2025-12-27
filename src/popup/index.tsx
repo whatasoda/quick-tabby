@@ -26,10 +26,32 @@ async function switchToTab(tabId: number): Promise<void> {
   window.close();
 }
 
+const MODE_STORAGE_KEY = "windowOnlyMode";
+
+async function loadMode(): Promise<boolean> {
+  const result = await chrome.storage.local.get(MODE_STORAGE_KEY);
+  return result[MODE_STORAGE_KEY] ?? false;
+}
+
+async function saveMode(windowOnly: boolean): Promise<void> {
+  await chrome.storage.local.set({ [MODE_STORAGE_KEY]: windowOnly });
+}
+
 function App() {
   const [windowOnly, setWindowOnly] = createSignal(false);
   const [selectedIndex, setSelectedIndex] = createSignal(0);
-  const [tabs, { refetch }] = createResource(windowOnly, fetchMRUTabs);
+  const [initialized, setInitialized] = createSignal(false);
+  const [tabs, { refetch }] = createResource(
+    () => (initialized() ? windowOnly() : null),
+    (mode) => (mode !== null ? fetchMRUTabs(mode) : Promise.resolve([]))
+  );
+
+  function toggleMode() {
+    const newMode = !windowOnly();
+    setWindowOnly(newMode);
+    setSelectedIndex(0);
+    saveMode(newMode);
+  }
 
   function handleKeyDown(e: KeyboardEvent) {
     const tabList = tabs();
@@ -55,8 +77,7 @@ function App() {
         break;
       case "Tab":
         e.preventDefault();
-        setWindowOnly((w) => !w);
-        setSelectedIndex(0);
+        toggleMode();
         break;
     }
   }
@@ -68,7 +89,10 @@ function App() {
     }
   }
 
-  onMount(() => {
+  onMount(async () => {
+    const savedMode = await loadMode();
+    setWindowOnly(savedMode);
+    setInitialized(true);
     document.addEventListener("keydown", handleKeyDown);
   });
 
@@ -82,10 +106,7 @@ function App() {
         <h1>QuickTabby</h1>
         <button
           class={`mode-toggle ${windowOnly() ? "active" : ""}`}
-          onClick={() => {
-            setWindowOnly((w) => !w);
-            setSelectedIndex(0);
-          }}
+          onClick={toggleMode}
           title="Toggle window-only mode (Tab)"
         >
           {windowOnly() ? "Window" : "All"}
