@@ -6,14 +6,19 @@
 
 body {
   width: var(--popup-width);
-  max-height: var(--popup-height);
+  height: var(--popup-height);
   margin: 0;
   font-family: system-ui, -apple-system, sans-serif;
   font-size: 13px;
   background: var(--colors-background);
   color: var(--colors-text-primary);
-  overflow-x: hidden;
-  overflow-y: auto;
+  overflow: hidden;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 [data-theme="dark"] {
