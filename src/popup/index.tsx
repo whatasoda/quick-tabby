@@ -200,34 +200,45 @@ function App() {
 
   return (
     <div class={`popup-container ${isPreviewEnabled() ? "preview-enabled" : ""}`}>
-      <Show when={isPreviewEnabled() && selectedTab()}>
-        {(tab) => (
-          <div class="preview-panel">
-            <Show
-              when={tab().thumbnailUrl}
-              fallback={
-                <div class="preview-placeholder">
+      <Show when={isPreviewEnabled()}>
+        <div class="preview-panel">
+          <Show
+            when={selectedTab()}
+            fallback={
+              <div class="preview-placeholder">
+                <div class="preview-no-thumbnail">Select a tab to preview</div>
+              </div>
+            }
+          >
+            {(tab) => (
+              <>
+                <Show
+                  when={tab().thumbnailUrl}
+                  fallback={
+                    <div class="preview-placeholder">
+                      <img
+                        class="preview-favicon"
+                        src={tab().favIconUrl || ""}
+                        alt=""
+                      />
+                      <div class="preview-no-thumbnail">No preview available</div>
+                    </div>
+                  }
+                >
                   <img
-                    class="preview-favicon"
-                    src={tab().favIconUrl || ""}
-                    alt=""
+                    class="preview-thumbnail"
+                    src={tab().thumbnailUrl}
+                    alt={tab().title}
                   />
-                  <div class="preview-no-thumbnail">No preview available</div>
+                </Show>
+                <div class="preview-info">
+                  <div class="preview-title">{tab().title}</div>
+                  <div class="preview-url">{tab().url}</div>
                 </div>
-              }
-            >
-              <img
-                class="preview-thumbnail"
-                src={tab().thumbnailUrl}
-                alt={tab().title}
-              />
-            </Show>
-            <div class="preview-info">
-              <div class="preview-title">{tab().title}</div>
-              <div class="preview-url">{tab().url}</div>
-            </div>
-          </div>
-        )}
+              </>
+            )}
+          </Show>
+        </div>
       </Show>
 
       <div class="main-content">

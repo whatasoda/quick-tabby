@@ -17,10 +17,12 @@ export const DEFAULT_SETTINGS: Settings = {
   },
 };
 
+// Preview panel widths optimized for 14:9 aspect ratio thumbnails
+// Panel width = image width + 24px padding
 export const PREVIEW_SIZES = {
-  small: { width: 400 },
-  medium: { width: 520 },
-  large: { width: 640 },
+  small: { width: 360 },   // 336px image → 216px height at 14:9
+  medium: { width: 460 },  // 436px image → 280px height at 14:9
+  large: { width: 580 },   // 556px image → 357px height at 14:9
 } as const;
 
 export const THUMBNAIL_QUALITIES = {
