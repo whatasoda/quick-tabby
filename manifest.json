@@ -3,7 +3,11 @@
   "name": "QuickTabby",
   "version": "0.1.0",
   "description": "Quick tab switching with keyboard",
-  "permissions": ["tabs", "storage", "activeTab"],
+  "permissions": [
+    "tabs",
+    "storage",
+    "activeTab"
+  ],
   "action": {
     "default_popup": "src/popup/index.html"
   },
@@ -35,11 +39,15 @@
       "description": "Switch to most recent tab in current window"
     },
     "open-popup-all-windows": {
-      "suggested_key": {},
+      "suggested_key": {
+        "default": "Alt+Shift+A"
+      },
       "description": "Open popup (All Windows mode)"
     },
     "open-popup-current-window": {
-      "suggested_key": {},
+      "suggested_key": {
+        "default": "Alt+Shift+C"
+      },
       "description": "Open popup (Current Window mode)"
     }
   }

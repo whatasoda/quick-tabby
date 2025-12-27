@@ -434,6 +434,7 @@ function App() {
                 tabs={tabList()}
                 selectedIndex={selectedIndex()}
                 onSelect={handleSelect}
+                showTabIndex={windowOnly()}
               />
             </Show>
           )}
