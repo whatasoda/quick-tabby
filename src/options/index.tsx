@@ -7,6 +7,7 @@ import type {
   PopupSize,
   ThumbnailQuality,
   ThemePreference,
+  DefaultMode,
   Keybinding,
 } from "../shared/types.ts";
 import {
@@ -381,20 +382,30 @@ function App() {
         </Show>
         <div class={styles.settingRow}>
           <div>
-            <div class={styles.settingLabel}>Enable Mode Toggle</div>
+            <div class={styles.settingLabel}>Default Mode</div>
             <div class={styles.settingDescription}>
-              Allow switching between All/Window mode
+              Initial mode when opening the popup
             </div>
           </div>
-          <label class={styles.checkboxLabel}>
-            <input
-              type="checkbox"
-              checked={settings().enableModeToggle}
-              onChange={(e) =>
-                updateSetting("enableModeToggle", e.target.checked)
-              }
-            />
-          </label>
+          <div class={styles.radioGroup}>
+            <For each={[
+              { value: "lastUsed", label: "Last Used" },
+              { value: "all", label: "All Windows" },
+              { value: "currentWindow", label: "Current Window" },
+            ] as { value: DefaultMode; label: string }[]}>
+              {(option) => (
+                <label class={styles.radioOption}>
+                  <input
+                    type="radio"
+                    name="defaultMode"
+                    checked={settings().defaultMode === option.value}
+                    onChange={() => updateSetting("defaultMode", option.value)}
+                  />
+                  {option.label}
+                </label>
+              )}
+            </For>
+          </div>
         </div>
       </div>
 

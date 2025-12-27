@@ -291,10 +291,7 @@ function App() {
       return;
     }
 
-    if (
-      currentSettings.enableModeToggle &&
-      matchesKeybinding(e, keybindings.toggleMode)
-    ) {
+    if (matchesKeybinding(e, keybindings.toggleMode)) {
       e.preventDefault();
       toggleMode();
       return;
@@ -315,12 +312,25 @@ function App() {
   let cleanupThemeListener: (() => void) | undefined;
 
   onMount(async () => {
-    const [savedMode, currentWindow, loadedSettings] = await Promise.all([
-      loadMode(),
+    const [currentWindow, loadedSettings] = await Promise.all([
       chrome.windows.getCurrent(),
       loadSettings(),
     ]);
-    setWindowOnly(savedMode);
+
+    // Determine initial mode based on defaultMode setting
+    let initialWindowOnly = false;
+    switch (loadedSettings.defaultMode) {
+      case "all":
+        initialWindowOnly = false;
+        break;
+      case "currentWindow":
+        initialWindowOnly = true;
+        break;
+      case "lastUsed":
+        initialWindowOnly = await loadMode();
+        break;
+    }
+    setWindowOnly(initialWindowOnly);
     setSettings(loadedSettings);
     applyPopupSize(loadedSettings);
     applyTheme(loadedSettings.themePreference);
@@ -397,17 +407,15 @@ function App() {
       </Show>
 
       <div class={styles.mainContent}>
-        <Show when={settings()?.enableModeToggle}>
-          <div class={styles.header}>
-            <button
-              class={`${styles.modeToggle} ${windowOnly() ? styles.modeToggleActive : ""}`}
-              onClick={toggleMode}
-              title="Toggle window-only mode (Tab)"
-            >
-              {windowOnly() ? "Window" : "All"}
-            </button>
-          </div>
-        </Show>
+        <div class={styles.header}>
+          <button
+            class={`${styles.modeToggle} ${windowOnly() ? styles.modeToggleActive : ""}`}
+            onClick={toggleMode}
+            title="Toggle window-only mode (Tab)"
+          >
+            {windowOnly() ? "Window" : "All"}
+          </button>
+        </div>
 
         <Show when={tabs.loading}>
           <div class={styles.loading}>Loading...</div>

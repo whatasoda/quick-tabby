@@ -110,17 +110,10 @@ export function KeybindingsModal(props: KeybindingsModalProps) {
   });
 
   const keybindings = () => {
-    const entries = Object.entries(props.settings.keybindings) as [
+    return Object.entries(props.settings.keybindings) as [
       keyof typeof props.settings.keybindings,
       typeof props.settings.keybindings.moveDown
     ][];
-
-    return entries.filter(([key]) => {
-      if (key === "toggleMode" && !props.settings.enableModeToggle) {
-        return false;
-      }
-      return true;
-    });
   };
 
   return (

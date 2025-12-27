@@ -1,4 +1,4 @@
-import type { Settings, Keybinding, PopupSize, ThemePreference } from "./types.ts";
+import type { Settings, Keybinding, PopupSize, ThemePreference, DefaultMode } from "./types.ts";
 
 const SETTINGS_KEY = "quicktabby:settings";
 
@@ -6,7 +6,7 @@ export const DEFAULT_SETTINGS: Settings = {
   popupSize: "medium",
   previewModeEnabled: false,
   thumbnailQuality: "standard",
-  enableModeToggle: true,
+  defaultMode: "lastUsed",
   themePreference: "auto",
   keybindings: {
     moveDown: { key: "j" },
@@ -23,18 +23,34 @@ export const THUMBNAIL_QUALITIES = {
   ultra: { size: 800, captureQuality: 95, resizeQuality: 0.95 },
 } as const;
 
+interface LegacySettings extends Partial<Settings> {
+  enableModeToggle?: boolean;
+}
+
 export async function loadSettings(): Promise<Settings> {
   const result = await chrome.storage.local.get(SETTINGS_KEY);
-  const stored = result[SETTINGS_KEY] as Partial<Settings> | undefined;
+  const stored = result[SETTINGS_KEY] as LegacySettings | undefined;
 
   if (!stored) {
     return DEFAULT_SETTINGS;
+  }
+
+  // Migration: convert enableModeToggle to defaultMode
+  let defaultMode = stored.defaultMode;
+  if (defaultMode === undefined && stored.enableModeToggle !== undefined) {
+    // If enableModeToggle was true, use lastUsed; if false, use "all" (fixed mode)
+    defaultMode = stored.enableModeToggle ? "lastUsed" : "all";
+    // Clean up legacy setting
+    const { enableModeToggle, ...cleanedStored } = stored;
+    const migratedSettings = { ...cleanedStored, defaultMode };
+    await chrome.storage.local.set({ [SETTINGS_KEY]: migratedSettings });
   }
 
   // Merge with defaults to handle missing fields
   return {
     ...DEFAULT_SETTINGS,
     ...stored,
+    defaultMode: defaultMode ?? DEFAULT_SETTINGS.defaultMode,
     keybindings: {
       ...DEFAULT_SETTINGS.keybindings,
       ...stored.keybindings,
