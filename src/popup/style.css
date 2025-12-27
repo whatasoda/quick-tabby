@@ -68,8 +68,8 @@ body {
 
 .tab-item {
   display: flex;
-  align-items: center;
-  padding: 10px 16px;
+  flex-direction: column;
+  padding: 8px 12px;
   cursor: pointer;
   border-bottom: 1px solid #f0f0f0;
   transition: background 0.1s;
@@ -81,6 +81,18 @@ body {
 
 .tab-item.selected {
   background: #e8f0fe;
+}
+
+.tab-item-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.tab-item-body {
+  display: flex;
+  gap: 8px;
 }
 
 .tab-thumbnail-container {
@@ -120,30 +132,28 @@ body {
 .tab-favicon {
   width: 16px;
   height: 16px;
-  margin-right: 8px;
   flex-shrink: 0;
 }
 
-.tab-info {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-}
-
 .tab-title {
+  flex: 1;
   font-weight: 500;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  margin-bottom: 2px;
+  min-width: 0;
 }
 
 .tab-url {
+  flex: 1;
   font-size: 11px;
   color: #666;
-  white-space: nowrap;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
-  text-overflow: ellipsis;
+  word-break: break-all;
+  min-width: 0;
 }
 
 .loading,
@@ -237,6 +247,8 @@ kbd {
 
 .preview-info {
   margin-top: 8px;
+  height: 56px;
+  flex-shrink: 0;
 }
 
 .preview-title {

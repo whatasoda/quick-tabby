@@ -237,9 +237,8 @@ function App() {
       </Show>
 
       <div class="main-content">
-        <div class="header">
-          <h1>QuickTabby</h1>
-          <Show when={settings()?.enableModeToggle}>
+        <Show when={settings()?.enableModeToggle}>
+          <div class="header">
             <button
               class={`mode-toggle ${windowOnly() ? "active" : ""}`}
               onClick={toggleMode}
@@ -247,8 +246,8 @@ function App() {
             >
               {windowOnly() ? "Window" : "All"}
             </button>
-          </Show>
-        </div>
+          </div>
+        </Show>
 
         <Show when={tabs.loading}>
           <div class="loading">Loading...</div>
