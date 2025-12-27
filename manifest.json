@@ -33,6 +33,14 @@
         "default": "Alt+Shift+W"
       },
       "description": "Switch to most recent tab in current window"
+    },
+    "open-popup-all-windows": {
+      "suggested_key": {},
+      "description": "Open popup (All Windows mode)"
+    },
+    "open-popup-current-window": {
+      "suggested_key": {},
+      "description": "Open popup (Current Window mode)"
     }
   }
 }

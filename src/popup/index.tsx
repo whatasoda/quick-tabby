@@ -315,18 +315,33 @@ function App() {
       loadSettings(),
     ]);
 
-    // Determine initial mode based on defaultMode setting
+    // Check for launch mode override first (from mode-fixed shortcuts)
+    const overrideResponse = await chrome.runtime.sendMessage({
+      type: "GET_LAUNCH_MODE_OVERRIDE",
+    }) as MessageResponse;
+
     let initialWindowOnly = false;
-    switch (loadedSettings.defaultMode) {
-      case "all":
-        initialWindowOnly = false;
-        break;
-      case "currentWindow":
-        initialWindowOnly = true;
-        break;
-      case "lastUsed":
-        initialWindowOnly = await loadMode();
-        break;
+    if (
+      overrideResponse.type === "LAUNCH_MODE_OVERRIDE" &&
+      overrideResponse.mode !== null
+    ) {
+      // Use the override mode
+      initialWindowOnly = overrideResponse.mode === "currentWindow";
+      // Clear the override after use
+      await chrome.runtime.sendMessage({ type: "CLEAR_LAUNCH_MODE_OVERRIDE" });
+    } else {
+      // Determine initial mode based on defaultMode setting
+      switch (loadedSettings.defaultMode) {
+        case "all":
+          initialWindowOnly = false;
+          break;
+        case "currentWindow":
+          initialWindowOnly = true;
+          break;
+        case "lastUsed":
+          initialWindowOnly = await loadMode();
+          break;
+      }
     }
     setWindowOnly(initialWindowOnly);
     setSettings(loadedSettings);

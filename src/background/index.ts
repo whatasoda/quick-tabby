@@ -3,7 +3,11 @@ import {
   getMRUTabs,
   switchToTab,
 } from "./mru-tracker.ts";
-import { initializeCommands } from "./commands.ts";
+import {
+  initializeCommands,
+  getLaunchModeOverride,
+  clearLaunchModeOverride,
+} from "./commands.ts";
 import {
   initThumbnailCache,
   captureAndStoreThumbnail,
@@ -60,6 +64,13 @@ async function handleMessage(
           message.thumbnailConfig
         );
       }
+      return { type: "SUCCESS" };
+    }
+    case "GET_LAUNCH_MODE_OVERRIDE": {
+      return { type: "LAUNCH_MODE_OVERRIDE", mode: getLaunchModeOverride() };
+    }
+    case "CLEAR_LAUNCH_MODE_OVERRIDE": {
+      clearLaunchModeOverride();
       return { type: "SUCCESS" };
     }
   }
