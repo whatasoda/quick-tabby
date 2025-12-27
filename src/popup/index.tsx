@@ -94,6 +94,12 @@ function App() {
     setWindowOnly(savedMode);
     setInitialized(true);
     document.addEventListener("keydown", handleKeyDown);
+
+    // Capture current tab and refresh to get updated thumbnail
+    const captureMessage: MessageType = { type: "CAPTURE_CURRENT_TAB" };
+    chrome.runtime.sendMessage(captureMessage).then(() => {
+      refetch();
+    });
   });
 
   onCleanup(() => {

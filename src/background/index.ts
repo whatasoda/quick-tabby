@@ -4,7 +4,10 @@ import {
   switchToTab,
 } from "./mru-tracker.ts";
 import { initializeCommands } from "./commands.ts";
-import { initThumbnailCache } from "./thumbnail-cache.ts";
+import {
+  initThumbnailCache,
+  captureAndStoreThumbnail,
+} from "./thumbnail-cache.ts";
 import type { MessageType, MessageResponse } from "../shared/types.ts";
 
 (async () => {
@@ -41,6 +44,16 @@ async function handleMessage(message: MessageType): Promise<MessageResponse> {
     }
     case "SWITCH_TO_TAB": {
       await switchToTab(message.tabId);
+      return { type: "SUCCESS" };
+    }
+    case "CAPTURE_CURRENT_TAB": {
+      const [tab] = await chrome.tabs.query({
+        active: true,
+        currentWindow: true,
+      });
+      if (tab?.id && tab.windowId) {
+        await captureAndStoreThumbnail(tab.id, tab.windowId);
+      }
       return { type: "SUCCESS" };
     }
   }

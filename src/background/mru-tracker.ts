@@ -62,7 +62,7 @@ export function handleTabActivated(
   // Capture thumbnail with delay to ensure page is rendered
   setTimeout(() => {
     captureAndStoreThumbnail(tabId, windowId);
-  }, 500);
+  }, 200);
 }
 
 export function handleTabRemoved(tabId: number): void {
