@@ -3,9 +3,11 @@ import {
   getMRUTabs,
   switchToTab,
 } from "./mru-tracker.ts";
+import { initializeCommands } from "./commands.ts";
 import type { MessageType, MessageResponse } from "../shared/types.ts";
 
 initializeMRUTracker();
+initializeCommands();
 
 chrome.runtime.onMessage.addListener(
   (
