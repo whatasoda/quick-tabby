@@ -17,6 +17,7 @@ import { TabList } from "./components/TabList.tsx";
 import {
   loadSettings,
   POPUP_SIZES,
+  PREVIEW_SIZES,
   matchesKeybinding,
 } from "../shared/settings.ts";
 
@@ -53,10 +54,19 @@ async function saveMode(windowOnly: boolean): Promise<void> {
 
 function applyPopupSize(settings: Settings) {
   const size = POPUP_SIZES[settings.popupSize];
+  const previewSize = PREVIEW_SIZES[settings.previewSize];
   document.documentElement.style.setProperty("--popup-width", `${size.width}px`);
   document.documentElement.style.setProperty(
     "--popup-height",
     `${size.height}px`
+  );
+  document.documentElement.style.setProperty(
+    "--preview-max-height",
+    `${previewSize.maxHeight}px`
+  );
+  document.documentElement.style.setProperty(
+    "--preview-placeholder-height",
+    `${previewSize.maxHeight * 0.67}px`
   );
 }
 
@@ -179,8 +189,43 @@ function App() {
     document.removeEventListener("keydown", handleKeyDown);
   });
 
-  return (
-    <div class="popup-container">
+  const previewPosition = () => settings()?.previewPosition ?? "bottom";
+  const isPreviewRight = () => previewPosition() === "right";
+
+  const previewPanel = () => (
+    <Show when={settings()?.previewModeEnabled && selectedTab()}>
+      {(tab) => (
+        <div class={`preview-panel position-${previewPosition()}`}>
+          <Show
+            when={tab().thumbnailUrl}
+            fallback={
+              <div class="preview-placeholder">
+                <img
+                  class="preview-favicon"
+                  src={tab().favIconUrl || ""}
+                  alt=""
+                />
+                <div class="preview-no-thumbnail">No preview available</div>
+              </div>
+            }
+          >
+            <img
+              class="preview-thumbnail"
+              src={tab().thumbnailUrl}
+              alt={tab().title}
+            />
+          </Show>
+          <div class="preview-info">
+            <div class="preview-title">{tab().title}</div>
+            <div class="preview-url">{tab().url}</div>
+          </div>
+        </div>
+      )}
+    </Show>
+  );
+
+  const mainContent = () => (
+    <>
       <div class="header">
         <h1>QuickTabby</h1>
         <Show when={settings()?.enableModeToggle}>
@@ -213,35 +258,7 @@ function App() {
         )}
       </Show>
 
-      <Show when={settings()?.previewModeEnabled && selectedTab()}>
-        {(tab) => (
-          <div class="preview-panel">
-            <Show
-              when={tab().thumbnailUrl}
-              fallback={
-                <div class="preview-placeholder">
-                  <img
-                    class="preview-favicon"
-                    src={tab().favIconUrl || ""}
-                    alt=""
-                  />
-                  <div class="preview-no-thumbnail">No preview available</div>
-                </div>
-              }
-            >
-              <img
-                class="preview-thumbnail"
-                src={tab().thumbnailUrl}
-                alt={tab().title}
-              />
-            </Show>
-            <div class="preview-info">
-              <div class="preview-title">{tab().title}</div>
-              <div class="preview-url">{tab().url}</div>
-            </div>
-          </div>
-        )}
-      </Show>
+      <Show when={!isPreviewRight()}>{previewPanel()}</Show>
 
       <div class="footer">
         <span class="hint">
@@ -254,6 +271,17 @@ function App() {
           <kbd>Tab</kbd> toggle mode
         </span>
       </div>
+    </>
+  );
+
+  return (
+    <div
+      class={`popup-container ${isPreviewRight() && settings()?.previewModeEnabled ? "preview-right" : ""}`}
+    >
+      <Show when={isPreviewRight()} fallback={mainContent()}>
+        <div class="main-content">{mainContent()}</div>
+        {previewPanel()}
+      </Show>
     </div>
   );
 }

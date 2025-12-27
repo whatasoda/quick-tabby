@@ -177,15 +177,38 @@ kbd {
 
 /* Preview panel styles */
 .preview-panel {
-  border-top: 1px solid #e0e0e0;
   background: #fafafa;
   padding: 12px;
+  flex-shrink: 0;
+}
+
+/* Bottom position (default) */
+.preview-panel.position-bottom {
+  border-top: 1px solid #e0e0e0;
+}
+
+/* Right position */
+.popup-container.preview-right {
+  flex-direction: row;
+}
+
+.popup-container.preview-right .main-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.popup-container.preview-right .preview-panel {
+  width: 180px;
+  border-left: 1px solid #e0e0e0;
+  border-top: none;
 }
 
 .preview-thumbnail {
   width: 100%;
   height: auto;
-  max-height: 150px;
+  max-height: var(--preview-max-height, 150px);
   object-fit: contain;
   border-radius: 6px;
   background: #fff;
@@ -197,7 +220,7 @@ kbd {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100px;
+  height: var(--preview-placeholder-height, 100px);
   background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
   border-radius: 6px;
 }

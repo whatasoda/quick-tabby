@@ -5,6 +5,8 @@ const SETTINGS_KEY = "quicktabby:settings";
 export const DEFAULT_SETTINGS: Settings = {
   popupSize: "medium",
   previewModeEnabled: false,
+  previewPosition: "bottom",
+  previewSize: "medium",
   enableModeToggle: true,
   keybindings: {
     moveDown: { key: "j" },
@@ -14,6 +16,12 @@ export const DEFAULT_SETTINGS: Settings = {
     toggleMode: { key: "Tab" },
   },
 };
+
+export const PREVIEW_SIZES = {
+  small: { maxHeight: 100 },
+  medium: { maxHeight: 150 },
+  large: { maxHeight: 200 },
+} as const;
 
 export async function loadSettings(): Promise<Settings> {
   const result = await chrome.storage.local.get(SETTINGS_KEY);

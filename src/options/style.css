@@ -102,6 +102,11 @@ h1 {
   border-bottom: none;
 }
 
+.setting-row.sub-setting {
+  padding-left: 24px;
+  background: #fafafa;
+}
+
 .setting-label {
   font-size: 14px;
 }
