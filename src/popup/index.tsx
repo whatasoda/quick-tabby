@@ -56,7 +56,13 @@ async function saveMode(windowOnly: boolean): Promise<void> {
 function applyPopupSize(settings: Settings) {
   const size = POPUP_SIZES[settings.popupSize];
   const previewSize = PREVIEW_SIZES[settings.previewSize];
-  document.documentElement.style.setProperty("--popup-width", `${size.width}px`);
+
+  // Add preview width to total popup width when preview is enabled
+  const totalWidth = settings.previewModeEnabled
+    ? size.width + previewSize.width
+    : size.width;
+
+  document.documentElement.style.setProperty("--popup-width", `${totalWidth}px`);
   document.documentElement.style.setProperty(
     "--popup-height",
     `${size.height}px`
