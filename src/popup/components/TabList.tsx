@@ -1,4 +1,5 @@
 import { For, createEffect } from "solid-js";
+import { css } from "../../../styled-system/css";
 import type { TabInfo } from "../../shared/types.ts";
 import { TabItem } from "./TabItem.tsx";
 
@@ -7,6 +8,12 @@ interface TabListProps {
   selectedIndex: number;
   onSelect: (index: number) => void;
 }
+
+const tabListStyle = css({
+  flex: 1,
+  overflowY: "auto",
+  maxHeight: "calc(var(--popup-height) - 120px)",
+});
 
 export function TabList(props: TabListProps) {
   let containerRef: HTMLDivElement | undefined;
@@ -21,7 +28,7 @@ export function TabList(props: TabListProps) {
   });
 
   return (
-    <div class="tab-list" ref={containerRef}>
+    <div class={tabListStyle} ref={containerRef}>
       <For each={props.tabs}>
         {(tab, index) => (
           <div ref={(el) => (itemRefs[index()] = el)}>

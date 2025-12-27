@@ -1,5 +1,7 @@
 import { render } from "solid-js/web";
 import { createSignal, createResource, For, onMount, Show } from "solid-js";
+import "./index.css";
+import { css } from "../../styled-system/css";
 import type {
   Settings,
   PopupSize,
@@ -12,6 +14,164 @@ import {
   DEFAULT_SETTINGS,
   keybindingToString,
 } from "../shared/settings.ts";
+
+const styles = {
+  container: css({
+    maxWidth: "600px",
+    margin: "0 auto",
+  }),
+  h1: css({
+    fontSize: "xxl",
+    margin: "0 0 24px",
+  }),
+  savedIndicator: css({
+    position: "fixed",
+    top: "xl",
+    right: "xl",
+    background: "success",
+    color: "white",
+    padding: "sm lg",
+    borderRadius: "md",
+    fontSize: "lg",
+    opacity: 0,
+    transition: "opacity 0.3s",
+  }),
+  savedIndicatorVisible: css({
+    opacity: 1,
+  }),
+  section: css({
+    background: "background",
+    borderRadius: "xl",
+    padding: "lg",
+    marginBottom: "lg",
+    boxShadow: "sm",
+  }),
+  sectionTitle: css({
+    fontSize: "lg",
+    fontWeight: 600,
+    color: "text.secondary",
+    margin: "0 0 12px",
+    textTransform: "uppercase",
+    letterSpacing: "0.5px",
+  }),
+  settingRow: css({
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: "md 0",
+    borderBottom: "1px solid token(colors.borderLighter)",
+    _last: {
+      borderBottom: "none",
+    },
+  }),
+  settingRowSubSetting: css({
+    paddingLeft: "xl",
+    background: "surfaceAlt",
+  }),
+  settingLabel: css({
+    fontSize: "lg",
+  }),
+  settingDescription: css({
+    fontSize: "12px",
+    color: "text.secondary",
+    marginTop: "xs",
+  }),
+  radioGroup: css({
+    display: "flex",
+    gap: "sm",
+  }),
+  radioOption: css({
+    display: "flex",
+    alignItems: "center",
+    gap: "xs",
+    cursor: "pointer",
+  }),
+  checkboxLabel: css({
+    display: "flex",
+    alignItems: "center",
+    gap: "sm",
+    cursor: "pointer",
+    "& input": {
+      width: "16px",
+      height: "16px",
+      cursor: "pointer",
+    },
+  }),
+  keybindingInput: css({
+    display: "flex",
+    alignItems: "center",
+    gap: "sm",
+  }),
+  keybindingDisplay: css({
+    fontFamily: "monospace",
+    background: "surfaceHover",
+    padding: "6px 12px",
+    borderRadius: "md",
+    fontSize: "12px",
+    minWidth: "80px",
+    textAlign: "center",
+  }),
+  keybindingDisplayRecording: css({
+    background: "primary",
+    color: "white",
+  }),
+  recordBtn: css({
+    padding: "xs sm",
+    fontSize: "12px",
+    background: "borderLight",
+    border: "1px solid #ddd",
+    borderRadius: "md",
+    cursor: "pointer",
+    _hover: {
+      background: "surfaceHover",
+    },
+  }),
+  shortcutList: css({
+    display: "flex",
+    flexDirection: "column",
+    gap: "md",
+  }),
+  shortcutItem: css({
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: "sm 0",
+    borderBottom: "1px solid token(colors.borderLighter)",
+    _last: {
+      borderBottom: "none",
+    },
+  }),
+  shortcutName: css({
+    fontSize: "lg",
+  }),
+  shortcutKey: css({
+    fontFamily: "monospace",
+    background: "surfaceHover",
+    padding: "xs sm",
+    borderRadius: "md",
+    fontSize: "12px",
+  }),
+  linkButton: css({
+    display: "inline-block",
+    marginTop: "md",
+    padding: "sm lg",
+    background: "primary",
+    color: "white",
+    textDecoration: "none",
+    borderRadius: "md",
+    fontSize: "lg",
+    cursor: "pointer",
+    border: "none",
+    _hover: {
+      background: "primaryHover",
+    },
+  }),
+  note: css({
+    fontSize: "12px",
+    color: "text.secondary",
+    marginTop: "sm",
+  }),
+};
 
 interface ShortcutInfo {
   name: string;
@@ -97,21 +257,21 @@ function App() {
   }
 
   return (
-    <div class="container">
-      <h1>QuickTabby Settings</h1>
+    <div class={styles.container}>
+      <h1 class={styles.h1}>QuickTabby Settings</h1>
 
-      <div class={`saved-indicator ${saved() ? "visible" : ""}`}>Saved!</div>
+      <div class={`${styles.savedIndicator} ${saved() ? styles.savedIndicatorVisible : ""}`}>Saved!</div>
 
-      <div class="section">
-        <h2 class="section-title">Appearance</h2>
-        <div class="setting-row">
+      <div class={styles.section}>
+        <h2 class={styles.sectionTitle}>Appearance</h2>
+        <div class={styles.settingRow}>
           <div>
-            <div class="setting-label">Popup Size</div>
+            <div class={styles.settingLabel}>Popup Size</div>
           </div>
-          <div class="radio-group">
+          <div class={styles.radioGroup}>
             <For each={["small", "medium", "large"] as PopupSize[]}>
               {(size) => (
-                <label class="radio-option">
+                <label class={styles.radioOption}>
                   <input
                     type="radio"
                     name="popupSize"
@@ -126,16 +286,16 @@ function App() {
         </div>
       </div>
 
-      <div class="section">
-        <h2 class="section-title">Behavior</h2>
-        <div class="setting-row">
+      <div class={styles.section}>
+        <h2 class={styles.sectionTitle}>Behavior</h2>
+        <div class={styles.settingRow}>
           <div>
-            <div class="setting-label">Preview Mode</div>
-            <div class="setting-description">
+            <div class={styles.settingLabel}>Preview Mode</div>
+            <div class={styles.settingDescription}>
               Show enlarged thumbnail of selected tab
             </div>
           </div>
-          <label class="checkbox-label">
+          <label class={styles.checkboxLabel}>
             <input
               type="checkbox"
               checked={settings().previewModeEnabled}
@@ -146,17 +306,17 @@ function App() {
           </label>
         </div>
         <Show when={settings().previewModeEnabled}>
-          <div class="setting-row sub-setting">
+          <div class={`${styles.settingRow} ${styles.settingRowSubSetting}`}>
             <div>
-              <div class="setting-label">Thumbnail Quality</div>
-              <div class="setting-description">
+              <div class={styles.settingLabel}>Thumbnail Quality</div>
+              <div class={styles.settingDescription}>
                 Higher quality uses more storage
               </div>
             </div>
-            <div class="radio-group">
+            <div class={styles.radioGroup}>
               <For each={["standard", "high", "ultra"] as ThumbnailQuality[]}>
                 {(quality) => (
-                  <label class="radio-option">
+                  <label class={styles.radioOption}>
                     <input
                       type="radio"
                       name="thumbnailQuality"
@@ -170,14 +330,14 @@ function App() {
             </div>
           </div>
         </Show>
-        <div class="setting-row">
+        <div class={styles.settingRow}>
           <div>
-            <div class="setting-label">Enable Mode Toggle</div>
-            <div class="setting-description">
+            <div class={styles.settingLabel}>Enable Mode Toggle</div>
+            <div class={styles.settingDescription}>
               Allow switching between All/Window mode
             </div>
           </div>
-          <label class="checkbox-label">
+          <label class={styles.checkboxLabel}>
             <input
               type="checkbox"
               checked={settings().enableModeToggle}
@@ -189,8 +349,8 @@ function App() {
         </div>
       </div>
 
-      <div class="section">
-        <h2 class="section-title">Popup Keybindings</h2>
+      <div class={styles.section}>
+        <h2 class={styles.sectionTitle}>Popup Keybindings</h2>
         <For
           each={
             [
@@ -203,11 +363,11 @@ function App() {
           }
         >
           {([key, label]) => (
-            <div class="setting-row">
-              <div class="setting-label">{label}</div>
-              <div class="keybinding-input">
+            <div class={styles.settingRow}>
+              <div class={styles.settingLabel}>{label}</div>
+              <div class={styles.keybindingInput}>
                 <div
-                  class={`keybinding-display ${recordingKey() === key ? "recording" : ""}`}
+                  class={`${styles.keybindingDisplay} ${recordingKey() === key ? styles.keybindingDisplayRecording : ""}`}
                   tabIndex={0}
                   onKeyDown={(e) => handleKeyDown(e, key)}
                   onBlur={() => setRecordingKey(null)}
@@ -216,7 +376,7 @@ function App() {
                     ? "Press key..."
                     : keybindingToString(settings().keybindings[key])}
                 </div>
-                <button class="record-btn" onClick={() => startRecording(key)}>
+                <button class={styles.recordBtn} onClick={() => startRecording(key)}>
                   Edit
                 </button>
               </div>
@@ -225,22 +385,22 @@ function App() {
         </For>
       </div>
 
-      <div class="section">
-        <h2 class="section-title">Global Shortcuts</h2>
-        <div class="shortcut-list">
+      <div class={styles.section}>
+        <h2 class={styles.sectionTitle}>Global Shortcuts</h2>
+        <div class={styles.shortcutList}>
           <For each={shortcuts()}>
             {(shortcut) => (
-              <div class="shortcut-item">
-                <span class="shortcut-name">{shortcut.description}</span>
-                <span class="shortcut-key">{shortcut.shortcut}</span>
+              <div class={styles.shortcutItem}>
+                <span class={styles.shortcutName}>{shortcut.description}</span>
+                <span class={styles.shortcutKey}>{shortcut.shortcut}</span>
               </div>
             )}
           </For>
         </div>
-        <button class="link-button" onClick={openShortcutsPage}>
+        <button class={styles.linkButton} onClick={openShortcutsPage}>
           Change Shortcuts
         </button>
-        <p class="note">
+        <p class={styles.note}>
           Opens Chrome's extension shortcuts page where you can customize
           keyboard shortcuts.
         </p>
