@@ -1,0 +1,17 @@
+@layer reset, base, tokens, recipes, utilities;
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  width: var(--popup-width);
+  max-height: var(--popup-height);
+  margin: 0;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 13px;
+  background: #fff;
+  color: #333;
+  overflow-x: hidden;
+  overflow-y: auto;
+}

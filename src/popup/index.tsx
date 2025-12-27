@@ -7,6 +7,8 @@ import {
   onCleanup,
   Show,
 } from "solid-js";
+import "./index.css";
+import { css } from "../../styled-system/css";
 import type {
   TabInfo,
   MessageType,
@@ -23,6 +25,142 @@ import {
   THUMBNAIL_QUALITIES,
   matchesKeybinding,
 } from "../shared/settings.ts";
+
+const styles = {
+  popupContainer: css({
+    display: "flex",
+    flexDirection: "column",
+    height: "100%",
+  }),
+  popupContainerPreviewEnabled: css({
+    flexDirection: "row",
+  }),
+  mainContent: css({
+    width: "var(--tab-list-width)",
+    flexShrink: 0,
+    display: "flex",
+    flexDirection: "column",
+  }),
+  previewPanel: css({
+    width: "var(--preview-width, 180px)",
+    maxHeight: "var(--popup-height)",
+    background: "surfaceAlt",
+    padding: "md",
+    flexShrink: 0,
+    borderRight: "1px solid token(colors.border)",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    overflow: "hidden",
+  }),
+  previewThumbnail: css({
+    width: "100%",
+    maxWidth: "100%",
+    height: "auto",
+    maxHeight: "calc(var(--popup-height) - 80px)",
+    objectFit: "contain",
+    borderRadius: "lg",
+    background: "background",
+    boxShadow: "sm",
+    filter: "blur(0.5px)",
+  }),
+  previewPlaceholder: css({
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    aspectRatio: "14 / 9",
+    background: "linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%)",
+    borderRadius: "lg",
+  }),
+  previewFavicon: css({
+    width: "32px",
+    height: "32px",
+    opacity: 0.5,
+  }),
+  previewNoThumbnail: css({
+    marginTop: "sm",
+    fontSize: "sm",
+    color: "text.muted",
+  }),
+  previewInfo: css({
+    marginTop: "sm",
+    height: "56px",
+    flexShrink: 0,
+  }),
+  previewTitle: css({
+    fontWeight: 500,
+    fontSize: "12px",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    display: "-webkit-box",
+    WebkitLineClamp: 2,
+    WebkitBoxOrient: "vertical",
+  }),
+  previewUrl: css({
+    fontSize: "sm",
+    color: "text.secondary",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    marginTop: "2px",
+  }),
+  header: css({
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: "md lg",
+    borderBottom: "1px solid token(colors.border)",
+  }),
+  modeToggle: css({
+    padding: "4px 12px",
+    border: "1px solid #ddd",
+    borderRadius: "full",
+    background: "surface",
+    fontSize: "sm",
+    cursor: "pointer",
+    transition: "all 0.15s",
+    _hover: {
+      background: "surfaceHover",
+    },
+  }),
+  modeToggleActive: css({
+    background: "primary",
+    borderColor: "primary",
+    color: "white",
+  }),
+  loading: css({
+    padding: "xl",
+    textAlign: "center",
+    color: "text.secondary",
+  }),
+  empty: css({
+    padding: "xl",
+    textAlign: "center",
+    color: "text.secondary",
+  }),
+  footer: css({
+    display: "flex",
+    justifyContent: "center",
+    gap: "lg",
+    padding: "sm lg",
+    borderTop: "1px solid token(colors.border)",
+    background: "surfaceAlt",
+  }),
+  hint: css({
+    fontSize: "sm",
+    color: "text.secondary",
+  }),
+  kbd: css({
+    display: "inline-block",
+    padding: "2px 6px",
+    fontFamily: "monospace",
+    fontSize: "xs",
+    background: "surfaceHover",
+    borderRadius: "sm",
+    margin: "0 2px",
+  }),
+};
 
 async function fetchMRUTabs(
   windowOnly: boolean,
@@ -194,14 +332,14 @@ function App() {
   const isPreviewEnabled = () => settings()?.previewModeEnabled ?? false;
 
   return (
-    <div class={`popup-container ${isPreviewEnabled() ? "preview-enabled" : ""}`}>
+    <div class={`${styles.popupContainer} ${isPreviewEnabled() ? styles.popupContainerPreviewEnabled : ""}`}>
       <Show when={isPreviewEnabled()}>
-        <div class="preview-panel">
+        <div class={styles.previewPanel}>
           <Show
             when={selectedTab()}
             fallback={
-              <div class="preview-placeholder">
-                <div class="preview-no-thumbnail">Select a tab to preview</div>
+              <div class={styles.previewPlaceholder}>
+                <div class={styles.previewNoThumbnail}>Select a tab to preview</div>
               </div>
             }
           >
@@ -210,25 +348,25 @@ function App() {
                 <Show
                   when={tab().thumbnailUrl}
                   fallback={
-                    <div class="preview-placeholder">
+                    <div class={styles.previewPlaceholder}>
                       <img
-                        class="preview-favicon"
+                        class={styles.previewFavicon}
                         src={tab().favIconUrl || ""}
                         alt=""
                       />
-                      <div class="preview-no-thumbnail">No preview available</div>
+                      <div class={styles.previewNoThumbnail}>No preview available</div>
                     </div>
                   }
                 >
                   <img
-                    class="preview-thumbnail"
+                    class={styles.previewThumbnail}
                     src={tab().thumbnailUrl}
                     alt={tab().title}
                   />
                 </Show>
-                <div class="preview-info">
-                  <div class="preview-title">{tab().title}</div>
-                  <div class="preview-url">{tab().url}</div>
+                <div class={styles.previewInfo}>
+                  <div class={styles.previewTitle}>{tab().title}</div>
+                  <div class={styles.previewUrl}>{tab().url}</div>
                 </div>
               </>
             )}
@@ -236,11 +374,11 @@ function App() {
         </div>
       </Show>
 
-      <div class="main-content">
+      <div class={styles.mainContent}>
         <Show when={settings()?.enableModeToggle}>
-          <div class="header">
+          <div class={styles.header}>
             <button
-              class={`mode-toggle ${windowOnly() ? "active" : ""}`}
+              class={`${styles.modeToggle} ${windowOnly() ? styles.modeToggleActive : ""}`}
               onClick={toggleMode}
               title="Toggle window-only mode (Tab)"
             >
@@ -250,14 +388,14 @@ function App() {
         </Show>
 
         <Show when={tabs.loading}>
-          <div class="loading">Loading...</div>
+          <div class={styles.loading}>Loading...</div>
         </Show>
 
         <Show when={!tabs.loading && tabs()}>
           {(tabList) => (
             <Show
               when={tabList().length > 0}
-              fallback={<div class="empty">No recent tabs</div>}
+              fallback={<div class={styles.empty}>No recent tabs</div>}
             >
               <TabList
                 tabs={tabList()}
@@ -268,15 +406,15 @@ function App() {
           )}
         </Show>
 
-        <div class="footer">
-          <span class="hint">
-            <kbd>j</kbd>/<kbd>k</kbd> navigate
+        <div class={styles.footer}>
+          <span class={styles.hint}>
+            <span class={styles.kbd}>j</span>/<span class={styles.kbd}>k</span> navigate
           </span>
-          <span class="hint">
-            <kbd>Enter</kbd> switch
+          <span class={styles.hint}>
+            <span class={styles.kbd}>Enter</span> switch
           </span>
-          <span class="hint">
-            <kbd>Tab</kbd> toggle mode
+          <span class={styles.hint}>
+            <span class={styles.kbd}>Tab</span> toggle mode
           </span>
         </div>
       </div>
