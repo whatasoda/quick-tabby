@@ -125,7 +125,6 @@ const styles = {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: "4px 8px",
     borderTop: "1px solid token(colors.border)",
     background: "surfaceAlt",
     marginTop: "auto",
