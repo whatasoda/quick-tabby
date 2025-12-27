@@ -2,6 +2,7 @@ import type { MRUState, TabInfo } from "../shared/types.ts";
 
 const MIN_DWELL_TIME = 750;
 const MAX_MRU_SIZE = 50;
+const STORAGE_KEY = "mruState";
 
 let state: MRUState = {
   global: [],
@@ -11,6 +12,17 @@ let state: MRUState = {
 let lastActivatedTabId: number | null = null;
 let lastActivatedTime = 0;
 let pendingAddTimeout: ReturnType<typeof setTimeout> | null = null;
+
+async function saveState(): Promise<void> {
+  await chrome.storage.session.set({ [STORAGE_KEY]: state });
+}
+
+async function loadState(): Promise<void> {
+  const result = await chrome.storage.session.get(STORAGE_KEY);
+  if (result[STORAGE_KEY]) {
+    state = result[STORAGE_KEY] as MRUState;
+  }
+}
 
 function addToMRU(tabId: number, windowId: number): void {
   state.global = [tabId, ...state.global.filter((id) => id !== tabId)].slice(
@@ -25,6 +37,8 @@ function addToMRU(tabId: number, windowId: number): void {
     tabId,
     ...state.byWindow[windowId].filter((id) => id !== tabId),
   ].slice(0, MAX_MRU_SIZE);
+
+  saveState();
 }
 
 function removeFromMRU(tabId: number): void {
@@ -35,6 +49,8 @@ function removeFromMRU(tabId: number): void {
       (id) => id !== tabId
     );
   }
+
+  saveState();
 }
 
 function scheduleAddTab(tabId: number, windowId: number): void {
@@ -81,6 +97,7 @@ export function handleTabRemoved(tabId: number): void {
 
 export function handleWindowRemoved(windowId: number): void {
   delete state.byWindow[windowId];
+  saveState();
 }
 
 export async function getMRUTabs(windowOnly?: boolean): Promise<TabInfo[]> {
@@ -140,7 +157,31 @@ export async function switchToTab(tabId: number): Promise<void> {
   await chrome.tabs.update(tabId, { active: true });
 }
 
-export function initializeMRUTracker(): void {
+async function initializeExistingTabs(): Promise<void> {
+  const windows = await chrome.windows.getAll({ populate: true });
+
+  for (const window of windows) {
+    if (window.id === undefined || !window.tabs) continue;
+
+    for (const tab of window.tabs) {
+      if (tab.id === undefined) continue;
+
+      if (tab.active) {
+        addToMRU(tab.id, window.id);
+        lastActivatedTabId = tab.id;
+        lastActivatedTime = Date.now();
+      }
+    }
+  }
+}
+
+export async function initializeMRUTracker(): Promise<void> {
+  await loadState();
+
+  if (state.global.length === 0) {
+    await initializeExistingTabs();
+  }
+
   chrome.tabs.onActivated.addListener(handleTabActivated);
   chrome.tabs.onRemoved.addListener(handleTabRemoved);
   chrome.windows.onRemoved.addListener(handleWindowRemoved);

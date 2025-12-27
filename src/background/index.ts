@@ -6,8 +6,11 @@ import {
 import { initializeCommands } from "./commands.ts";
 import type { MessageType, MessageResponse } from "../shared/types.ts";
 
-initializeMRUTracker();
-initializeCommands();
+(async () => {
+  await initializeMRUTracker();
+  initializeCommands();
+  console.log("QuickTabby background service worker initialized");
+})();
 
 chrome.runtime.onMessage.addListener(
   (
@@ -40,5 +43,3 @@ async function handleMessage(message: MessageType): Promise<MessageResponse> {
     }
   }
 }
-
-console.log("QuickTabby background service worker loaded");
