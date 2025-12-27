@@ -229,7 +229,7 @@ function applyPopupSize(settings: Settings) {
   );
 }
 
-function App() {
+export function App() {
   const [windowOnly, setWindowOnly] = createSignal(false);
   const [selectedIndex, setSelectedIndex] = createSignal(1);
   const [settings, setSettings] = createSignal<Settings | null>(null);
