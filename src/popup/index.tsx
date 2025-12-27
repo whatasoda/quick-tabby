@@ -1,4 +1,3 @@
-import { render } from "solid-js/web";
 import {
   createSignal,
   createResource,
@@ -521,7 +520,3 @@ export function App() {
   );
 }
 
-const root = document.getElementById("app");
-if (root) {
-  render(() => <App />, root);
-}

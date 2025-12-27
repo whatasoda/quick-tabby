@@ -1,4 +1,3 @@
-import { render } from "solid-js/web";
 import { createSignal, createResource, createEffect, For, onMount, onCleanup, Show } from "solid-js";
 import "./index.css";
 import { css } from "../../styled-system/css";
@@ -516,7 +515,3 @@ export function App() {
   );
 }
 
-const root = document.getElementById("app");
-if (root) {
-  render(() => <App />, root);
-}
