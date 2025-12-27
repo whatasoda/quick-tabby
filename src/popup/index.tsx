@@ -9,8 +9,11 @@ import {
 import type { TabInfo, MessageType, MessageResponse } from "../shared/types.ts";
 import { TabList } from "./components/TabList.tsx";
 
-async function fetchMRUTabs(windowOnly: boolean): Promise<TabInfo[]> {
-  const message: MessageType = { type: "GET_MRU_TABS", windowOnly };
+async function fetchMRUTabs(
+  windowOnly: boolean,
+  windowId: number
+): Promise<TabInfo[]> {
+  const message: MessageType = { type: "GET_MRU_TABS", windowOnly, windowId };
   const response = (await chrome.runtime.sendMessage(
     message
   )) as MessageResponse;
@@ -40,10 +43,18 @@ async function saveMode(windowOnly: boolean): Promise<void> {
 function App() {
   const [windowOnly, setWindowOnly] = createSignal(false);
   const [selectedIndex, setSelectedIndex] = createSignal(1);
-  const [initialized, setInitialized] = createSignal(false);
+  const [currentWindowId, setCurrentWindowId] = createSignal<number | null>(
+    null
+  );
   const [tabs, { refetch }] = createResource(
-    () => (initialized() ? windowOnly() : null),
-    (mode) => (mode !== null ? fetchMRUTabs(mode) : Promise.resolve([]))
+    () => {
+      const wid = currentWindowId();
+      return wid !== null ? { windowOnly: windowOnly(), windowId: wid } : null;
+    },
+    (params) =>
+      params !== null
+        ? fetchMRUTabs(params.windowOnly, params.windowId)
+        : Promise.resolve([])
   );
 
   function toggleMode() {
@@ -90,13 +101,21 @@ function App() {
   }
 
   onMount(async () => {
-    const savedMode = await loadMode();
+    const [savedMode, currentWindow] = await Promise.all([
+      loadMode(),
+      chrome.windows.getCurrent(),
+    ]);
     setWindowOnly(savedMode);
-    setInitialized(true);
+    if (currentWindow.id !== undefined) {
+      setCurrentWindowId(currentWindow.id);
+    }
     document.addEventListener("keydown", handleKeyDown);
 
     // Capture current tab and refresh to get updated thumbnail
-    const captureMessage: MessageType = { type: "CAPTURE_CURRENT_TAB" };
+    const captureMessage: MessageType = {
+      type: "CAPTURE_CURRENT_TAB",
+      windowId: currentWindow.id,
+    };
     chrome.runtime.sendMessage(captureMessage).then(() => {
       refetch();
     });

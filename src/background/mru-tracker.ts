@@ -75,9 +75,13 @@ export function handleWindowRemoved(windowId: number): void {
   saveState();
 }
 
-export async function getMRUTabs(windowOnly?: boolean): Promise<TabInfo[]> {
-  const currentWindow = await chrome.windows.getCurrent();
-  const windowId = currentWindow.id;
+export async function getMRUTabs(
+  windowOnly?: boolean,
+  senderWindowId?: number
+): Promise<TabInfo[]> {
+  // Use sender's window ID if provided, otherwise fall back to getCurrent()
+  const windowId =
+    senderWindowId ?? (await chrome.windows.getCurrent()).id;
 
   const mruList =
     windowOnly && windowId !== undefined

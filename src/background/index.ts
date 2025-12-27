@@ -36,10 +36,12 @@ chrome.runtime.onMessage.addListener(
   }
 );
 
-async function handleMessage(message: MessageType): Promise<MessageResponse> {
+async function handleMessage(
+  message: MessageType
+): Promise<MessageResponse> {
   switch (message.type) {
     case "GET_MRU_TABS": {
-      const tabs = await getMRUTabs(message.windowOnly);
+      const tabs = await getMRUTabs(message.windowOnly, message.windowId);
       return { type: "MRU_TABS", tabs };
     }
     case "SWITCH_TO_TAB": {
@@ -49,7 +51,7 @@ async function handleMessage(message: MessageType): Promise<MessageResponse> {
     case "CAPTURE_CURRENT_TAB": {
       const [tab] = await chrome.tabs.query({
         active: true,
-        currentWindow: true,
+        windowId: message.windowId,
       });
       if (tab?.id && tab.windowId) {
         await captureAndStoreThumbnail(tab.id, tab.windowId);

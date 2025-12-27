@@ -13,9 +13,9 @@ export interface MRUState {
 }
 
 export type MessageType =
-  | { type: "GET_MRU_TABS"; windowOnly?: boolean }
+  | { type: "GET_MRU_TABS"; windowOnly?: boolean; windowId?: number }
   | { type: "SWITCH_TO_TAB"; tabId: number }
-  | { type: "CAPTURE_CURRENT_TAB" };
+  | { type: "CAPTURE_CURRENT_TAB"; windowId?: number };
 
 export type MessageResponse =
   | { type: "MRU_TABS"; tabs: TabInfo[] }
