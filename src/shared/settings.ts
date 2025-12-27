@@ -1,11 +1,10 @@
-import type { Settings, Keybinding } from "./types.ts";
+import type { Settings, Keybinding, PopupSize } from "./types.ts";
 
 const SETTINGS_KEY = "quicktabby:settings";
 
 export const DEFAULT_SETTINGS: Settings = {
   popupSize: "medium",
   previewModeEnabled: false,
-  previewSize: "medium",
   thumbnailQuality: "standard",
   enableModeToggle: true,
   keybindings: {
@@ -16,14 +15,6 @@ export const DEFAULT_SETTINGS: Settings = {
     toggleMode: { key: "Tab" },
   },
 };
-
-// Preview panel widths optimized for 14:9 aspect ratio thumbnails
-// Panel width = image width + 24px padding
-export const PREVIEW_SIZES = {
-  small: { width: 360 },   // 336px image → 216px height at 14:9
-  medium: { width: 460 },  // 436px image → 280px height at 14:9
-  large: { width: 580 },   // 556px image → 357px height at 14:9
-} as const;
 
 export const THUMBNAIL_QUALITIES = {
   standard: { size: 200, captureQuality: 70, resizeQuality: 0.8 },
@@ -93,3 +84,11 @@ export const POPUP_SIZES = {
   medium: { width: 350, height: 500 },
   large: { width: 450, height: 600 },
 } as const;
+
+// Calculate preview panel width based on popup height and 14:9 aspect ratio
+export function getPreviewWidth(popupSize: PopupSize): number {
+  const height = POPUP_SIZES[popupSize].height;
+  const thumbnailHeight = height - 80; // padding (24px) + info section (~56px)
+  const thumbnailWidth = Math.round(thumbnailHeight * (14 / 9));
+  return thumbnailWidth + 24; // left + right padding
+}

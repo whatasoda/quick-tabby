@@ -17,7 +17,7 @@ import { TabList } from "./components/TabList.tsx";
 import {
   loadSettings,
   POPUP_SIZES,
-  PREVIEW_SIZES,
+  getPreviewWidth,
   THUMBNAIL_QUALITIES,
   matchesKeybinding,
 } from "../shared/settings.ts";
@@ -55,13 +55,13 @@ async function saveMode(windowOnly: boolean): Promise<void> {
 
 function applyPopupSize(settings: Settings) {
   const size = POPUP_SIZES[settings.popupSize];
-  const previewSize = PREVIEW_SIZES[settings.previewSize];
+  const previewWidth = getPreviewWidth(settings.popupSize);
 
   // Add preview width to total popup width when preview is enabled
   // Include border width (1px) for the preview panel separator
   const borderWidth = 1;
   const totalWidth = settings.previewModeEnabled
-    ? size.width + previewSize.width + borderWidth
+    ? size.width + previewWidth + borderWidth
     : size.width;
 
   document.documentElement.style.setProperty("--popup-width", `${totalWidth}px`);
@@ -71,7 +71,7 @@ function applyPopupSize(settings: Settings) {
   );
   document.documentElement.style.setProperty(
     "--preview-width",
-    `${previewSize.width}px`
+    `${previewWidth}px`
   );
 }
 
