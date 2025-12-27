@@ -2,6 +2,7 @@ import { render } from "solid-js/web";
 import {
   createSignal,
   createResource,
+  createEffect,
   onMount,
   onCleanup,
   Show,
@@ -39,6 +40,11 @@ async function switchToTab(tabId: number): Promise<void> {
   window.close();
 }
 
+async function previewTab(tabId: number): Promise<void> {
+  const message: MessageType = { type: "PREVIEW_TAB", tabId };
+  await chrome.runtime.sendMessage(message);
+}
+
 const MODE_STORAGE_KEY = "windowOnlyMode";
 
 async function loadMode(): Promise<boolean> {
@@ -66,6 +72,7 @@ function App() {
   const [currentWindowId, setCurrentWindowId] = createSignal<number | null>(
     null
   );
+  const [originalTabId, setOriginalTabId] = createSignal<number | null>(null);
   const [tabs, { refetch }] = createResource(
     () => {
       const wid = currentWindowId();
@@ -76,6 +83,22 @@ function App() {
         ? fetchMRUTabs(params.windowOnly, params.windowId)
         : Promise.resolve([])
   );
+
+  // Preview tab when selection changes (if preview mode is enabled)
+  createEffect(() => {
+    const currentSettings = settings();
+    const tabList = tabs();
+    const index = selectedIndex();
+
+    if (
+      currentSettings?.previewModeEnabled &&
+      tabList &&
+      tabList[index] &&
+      originalTabId() !== null
+    ) {
+      previewTab(tabList[index].id);
+    }
+  });
 
   function toggleMode() {
     const newMode = !windowOnly();
@@ -121,6 +144,11 @@ function App() {
 
     if (matchesKeybinding(e, keybindings.cancel)) {
       e.preventDefault();
+      // Restore original tab if in preview mode
+      const origId = originalTabId();
+      if (currentSettings.previewModeEnabled && origId !== null) {
+        previewTab(origId);
+      }
       window.close();
       return;
     }
@@ -143,14 +171,21 @@ function App() {
   }
 
   onMount(async () => {
-    const [savedMode, currentWindow, loadedSettings] = await Promise.all([
-      loadMode(),
-      chrome.windows.getCurrent(),
-      loadSettings(),
-    ]);
+    const [savedMode, currentWindow, loadedSettings, activeTabs] =
+      await Promise.all([
+        loadMode(),
+        chrome.windows.getCurrent(),
+        loadSettings(),
+        chrome.tabs.query({ active: true, currentWindow: true }),
+      ]);
     setWindowOnly(savedMode);
     setSettings(loadedSettings);
     applyPopupSize(loadedSettings);
+
+    // Save original tab for preview mode cancellation
+    if (activeTabs[0]?.id) {
+      setOriginalTabId(activeTabs[0].id);
+    }
 
     if (currentWindow.id !== undefined) {
       setCurrentWindowId(currentWindow.id);
