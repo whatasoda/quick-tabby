@@ -1,4 +1,9 @@
 import type { MRUState, TabInfo } from "../shared/types.ts";
+import {
+  captureAndStoreThumbnail,
+  deleteThumbnail,
+  getThumbnailsForTabs,
+} from "./thumbnail-cache.ts";
 
 const MAX_MRU_SIZE = 50;
 const STORAGE_KEY = "mruState";
@@ -53,10 +58,16 @@ export function handleTabActivated(
 ): void {
   const { tabId, windowId } = activeInfo;
   addToMRU(tabId, windowId);
+
+  // Capture thumbnail with delay to ensure page is rendered
+  setTimeout(() => {
+    captureAndStoreThumbnail(tabId, windowId);
+  }, 500);
 }
 
 export function handleTabRemoved(tabId: number): void {
   removeFromMRU(tabId);
+  deleteThumbnail(tabId);
 }
 
 export function handleWindowRemoved(windowId: number): void {
@@ -92,7 +103,14 @@ export async function getMRUTabs(windowOnly?: boolean): Promise<TabInfo[]> {
     }
   }
 
-  return tabs;
+  // Fetch thumbnails for all tabs
+  const tabIds = tabs.map((t) => t.id);
+  const thumbnails = await getThumbnailsForTabs(tabIds);
+
+  return tabs.map((tab) => ({
+    ...tab,
+    thumbnailUrl: thumbnails.get(tab.id),
+  }));
 }
 
 export function getPreviousTab(windowOnly?: boolean): number | null {

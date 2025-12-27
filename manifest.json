@@ -3,7 +3,7 @@
   "name": "QuickTabby",
   "version": "0.1.0",
   "description": "Quick tab switching with keyboard",
-  "permissions": ["tabs", "storage"],
+  "permissions": ["tabs", "storage", "activeTab"],
   "action": {
     "default_popup": "src/popup/index.html"
   },

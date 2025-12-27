@@ -4,10 +4,12 @@ import {
   switchToTab,
 } from "./mru-tracker.ts";
 import { initializeCommands } from "./commands.ts";
+import { initThumbnailCache } from "./thumbnail-cache.ts";
 import type { MessageType, MessageResponse } from "../shared/types.ts";
 
 (async () => {
   await initializeMRUTracker();
+  await initThumbnailCache();
   initializeCommands();
   console.log("QuickTabby background service worker initialized");
 })();

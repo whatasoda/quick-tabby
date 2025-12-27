@@ -4,6 +4,7 @@ export interface TabInfo {
   title: string;
   url: string;
   favIconUrl?: string;
+  thumbnailUrl?: string;
 }
 
 export interface MRUState {
