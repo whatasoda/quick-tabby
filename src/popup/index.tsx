@@ -58,8 +58,10 @@ function applyPopupSize(settings: Settings) {
   const previewSize = PREVIEW_SIZES[settings.previewSize];
 
   // Add preview width to total popup width when preview is enabled
+  // Include border width (1px) for the preview panel separator
+  const borderWidth = 1;
   const totalWidth = settings.previewModeEnabled
-    ? size.width + previewSize.width
+    ? size.width + previewSize.width + borderWidth
     : size.width;
 
   document.documentElement.style.setProperty("--popup-width", `${totalWidth}px`);
