@@ -73,5 +73,9 @@ async function handleMessage(
       clearLaunchInfo();
       return { type: "SUCCESS" };
     }
+    default: {
+      const _exhaustive: never = message;
+      return { type: "ERROR", message: `Unknown message type: ${(_exhaustive as MessageType).type}` };
+    }
   }
 }

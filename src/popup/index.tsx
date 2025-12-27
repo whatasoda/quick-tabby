@@ -77,7 +77,8 @@ const styles = {
     alignItems: "center",
     justifyContent: "center",
     aspectRatio: "14 / 9",
-    background: "linear-gradient(135deg, token(colors.surface) 0%, token(colors.surfaceHover) 100%)",
+    background:
+      "linear-gradient(135deg, token(colors.surface) 0%, token(colors.surfaceHover) 100%)",
     borderRadius: "lg",
   }),
   previewFavicon: css({
@@ -177,10 +178,11 @@ async function fetchMRUTabs(
   windowId: number
 ): Promise<TabInfo[]> {
   const message: MessageType = { type: "GET_MRU_TABS", windowOnly, windowId };
-  const response = (await chrome.runtime.sendMessage(
-    message
-  )) as MessageResponse;
-  if (response.type === "MRU_TABS") {
+  const response = (await chrome.runtime.sendMessage(message)) as
+    | MessageResponse
+    | null
+    | undefined;
+  if (response?.type === "MRU_TABS") {
     return response.tabs;
   }
   return [];
@@ -212,10 +214,22 @@ function applyPopupSize(settings: Settings) {
     ? getMaxPopupWidth()
     : tabListWidth;
 
-  document.documentElement.style.setProperty("--popup-width", `${totalWidth}px`);
-  document.documentElement.style.setProperty("--popup-height", `${size.height}px`);
-  document.documentElement.style.setProperty("--preview-width", `${previewWidth}px`);
-  document.documentElement.style.setProperty("--tab-list-width", `${tabListWidth}px`);
+  document.documentElement.style.setProperty(
+    "--popup-width",
+    `${totalWidth}px`
+  );
+  document.documentElement.style.setProperty(
+    "--popup-height",
+    `${size.height}px`
+  );
+  document.documentElement.style.setProperty(
+    "--preview-width",
+    `${previewWidth}px`
+  );
+  document.documentElement.style.setProperty(
+    "--tab-list-width",
+    `${tabListWidth}px`
+  );
 }
 
 function App() {
@@ -226,8 +240,11 @@ function App() {
   const [currentWindowId, setCurrentWindowId] = createSignal<number | null>(
     null
   );
-  const [launchCommand, setLaunchCommand] = createSignal<CommandName>("_execute_action");
-  const [launchShortcut, setLaunchShortcut] = createSignal<Keybinding | null>(null);
+  const [launchCommand, setLaunchCommand] =
+    createSignal<CommandName>("_execute_action");
+  const [launchShortcut, setLaunchShortcut] = createSignal<Keybinding | null>(
+    null
+  );
   const [tabs, { refetch }] = createResource(
     () => {
       const wid = currentWindowId();
@@ -281,19 +298,13 @@ function App() {
     const { keybindings } = currentSettings;
 
     // Also allow arrow keys as built-in navigation
-    if (
-      matchesKeybinding(e, keybindings.moveDown) ||
-      e.key === "ArrowDown"
-    ) {
+    if (matchesKeybinding(e, keybindings.moveDown) || e.key === "ArrowDown") {
       e.preventDefault();
       setSelectedIndex((i) => Math.min(i + 1, tabList.length - 1));
       return;
     }
 
-    if (
-      matchesKeybinding(e, keybindings.moveUp) ||
-      e.key === "ArrowUp"
-    ) {
+    if (matchesKeybinding(e, keybindings.moveUp) || e.key === "ArrowUp") {
       e.preventDefault();
       setSelectedIndex((i) => Math.max(i - 1, 0));
       return;
@@ -342,15 +353,15 @@ function App() {
     ]);
 
     // Check for launch info (from mode-fixed shortcuts)
-    const launchInfoResponse = await chrome.runtime.sendMessage({
+    const launchInfoResponse = (await chrome.runtime.sendMessage({
       type: "GET_LAUNCH_INFO",
-    }) as MessageResponse;
+    })) as MessageResponse | null | undefined;
 
     let initialWindowOnly = false;
     let command: CommandName = "_execute_action";
 
     if (
-      launchInfoResponse.type === "LAUNCH_INFO" &&
+      launchInfoResponse?.type === "LAUNCH_INFO" &&
       launchInfoResponse.info.command !== null
     ) {
       // Use the command from launch info
@@ -380,7 +391,7 @@ function App() {
     setLaunchCommand(command);
 
     // Get the shortcut for the launch command
-    const cmd = commands.find(c => c.name === command);
+    const cmd = commands.find((c) => c.name === command);
     if (cmd?.shortcut) {
       setLaunchShortcut(parseShortcut(cmd.shortcut));
     }
@@ -400,7 +411,8 @@ function App() {
     document.addEventListener("keydown", handleKeyDown);
 
     // Capture current tab and refresh to get updated thumbnail
-    const thumbnailConfig = THUMBNAIL_QUALITIES[loadedSettings.thumbnailQuality];
+    const thumbnailConfig =
+      THUMBNAIL_QUALITIES[loadedSettings.thumbnailQuality];
     const captureMessage: MessageType = {
       type: "CAPTURE_CURRENT_TAB",
       windowId: currentWindow.id,
@@ -419,14 +431,18 @@ function App() {
   const isPreviewEnabled = () => settings()?.previewModeEnabled ?? false;
 
   return (
-    <div class={`${styles.popupContainer} ${isPreviewEnabled() ? styles.popupContainerPreviewEnabled : ""}`}>
+    <div
+      class={`${styles.popupContainer} ${isPreviewEnabled() ? styles.popupContainerPreviewEnabled : ""}`}
+    >
       <Show when={isPreviewEnabled()}>
         <div class={styles.previewPanel}>
           <Show
             when={selectedTab()}
             fallback={
               <div class={styles.previewPlaceholder}>
-                <div class={styles.previewNoThumbnail}>Select a tab to preview</div>
+                <div class={styles.previewNoThumbnail}>
+                  Select a tab to preview
+                </div>
               </div>
             }
           >
@@ -441,7 +457,9 @@ function App() {
                         src={tab().favIconUrl || ""}
                         alt=""
                       />
-                      <div class={styles.previewNoThumbnail}>No preview available</div>
+                      <div class={styles.previewNoThumbnail}>
+                        No preview available
+                      </div>
                     </div>
                   }
                 >
