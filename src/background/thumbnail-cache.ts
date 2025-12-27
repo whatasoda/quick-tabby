@@ -1,7 +1,7 @@
 const DB_NAME = "quicktabby-thumbnails";
 const DB_VERSION = 1;
 const STORE_NAME = "thumbnails";
-const THUMBNAIL_SIZE = 96;
+const THUMBNAIL_SIZE = 200;
 const MAX_THUMBNAILS = 100;
 
 interface StoredThumbnail {
@@ -53,7 +53,7 @@ async function resizeImage(dataUrl: string, size: number): Promise<string> {
 
   const resizedBlob = await canvas.convertToBlob({
     type: "image/jpeg",
-    quality: 0.6,
+    quality: 0.8,
   });
   return blobToDataUrl(resizedBlob);
 }
@@ -120,7 +120,7 @@ export async function captureAndStoreThumbnail(
   try {
     const dataUrl = await chrome.tabs.captureVisibleTab(windowId, {
       format: "jpeg",
-      quality: 50,
+      quality: 70,
     });
 
     const resized = await resizeImage(dataUrl, THUMBNAIL_SIZE);

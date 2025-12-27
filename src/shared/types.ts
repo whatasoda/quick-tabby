@@ -24,7 +24,6 @@ export type MessageResponse =
 
 // Settings types
 export type PopupSize = "small" | "medium" | "large";
-export type PreviewPosition = "bottom" | "right";
 export type PreviewSize = "small" | "medium" | "large";
 
 export interface Keybinding {
@@ -38,7 +37,6 @@ export interface Keybinding {
 export interface Settings {
   popupSize: PopupSize;
   previewModeEnabled: boolean;
-  previewPosition: PreviewPosition;
   previewSize: PreviewSize;
   enableModeToggle: boolean;
   keybindings: {

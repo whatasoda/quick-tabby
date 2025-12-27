@@ -5,7 +5,6 @@ const SETTINGS_KEY = "quicktabby:settings";
 export const DEFAULT_SETTINGS: Settings = {
   popupSize: "medium",
   previewModeEnabled: false,
-  previewPosition: "bottom",
   previewSize: "medium",
   enableModeToggle: true,
   keybindings: {
@@ -18,9 +17,9 @@ export const DEFAULT_SETTINGS: Settings = {
 };
 
 export const PREVIEW_SIZES = {
-  small: { maxHeight: 100 },
-  medium: { maxHeight: 150 },
-  large: { maxHeight: 200 },
+  small: { width: 140 },
+  medium: { width: 180 },
+  large: { width: 240 },
 } as const;
 
 export async function loadSettings(): Promise<Settings> {

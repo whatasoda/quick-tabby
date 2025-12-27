@@ -3,7 +3,6 @@ import { createSignal, createResource, For, onMount, Show } from "solid-js";
 import type {
   Settings,
   PopupSize,
-  PreviewPosition,
   PreviewSize,
   Keybinding,
 } from "../shared/types.ts";
@@ -147,26 +146,6 @@ function App() {
           </label>
         </div>
         <Show when={settings().previewModeEnabled}>
-          <div class="setting-row sub-setting">
-            <div>
-              <div class="setting-label">Preview Position</div>
-            </div>
-            <div class="radio-group">
-              <For each={["bottom", "right"] as PreviewPosition[]}>
-                {(pos) => (
-                  <label class="radio-option">
-                    <input
-                      type="radio"
-                      name="previewPosition"
-                      checked={settings().previewPosition === pos}
-                      onChange={() => updateSetting("previewPosition", pos)}
-                    />
-                    {pos.charAt(0).toUpperCase() + pos.slice(1)}
-                  </label>
-                )}
-              </For>
-            </div>
-          </div>
           <div class="setting-row sub-setting">
             <div>
               <div class="setting-label">Preview Size</div>

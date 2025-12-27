@@ -61,12 +61,8 @@ function applyPopupSize(settings: Settings) {
     `${size.height}px`
   );
   document.documentElement.style.setProperty(
-    "--preview-max-height",
-    `${previewSize.maxHeight}px`
-  );
-  document.documentElement.style.setProperty(
-    "--preview-placeholder-height",
-    `${previewSize.maxHeight * 0.67}px`
+    "--preview-width",
+    `${previewSize.width}px`
   );
 }
 
@@ -189,99 +185,85 @@ function App() {
     document.removeEventListener("keydown", handleKeyDown);
   });
 
-  const previewPosition = () => settings()?.previewPosition ?? "bottom";
-  const isPreviewRight = () => previewPosition() === "right";
+  const isPreviewEnabled = () => settings()?.previewModeEnabled ?? false;
 
-  const previewPanel = () => (
-    <Show when={settings()?.previewModeEnabled && selectedTab()}>
-      {(tab) => (
-        <div class={`preview-panel position-${previewPosition()}`}>
-          <Show
-            when={tab().thumbnailUrl}
-            fallback={
-              <div class="preview-placeholder">
-                <img
-                  class="preview-favicon"
-                  src={tab().favIconUrl || ""}
-                  alt=""
-                />
-                <div class="preview-no-thumbnail">No preview available</div>
-              </div>
-            }
-          >
-            <img
-              class="preview-thumbnail"
-              src={tab().thumbnailUrl}
-              alt={tab().title}
-            />
-          </Show>
-          <div class="preview-info">
-            <div class="preview-title">{tab().title}</div>
-            <div class="preview-url">{tab().url}</div>
+  return (
+    <div class={`popup-container ${isPreviewEnabled() ? "preview-enabled" : ""}`}>
+      <Show when={isPreviewEnabled() && selectedTab()}>
+        {(tab) => (
+          <div class="preview-panel">
+            <Show
+              when={tab().thumbnailUrl}
+              fallback={
+                <div class="preview-placeholder">
+                  <img
+                    class="preview-favicon"
+                    src={tab().favIconUrl || ""}
+                    alt=""
+                  />
+                  <div class="preview-no-thumbnail">No preview available</div>
+                </div>
+              }
+            >
+              <img
+                class="preview-thumbnail"
+                src={tab().thumbnailUrl}
+                alt={tab().title}
+              />
+            </Show>
+            <div class="preview-info">
+              <div class="preview-title">{tab().title}</div>
+              <div class="preview-url">{tab().url}</div>
+            </div>
           </div>
-        </div>
-      )}
-    </Show>
-  );
-
-  const mainContent = () => (
-    <>
-      <div class="header">
-        <h1>QuickTabby</h1>
-        <Show when={settings()?.enableModeToggle}>
-          <button
-            class={`mode-toggle ${windowOnly() ? "active" : ""}`}
-            onClick={toggleMode}
-            title="Toggle window-only mode (Tab)"
-          >
-            {windowOnly() ? "Window" : "All"}
-          </button>
-        </Show>
-      </div>
-
-      <Show when={tabs.loading}>
-        <div class="loading">Loading...</div>
-      </Show>
-
-      <Show when={!tabs.loading && tabs()}>
-        {(tabList) => (
-          <Show
-            when={tabList().length > 0}
-            fallback={<div class="empty">No recent tabs</div>}
-          >
-            <TabList
-              tabs={tabList()}
-              selectedIndex={selectedIndex()}
-              onSelect={handleSelect}
-            />
-          </Show>
         )}
       </Show>
 
-      <Show when={!isPreviewRight()}>{previewPanel()}</Show>
+      <div class="main-content">
+        <div class="header">
+          <h1>QuickTabby</h1>
+          <Show when={settings()?.enableModeToggle}>
+            <button
+              class={`mode-toggle ${windowOnly() ? "active" : ""}`}
+              onClick={toggleMode}
+              title="Toggle window-only mode (Tab)"
+            >
+              {windowOnly() ? "Window" : "All"}
+            </button>
+          </Show>
+        </div>
 
-      <div class="footer">
-        <span class="hint">
-          <kbd>j</kbd>/<kbd>k</kbd> navigate
-        </span>
-        <span class="hint">
-          <kbd>Enter</kbd> switch
-        </span>
-        <span class="hint">
-          <kbd>Tab</kbd> toggle mode
-        </span>
+        <Show when={tabs.loading}>
+          <div class="loading">Loading...</div>
+        </Show>
+
+        <Show when={!tabs.loading && tabs()}>
+          {(tabList) => (
+            <Show
+              when={tabList().length > 0}
+              fallback={<div class="empty">No recent tabs</div>}
+            >
+              <TabList
+                tabs={tabList()}
+                selectedIndex={selectedIndex()}
+                onSelect={handleSelect}
+              />
+            </Show>
+          )}
+        </Show>
+
+        <div class="footer">
+          <span class="hint">
+            <kbd>j</kbd>/<kbd>k</kbd> navigate
+          </span>
+          <span class="hint">
+            <kbd>Enter</kbd> switch
+          </span>
+          <span class="hint">
+            <kbd>Tab</kbd> toggle mode
+          </span>
+        </div>
       </div>
-    </>
-  );
-
-  return (
-    <div
-      class={`popup-container ${isPreviewRight() && settings()?.previewModeEnabled ? "preview-right" : ""}`}
-    >
-      <Show when={isPreviewRight()} fallback={mainContent()}>
-        <div class="main-content">{mainContent()}</div>
-        {previewPanel()}
-      </Show>
     </div>
   );
 }
