@@ -26,12 +26,6 @@
       },
       "description": "Open QuickTabby popup"
     },
-    "toggle-recent": {
-      "suggested_key": {
-        "default": "Alt+Shift+Q"
-      },
-      "description": "Switch to most recent tab"
-    },
     "open-popup-all-windows": {
       "suggested_key": {
         "default": "Alt+Shift+A"

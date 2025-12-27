@@ -14,6 +14,8 @@ import type {
   MessageType,
   MessageResponse,
   Settings,
+  CommandName,
+  Keybinding,
 } from "../shared/types.ts";
 import { TabList } from "./components/TabList.tsx";
 import { KeybindingsModal } from "./components/KeybindingsModal.tsx";
@@ -28,6 +30,7 @@ import {
   matchesKeybinding,
   applyTheme,
   setupThemeListener,
+  parseShortcut,
 } from "../shared/settings.ts";
 
 const styles = {
@@ -223,6 +226,8 @@ function App() {
   const [currentWindowId, setCurrentWindowId] = createSignal<number | null>(
     null
   );
+  const [launchCommand, setLaunchCommand] = createSignal<CommandName>("_execute_action");
+  const [launchShortcut, setLaunchShortcut] = createSignal<Keybinding | null>(null);
   const [tabs, { refetch }] = createResource(
     () => {
       const wid = currentWindowId();
@@ -251,7 +256,27 @@ function App() {
   function handleKeyDown(e: KeyboardEvent) {
     const tabList = tabs();
     const currentSettings = settings();
-    if (!tabList || tabList.length === 0 || !currentSettings) return;
+    if (!currentSettings) return;
+
+    // Check for shortcut re-press (close popup)
+    const shortcut = launchShortcut();
+    if (shortcut && matchesKeybinding(e, shortcut)) {
+      e.preventDefault();
+      const cmd = launchCommand();
+      const cmdSettings = currentSettings.commandSettings[cmd];
+      if (cmdSettings?.selectOnClose && tabList && tabList.length > 0) {
+        // Select focused tab before closing
+        const tab = tabList[selectedIndex()];
+        if (tab) {
+          switchToTab(tab.id); // switchToTab closes the window
+          return;
+        }
+      }
+      window.close();
+      return;
+    }
+
+    if (!tabList || tabList.length === 0) return;
 
     const { keybindings } = currentSettings;
 
@@ -310,26 +335,34 @@ function App() {
   let cleanupThemeListener: (() => void) | undefined;
 
   onMount(async () => {
-    const [currentWindow, loadedSettings] = await Promise.all([
+    const [currentWindow, loadedSettings, commands] = await Promise.all([
       chrome.windows.getCurrent(),
       loadSettings(),
+      chrome.commands.getAll(),
     ]);
 
-    // Check for launch mode override first (from mode-fixed shortcuts)
-    const overrideResponse = await chrome.runtime.sendMessage({
-      type: "GET_LAUNCH_MODE_OVERRIDE",
+    // Check for launch info (from mode-fixed shortcuts)
+    const launchInfoResponse = await chrome.runtime.sendMessage({
+      type: "GET_LAUNCH_INFO",
     }) as MessageResponse;
 
     let initialWindowOnly = false;
+    let command: CommandName = "_execute_action";
+
     if (
-      overrideResponse.type === "LAUNCH_MODE_OVERRIDE" &&
-      overrideResponse.mode !== null
+      launchInfoResponse.type === "LAUNCH_INFO" &&
+      launchInfoResponse.info.command !== null
     ) {
+      // Use the command from launch info
+      command = launchInfoResponse.info.command;
       // Use the override mode
-      initialWindowOnly = overrideResponse.mode === "currentWindow";
-      // Clear the override after use
-      await chrome.runtime.sendMessage({ type: "CLEAR_LAUNCH_MODE_OVERRIDE" });
+      if (launchInfoResponse.info.mode !== null) {
+        initialWindowOnly = launchInfoResponse.info.mode === "currentWindow";
+      }
+      // Clear the info after use
+      await chrome.runtime.sendMessage({ type: "CLEAR_LAUNCH_INFO" });
     } else {
+      // Opened via _execute_action (direct popup open)
       // Determine initial mode based on defaultMode setting
       switch (loadedSettings.defaultMode) {
         case "all":
@@ -343,6 +376,15 @@ function App() {
           break;
       }
     }
+
+    setLaunchCommand(command);
+
+    // Get the shortcut for the launch command
+    const cmd = commands.find(c => c.name === command);
+    if (cmd?.shortcut) {
+      setLaunchShortcut(parseShortcut(cmd.shortcut));
+    }
+
     setWindowOnly(initialWindowOnly);
     setSettings(loadedSettings);
     applyPopupSize(loadedSettings);

@@ -1,50 +1,39 @@
-import { switchToTab, getMRUTabs } from "./mru-tracker.ts";
-import type { LaunchModeOverride } from "../shared/types.ts";
+import type { LaunchInfo } from "../shared/types.ts";
 
-// Store launch mode override for when popup opens
-let launchModeOverride: LaunchModeOverride = null;
+// Store launch info for when popup opens (which command triggered it)
+let launchInfo: LaunchInfo = { mode: null, command: null };
 
-export function getLaunchModeOverride(): LaunchModeOverride {
-  return launchModeOverride;
+export function getLaunchInfo(): LaunchInfo {
+  return launchInfo;
 }
 
-export function clearLaunchModeOverride(): void {
-  launchModeOverride = null;
-}
-
-async function handleToggleRecent(): Promise<void> {
-  const tabs = await getMRUTabs(false);
-  if (tabs.length >= 2 && tabs[1]) {
-    await switchToTab(tabs[1].id);
-  }
+export function clearLaunchInfo(): void {
+  launchInfo = { mode: null, command: null };
 }
 
 async function handleOpenPopupAllWindows(): Promise<void> {
-  launchModeOverride = "all";
+  launchInfo = { mode: "all", command: "open-popup-all-windows" };
   try {
     await chrome.action.openPopup();
   } catch {
-    // openPopup may fail in older Chrome versions, clear the override
-    launchModeOverride = null;
+    // openPopup may fail in older Chrome versions, clear the info
+    clearLaunchInfo();
   }
 }
 
 async function handleOpenPopupCurrentWindow(): Promise<void> {
-  launchModeOverride = "currentWindow";
+  launchInfo = { mode: "currentWindow", command: "open-popup-current-window" };
   try {
     await chrome.action.openPopup();
   } catch {
-    // openPopup may fail in older Chrome versions, clear the override
-    launchModeOverride = null;
+    // openPopup may fail in older Chrome versions, clear the info
+    clearLaunchInfo();
   }
 }
 
 export function initializeCommands(): void {
   chrome.commands.onCommand.addListener(async (command) => {
     switch (command) {
-      case "toggle-recent":
-        await handleToggleRecent();
-        break;
       case "open-popup-all-windows":
         await handleOpenPopupAllWindows();
         break;

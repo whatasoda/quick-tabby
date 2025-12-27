@@ -9,6 +9,7 @@ import type {
   ThemePreference,
   DefaultMode,
   Keybinding,
+  CommandName,
 } from "../shared/types.ts";
 import {
   loadSettings,
@@ -137,13 +138,18 @@ const styles = {
   }),
   shortcutItem: css({
     display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: "sm 0",
+    flexDirection: "column",
+    gap: "xs",
+    padding: "md 0",
     borderBottom: "1px solid token(colors.borderLighter)",
     _last: {
       borderBottom: "none",
     },
+  }),
+  shortcutHeader: css({
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
   }),
   shortcutName: css({
     fontSize: "lg",
@@ -154,6 +160,12 @@ const styles = {
     padding: "xs sm",
     borderRadius: "md",
     fontSize: "12px",
+  }),
+  shortcutSettings: css({
+    display: "flex",
+    alignItems: "center",
+    gap: "md",
+    paddingLeft: "sm",
   }),
   linkButton: css({
     display: "inline-block",
@@ -246,6 +258,27 @@ function App() {
     setSettings(newSettings);
     await saveSettings(newSettings);
     showSaved();
+  }
+
+  async function updateCommandSetting(
+    command: CommandName,
+    key: keyof Settings["commandSettings"][CommandName],
+    value: boolean
+  ) {
+    const newSettings = {
+      ...settings(),
+      commandSettings: {
+        ...settings().commandSettings,
+        [command]: { ...settings().commandSettings[command], [key]: value },
+      },
+    };
+    setSettings(newSettings);
+    await saveSettings(newSettings);
+    showSaved();
+  }
+
+  function isValidCommandName(name: string): name is CommandName {
+    return ["_execute_action", "open-popup-all-windows", "open-popup-current-window"].includes(name);
   }
 
   function showSaved() {
@@ -451,8 +484,22 @@ function App() {
           <For each={shortcuts()}>
             {(shortcut) => (
               <div class={styles.shortcutItem}>
-                <span class={styles.shortcutName}>{shortcut.description}</span>
-                <span class={styles.shortcutKey}>{shortcut.shortcut}</span>
+                <div class={styles.shortcutHeader}>
+                  <span class={styles.shortcutName}>{shortcut.description}</span>
+                  <span class={styles.shortcutKey}>{shortcut.shortcut}</span>
+                </div>
+                <Show when={isValidCommandName(shortcut.name)}>
+                  <div class={styles.shortcutSettings}>
+                    <label class={styles.checkboxLabel}>
+                      <input
+                        type="checkbox"
+                        checked={settings().commandSettings[shortcut.name as CommandName]?.selectOnClose ?? true}
+                        onChange={(e) => updateCommandSetting(shortcut.name as CommandName, "selectOnClose", e.target.checked)}
+                      />
+                      <span>Select on re-press</span>
+                    </label>
+                  </div>
+                </Show>
               </div>
             )}
           </For>
@@ -461,8 +508,8 @@ function App() {
           Change Shortcuts
         </button>
         <p class={styles.note}>
-          Opens Chrome's extension shortcuts page where you can customize
-          keyboard shortcuts.
+          Opens Chrome's extension shortcuts page. "Select on re-press" switches
+          to the selected tab when pressing the shortcut again to close the popup.
         </p>
       </div>
     </div>

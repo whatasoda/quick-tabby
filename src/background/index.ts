@@ -5,8 +5,8 @@ import {
 } from "./mru-tracker.ts";
 import {
   initializeCommands,
-  getLaunchModeOverride,
-  clearLaunchModeOverride,
+  getLaunchInfo,
+  clearLaunchInfo,
 } from "./commands.ts";
 import {
   initThumbnailCache,
@@ -66,11 +66,11 @@ async function handleMessage(
       }
       return { type: "SUCCESS" };
     }
-    case "GET_LAUNCH_MODE_OVERRIDE": {
-      return { type: "LAUNCH_MODE_OVERRIDE", mode: getLaunchModeOverride() };
+    case "GET_LAUNCH_INFO": {
+      return { type: "LAUNCH_INFO", info: getLaunchInfo() };
     }
-    case "CLEAR_LAUNCH_MODE_OVERRIDE": {
-      clearLaunchModeOverride();
+    case "CLEAR_LAUNCH_INFO": {
+      clearLaunchInfo();
       return { type: "SUCCESS" };
     }
   }

@@ -1,4 +1,4 @@
-import type { Settings, Keybinding, PopupSize, ThemePreference, DefaultMode } from "./types.ts";
+import type { Settings, Keybinding, PopupSize, ThemePreference, DefaultMode, CommandName } from "./types.ts";
 
 const SETTINGS_KEY = "quicktabby:settings";
 
@@ -14,6 +14,11 @@ export const DEFAULT_SETTINGS: Settings = {
     confirm: { key: "Enter" },
     cancel: { key: "Escape" },
     toggleMode: { key: "Tab" },
+  },
+  commandSettings: {
+    "_execute_action": { selectOnClose: true },
+    "open-popup-all-windows": { selectOnClose: true },
+    "open-popup-current-window": { selectOnClose: true },
   },
 };
 
@@ -54,6 +59,10 @@ export async function loadSettings(): Promise<Settings> {
     keybindings: {
       ...DEFAULT_SETTINGS.keybindings,
       ...stored.keybindings,
+    },
+    commandSettings: {
+      ...DEFAULT_SETTINGS.commandSettings,
+      ...stored.commandSettings,
     },
   };
 }
@@ -152,4 +161,17 @@ export function setupThemeListener(
   const handler = () => onThemeChange();
   mediaQuery.addEventListener("change", handler);
   return () => mediaQuery.removeEventListener("change", handler);
+}
+
+// Parse Chrome shortcut string (e.g., "Alt+Shift+Q") into Keybinding
+export function parseShortcut(shortcut: string): Keybinding {
+  const parts = shortcut.split("+");
+  const key = parts[parts.length - 1];
+  return {
+    key: key.length === 1 ? key.toLowerCase() : key,
+    ctrl: parts.includes("Ctrl"),
+    alt: parts.includes("Alt"),
+    shift: parts.includes("Shift"),
+    meta: parts.includes("Command") || parts.includes("Meta"),
+  };
 }

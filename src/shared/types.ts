@@ -20,18 +20,32 @@ export interface ThumbnailConfig {
 
 export type LaunchModeOverride = "all" | "currentWindow" | null;
 
+// Which command opened the popup
+export type CommandName = "_execute_action" | "open-popup-all-windows" | "open-popup-current-window";
+
+// Launch info tracking which command opened the popup
+export interface LaunchInfo {
+  mode: LaunchModeOverride;
+  command: CommandName | null;
+}
+
+// Per-command settings
+export interface CommandSettings {
+  selectOnClose: boolean; // Whether to select focused tab when closing via shortcut re-press
+}
+
 export type MessageType =
   | { type: "GET_MRU_TABS"; windowOnly?: boolean; windowId?: number }
   | { type: "SWITCH_TO_TAB"; tabId: number }
   | { type: "CAPTURE_CURRENT_TAB"; windowId?: number; thumbnailConfig?: ThumbnailConfig }
-  | { type: "GET_LAUNCH_MODE_OVERRIDE" }
-  | { type: "CLEAR_LAUNCH_MODE_OVERRIDE" };
+  | { type: "GET_LAUNCH_INFO" }
+  | { type: "CLEAR_LAUNCH_INFO" };
 
 export type MessageResponse =
   | { type: "MRU_TABS"; tabs: TabInfo[] }
   | { type: "SUCCESS" }
   | { type: "ERROR"; message: string }
-  | { type: "LAUNCH_MODE_OVERRIDE"; mode: LaunchModeOverride };
+  | { type: "LAUNCH_INFO"; info: LaunchInfo };
 
 // Settings types
 export type PopupSize = "small" | "medium" | "large";
@@ -60,4 +74,5 @@ export interface Settings {
     cancel: Keybinding;
     toggleMode: Keybinding;
   };
+  commandSettings: Record<CommandName, CommandSettings>;
 }
