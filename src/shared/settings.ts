@@ -80,11 +80,16 @@ export function keybindingToString(binding: Keybinding): string {
 }
 
 // Chrome popup max width is 800px
-// Fixed 1:2 ratio for tab list:preview
+// Fixed 1:1.75 ratio for tab list:preview
 const MAX_POPUP_WIDTH = 800;
 const BORDER_WIDTH = 1;
-const TAB_LIST_WIDTH = 266;
-const PREVIEW_WIDTH = MAX_POPUP_WIDTH - TAB_LIST_WIDTH - BORDER_WIDTH; // 533
+const RATIO_TAB_LIST = 1;
+const RATIO_PREVIEW = 1.75;
+const AVAILABLE_WIDTH = MAX_POPUP_WIDTH - BORDER_WIDTH;
+const TAB_LIST_WIDTH = Math.round(
+  (AVAILABLE_WIDTH * RATIO_TAB_LIST) / (RATIO_TAB_LIST + RATIO_PREVIEW)
+); // 290px
+const PREVIEW_WIDTH = AVAILABLE_WIDTH - TAB_LIST_WIDTH; // 509px
 
 export const POPUP_SIZES = {
   small: { height: 400 },
