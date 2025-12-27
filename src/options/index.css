@@ -8,6 +8,10 @@ body {
   margin: 0;
   padding: 24px;
   font-family: system-ui, -apple-system, sans-serif;
-  background: #f5f5f5;
-  color: #333;
+  background: var(--colors-surface);
+  color: var(--colors-text-primary);
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
 }

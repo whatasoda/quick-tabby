@@ -69,7 +69,7 @@ const styles = {
     justifyContent: "center",
     width: "100%",
     height: "100%",
-    background: "linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%)",
+    background: "linear-gradient(135deg, token(colors.surface) 0%, token(colors.surfaceHover) 100%)",
   }),
   tabFaviconLarge: css({
     width: "24px",

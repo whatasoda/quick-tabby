@@ -26,6 +26,8 @@ import {
   getMaxPopupWidth,
   THUMBNAIL_QUALITIES,
   matchesKeybinding,
+  applyTheme,
+  setupThemeListener,
 } from "../shared/settings.ts";
 
 const styles = {
@@ -72,7 +74,7 @@ const styles = {
     alignItems: "center",
     justifyContent: "center",
     aspectRatio: "14 / 9",
-    background: "linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%)",
+    background: "linear-gradient(135deg, token(colors.surface) 0%, token(colors.surfaceHover) 100%)",
     borderRadius: "lg",
   }),
   previewFavicon: css({
@@ -310,6 +312,8 @@ function App() {
     chrome.runtime.openOptionsPage();
   }
 
+  let cleanupThemeListener: (() => void) | undefined;
+
   onMount(async () => {
     const [savedMode, currentWindow, loadedSettings] = await Promise.all([
       loadMode(),
@@ -319,6 +323,11 @@ function App() {
     setWindowOnly(savedMode);
     setSettings(loadedSettings);
     applyPopupSize(loadedSettings);
+    applyTheme(loadedSettings.themePreference);
+    cleanupThemeListener = setupThemeListener(
+      loadedSettings.themePreference,
+      () => applyTheme(loadedSettings.themePreference)
+    );
 
     if (currentWindow.id !== undefined) {
       setCurrentWindowId(currentWindow.id);
@@ -339,6 +348,7 @@ function App() {
 
   onCleanup(() => {
     document.removeEventListener("keydown", handleKeyDown);
+    cleanupThemeListener?.();
   });
 
   const isPreviewEnabled = () => settings()?.previewModeEnabled ?? false;

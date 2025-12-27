@@ -31,6 +31,7 @@ export type MessageResponse =
 // Settings types
 export type PopupSize = "small" | "medium" | "large";
 export type ThumbnailQuality = "standard" | "high" | "ultra";
+export type ThemePreference = "light" | "dark" | "auto";
 
 export interface Keybinding {
   key: string;
@@ -45,6 +46,7 @@ export interface Settings {
   previewModeEnabled: boolean;
   thumbnailQuality: ThumbnailQuality;
   enableModeToggle: boolean;
+  themePreference: ThemePreference;
   keybindings: {
     moveDown: Keybinding;
     moveUp: Keybinding;

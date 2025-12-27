@@ -1,11 +1,12 @@
 import { render } from "solid-js/web";
-import { createSignal, createResource, For, onMount, Show } from "solid-js";
+import { createSignal, createResource, createEffect, For, onMount, onCleanup, Show } from "solid-js";
 import "./index.css";
 import { css } from "../../styled-system/css";
 import type {
   Settings,
   PopupSize,
   ThumbnailQuality,
+  ThemePreference,
   Keybinding,
 } from "../shared/types.ts";
 import {
@@ -13,6 +14,8 @@ import {
   saveSettings,
   DEFAULT_SETTINGS,
   keybindingToString,
+  applyTheme,
+  setupThemeListener,
 } from "../shared/settings.ts";
 
 const styles = {
@@ -119,7 +122,7 @@ const styles = {
     padding: "xs sm",
     fontSize: "12px",
     background: "borderLight",
-    border: "1px solid #ddd",
+    border: "1px solid token(colors.border)",
     borderRadius: "md",
     cursor: "pointer",
     _hover: {
@@ -194,9 +197,31 @@ function App() {
   const [saved, setSaved] = createSignal(false);
   const [recordingKey, setRecordingKey] = createSignal<string | null>(null);
 
+  let cleanupThemeListener: (() => void) | undefined;
+
   onMount(async () => {
     const loaded = await loadSettings();
     setSettings(loaded);
+    applyTheme(loaded.themePreference);
+    cleanupThemeListener = setupThemeListener(
+      loaded.themePreference,
+      () => applyTheme(loaded.themePreference)
+    );
+  });
+
+  onCleanup(() => {
+    cleanupThemeListener?.();
+  });
+
+  // Re-apply theme when settings change
+  createEffect(() => {
+    const currentSettings = settings();
+    applyTheme(currentSettings.themePreference);
+    cleanupThemeListener?.();
+    cleanupThemeListener = setupThemeListener(
+      currentSettings.themePreference,
+      () => applyTheme(currentSettings.themePreference)
+    );
   });
 
   async function updateSetting<K extends keyof Settings>(
@@ -264,6 +289,30 @@ function App() {
 
       <div class={styles.section}>
         <h2 class={styles.sectionTitle}>Appearance</h2>
+        <div class={styles.settingRow}>
+          <div>
+            <div class={styles.settingLabel}>Theme</div>
+          </div>
+          <div class={styles.radioGroup}>
+            <For each={[
+              { value: "auto", label: "Auto" },
+              { value: "light", label: "Light" },
+              { value: "dark", label: "Dark" },
+            ] as { value: ThemePreference; label: string }[]}>
+              {(option) => (
+                <label class={styles.radioOption}>
+                  <input
+                    type="radio"
+                    name="themePreference"
+                    checked={settings().themePreference === option.value}
+                    onChange={() => updateSetting("themePreference", option.value)}
+                  />
+                  {option.label}
+                </label>
+              )}
+            </For>
+          </div>
+        </div>
         <div class={styles.settingRow}>
           <div>
             <div class={styles.settingLabel}>Popup Size</div>

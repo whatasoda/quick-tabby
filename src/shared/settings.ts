@@ -1,4 +1,4 @@
-import type { Settings, Keybinding, PopupSize } from "./types.ts";
+import type { Settings, Keybinding, PopupSize, ThemePreference } from "./types.ts";
 
 const SETTINGS_KEY = "quicktabby:settings";
 
@@ -7,6 +7,7 @@ export const DEFAULT_SETTINGS: Settings = {
   previewModeEnabled: false,
   thumbnailQuality: "standard",
   enableModeToggle: true,
+  themePreference: "auto",
   keybindings: {
     moveDown: { key: "j" },
     moveUp: { key: "k" },
@@ -107,4 +108,32 @@ export function getTabListWidth(): number {
 
 export function getMaxPopupWidth(): number {
   return MAX_POPUP_WIDTH;
+}
+
+export function getEffectiveTheme(preference: ThemePreference): "light" | "dark" {
+  if (preference === "auto") {
+    return window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light";
+  }
+  return preference;
+}
+
+export function applyTheme(preference: ThemePreference): void {
+  const theme = getEffectiveTheme(preference);
+  document.documentElement.setAttribute("data-theme", theme);
+}
+
+export function setupThemeListener(
+  preference: ThemePreference,
+  onThemeChange: () => void
+): () => void {
+  if (preference !== "auto") {
+    return () => {};
+  }
+
+  const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+  const handler = () => onThemeChange();
+  mediaQuery.addEventListener("change", handler);
+  return () => mediaQuery.removeEventListener("change", handler);
 }

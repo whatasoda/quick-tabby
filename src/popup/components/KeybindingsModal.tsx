@@ -13,7 +13,7 @@ const styles = {
   overlay: css({
     position: "fixed",
     inset: 0,
-    background: "rgba(0, 0, 0, 0.4)",
+    background: "overlay",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
