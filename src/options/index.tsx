@@ -120,12 +120,14 @@ const styles = {
     color: "white",
   }),
   recordBtn: css({
-    padding: "8px 12px",
+    padding: "6px 12px",
     fontSize: "12px",
     background: "borderLight",
     border: "1px solid token(colors.border)",
     borderRadius: "md",
     cursor: "pointer",
+    minWidth: "80px",
+    textAlign: "center",
     _hover: {
       background: "surfaceHover",
     },
@@ -156,9 +158,11 @@ const styles = {
   shortcutKey: css({
     fontFamily: "monospace",
     background: "surfaceHover",
-    padding: "4px 8px",
+    padding: "6px 12px",
     borderRadius: "md",
     fontSize: "12px",
+    minWidth: "80px",
+    textAlign: "center",
   }),
   shortcutSettings: css({
     display: "flex",
