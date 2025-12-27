@@ -109,30 +109,6 @@ const styles = {
     textOverflow: "ellipsis",
     marginTop: "2px",
   }),
-  header: css({
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: "md lg",
-    borderBottom: "1px solid token(colors.border)",
-  }),
-  modeToggle: css({
-    padding: "4px 12px",
-    border: "1px solid #ddd",
-    borderRadius: "full",
-    background: "surface",
-    fontSize: "sm",
-    cursor: "pointer",
-    transition: "all 0.15s",
-    _hover: {
-      background: "surfaceHover",
-    },
-  }),
-  modeToggleActive: css({
-    background: "primary",
-    borderColor: "primary",
-    color: "white",
-  }),
   loading: css({
     padding: "xl",
     textAlign: "center",
@@ -145,11 +121,33 @@ const styles = {
   }),
   footer: css({
     display: "flex",
-    justifyContent: "flex-end",
-    gap: "xs",
+    justifyContent: "space-between",
+    alignItems: "center",
     padding: "xs sm",
     borderTop: "1px solid token(colors.border)",
     background: "surfaceAlt",
+  }),
+  footerLeft: css({
+    display: "flex",
+    alignItems: "center",
+  }),
+  footerRight: css({
+    display: "flex",
+    alignItems: "center",
+    gap: "xs",
+  }),
+  modeIndicator: css({
+    fontSize: "sm",
+    color: "text.secondary",
+    cursor: "pointer",
+    padding: "xs sm",
+    borderRadius: "sm",
+    transition: "all 0.15s",
+    userSelect: "none",
+    _hover: {
+      background: "surfaceHover",
+      color: "text.primary",
+    },
   }),
   iconButton: css({
     display: "flex",
@@ -407,16 +405,6 @@ function App() {
       </Show>
 
       <div class={styles.mainContent}>
-        <div class={styles.header}>
-          <button
-            class={`${styles.modeToggle} ${windowOnly() ? styles.modeToggleActive : ""}`}
-            onClick={toggleMode}
-            title="Toggle window-only mode (Tab)"
-          >
-            {windowOnly() ? "Window" : "All"}
-          </button>
-        </div>
-
         <Show when={tabs.loading}>
           <div class={styles.loading}>Loading...</div>
         </Show>
@@ -437,20 +425,31 @@ function App() {
         </Show>
 
         <div class={styles.footer}>
-          <button
-            class={styles.iconButton}
-            onClick={() => setShowKeybindingsModal(true)}
-            title="キーボードショートカット"
-          >
-            <FiHelpCircle size={16} />
-          </button>
-          <button
-            class={styles.iconButton}
-            onClick={openSettings}
-            title="設定"
-          >
-            <FiSettings size={16} />
-          </button>
+          <div class={styles.footerLeft}>
+            <span
+              class={styles.modeIndicator}
+              onClick={toggleMode}
+              title="Click to toggle mode"
+            >
+              {windowOnly() ? "Current Window" : "All Windows"}
+            </span>
+          </div>
+          <div class={styles.footerRight}>
+            <button
+              class={styles.iconButton}
+              onClick={() => setShowKeybindingsModal(true)}
+              title="キーボードショートカット"
+            >
+              <FiHelpCircle size={16} />
+            </button>
+            <button
+              class={styles.iconButton}
+              onClick={openSettings}
+              title="設定"
+            >
+              <FiSettings size={16} />
+            </button>
+          </div>
         </div>
       </div>
 
