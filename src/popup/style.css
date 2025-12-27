@@ -190,17 +190,21 @@ kbd {
 
 .preview-panel {
   width: var(--preview-width, 180px);
+  max-height: var(--popup-height);
   background: #fafafa;
   padding: 12px;
   flex-shrink: 0;
   border-right: 1px solid #e0e0e0;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .preview-thumbnail {
   width: 100%;
+  max-width: 100%;
   height: auto;
+  max-height: calc(var(--popup-height) - 80px);
   object-fit: contain;
   border-radius: 6px;
   background: #fff;
