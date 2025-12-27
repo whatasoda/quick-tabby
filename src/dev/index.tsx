@@ -2,6 +2,8 @@ import { render } from "solid-js/web";
 import { createSignal, Show } from "solid-js";
 import "./index.css";
 import { setupChromeMock } from "./mocks/chrome-api.ts";
+import { PopupPreview } from "./previews/PopupPreview.tsx";
+import { OptionsPreview } from "./previews/OptionsPreview.tsx";
 
 // Setup Chrome API mock before any component imports
 setupChromeMock();
@@ -33,10 +35,10 @@ function DevApp() {
 
       <main class="preview-area">
         <Show when={activePreview() === "popup"}>
-          <div>Popup Preview (Component will be added)</div>
+          <PopupPreview />
         </Show>
         <Show when={activePreview() === "options"}>
-          <div>Options Preview (Component will be added)</div>
+          <OptionsPreview />
         </Show>
       </main>
     </div>
