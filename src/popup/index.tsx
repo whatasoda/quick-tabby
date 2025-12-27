@@ -2,7 +2,7 @@ import { render } from "solid-js/web";
 import {
   createSignal,
   createResource,
-  createEffect,
+  createMemo,
   onMount,
   onCleanup,
   Show,
@@ -40,11 +40,6 @@ async function switchToTab(tabId: number): Promise<void> {
   window.close();
 }
 
-async function previewTab(tabId: number): Promise<void> {
-  const message: MessageType = { type: "PREVIEW_TAB", tabId };
-  await chrome.runtime.sendMessage(message);
-}
-
 const MODE_STORAGE_KEY = "windowOnlyMode";
 
 async function loadMode(): Promise<boolean> {
@@ -72,7 +67,6 @@ function App() {
   const [currentWindowId, setCurrentWindowId] = createSignal<number | null>(
     null
   );
-  const [originalTabId, setOriginalTabId] = createSignal<number | null>(null);
   const [tabs, { refetch }] = createResource(
     () => {
       const wid = currentWindowId();
@@ -84,20 +78,11 @@ function App() {
         : Promise.resolve([])
   );
 
-  // Preview tab when selection changes (if preview mode is enabled)
-  createEffect(() => {
-    const currentSettings = settings();
+  // Get selected tab for preview display
+  const selectedTab = createMemo(() => {
     const tabList = tabs();
     const index = selectedIndex();
-
-    if (
-      currentSettings?.previewModeEnabled &&
-      tabList &&
-      tabList[index] &&
-      originalTabId() !== null
-    ) {
-      previewTab(tabList[index].id);
-    }
+    return tabList?.[index] ?? null;
   });
 
   function toggleMode() {
@@ -144,11 +129,6 @@ function App() {
 
     if (matchesKeybinding(e, keybindings.cancel)) {
       e.preventDefault();
-      // Restore original tab if in preview mode
-      const origId = originalTabId();
-      if (currentSettings.previewModeEnabled && origId !== null) {
-        previewTab(origId);
-      }
       window.close();
       return;
     }
@@ -171,21 +151,14 @@ function App() {
   }
 
   onMount(async () => {
-    const [savedMode, currentWindow, loadedSettings, activeTabs] =
-      await Promise.all([
-        loadMode(),
-        chrome.windows.getCurrent(),
-        loadSettings(),
-        chrome.tabs.query({ active: true, currentWindow: true }),
-      ]);
+    const [savedMode, currentWindow, loadedSettings] = await Promise.all([
+      loadMode(),
+      chrome.windows.getCurrent(),
+      loadSettings(),
+    ]);
     setWindowOnly(savedMode);
     setSettings(loadedSettings);
     applyPopupSize(loadedSettings);
-
-    // Save original tab for preview mode cancellation
-    if (activeTabs[0]?.id) {
-      setOriginalTabId(activeTabs[0].id);
-    }
 
     if (currentWindow.id !== undefined) {
       setCurrentWindowId(currentWindow.id);
@@ -237,6 +210,36 @@ function App() {
               onSelect={handleSelect}
             />
           </Show>
+        )}
+      </Show>
+
+      <Show when={settings()?.previewModeEnabled && selectedTab()}>
+        {(tab) => (
+          <div class="preview-panel">
+            <Show
+              when={tab().thumbnailUrl}
+              fallback={
+                <div class="preview-placeholder">
+                  <img
+                    class="preview-favicon"
+                    src={tab().favIconUrl || ""}
+                    alt=""
+                  />
+                  <div class="preview-no-thumbnail">No preview available</div>
+                </div>
+              }
+            >
+              <img
+                class="preview-thumbnail"
+                src={tab().thumbnailUrl}
+                alt={tab().title}
+              />
+            </Show>
+            <div class="preview-info">
+              <div class="preview-title">{tab().title}</div>
+              <div class="preview-url">{tab().url}</div>
+            </div>
+          </div>
         )}
       </Show>
 

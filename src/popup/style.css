@@ -174,3 +174,63 @@ kbd {
   border-radius: 3px;
   margin: 0 2px;
 }
+
+/* Preview panel styles */
+.preview-panel {
+  border-top: 1px solid #e0e0e0;
+  background: #fafafa;
+  padding: 12px;
+}
+
+.preview-thumbnail {
+  width: 100%;
+  height: auto;
+  max-height: 150px;
+  object-fit: contain;
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.preview-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100px;
+  background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+  border-radius: 6px;
+}
+
+.preview-favicon {
+  width: 32px;
+  height: 32px;
+  opacity: 0.5;
+}
+
+.preview-no-thumbnail {
+  margin-top: 8px;
+  font-size: 11px;
+  color: #999;
+}
+
+.preview-info {
+  margin-top: 8px;
+}
+
+.preview-title {
+  font-weight: 500;
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.preview-url {
+  font-size: 11px;
+  color: #666;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 2px;
+}

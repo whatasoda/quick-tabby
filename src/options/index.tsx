@@ -127,7 +127,7 @@ function App() {
           <div>
             <div class="setting-label">Preview Mode</div>
             <div class="setting-description">
-              Switch tabs while navigating (before confirming)
+              Show enlarged thumbnail of selected tab
             </div>
           </div>
           <label class="checkbox-label">

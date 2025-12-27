@@ -48,11 +48,6 @@ async function handleMessage(
       await switchToTab(message.tabId);
       return { type: "SUCCESS" };
     }
-    case "PREVIEW_TAB": {
-      // Activate tab without focusing its window (for preview mode)
-      await chrome.tabs.update(message.tabId, { active: true });
-      return { type: "SUCCESS" };
-    }
     case "CAPTURE_CURRENT_TAB": {
       const [tab] = await chrome.tabs.query({
         active: true,
