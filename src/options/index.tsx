@@ -175,7 +175,7 @@ function App() {
               </div>
             </div>
             <div class="radio-group">
-              <For each={["standard", "high"] as ThumbnailQuality[]}>
+              <For each={["standard", "high", "ultra"] as ThumbnailQuality[]}>
                 {(quality) => (
                   <label class="radio-option">
                     <input

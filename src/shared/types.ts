@@ -31,7 +31,7 @@ export type MessageResponse =
 // Settings types
 export type PopupSize = "small" | "medium" | "large";
 export type PreviewSize = "small" | "medium" | "large";
-export type ThumbnailQuality = "standard" | "high";
+export type ThumbnailQuality = "standard" | "high" | "ultra";
 
 export interface Keybinding {
   key: string;

@@ -18,14 +18,15 @@ export const DEFAULT_SETTINGS: Settings = {
 };
 
 export const PREVIEW_SIZES = {
-  small: { width: 320 },
-  medium: { width: 400 },
-  large: { width: 480 },
+  small: { width: 400 },
+  medium: { width: 520 },
+  large: { width: 640 },
 } as const;
 
 export const THUMBNAIL_QUALITIES = {
   standard: { size: 200, captureQuality: 70, resizeQuality: 0.8 },
   high: { size: 400, captureQuality: 85, resizeQuality: 0.9 },
+  ultra: { size: 800, captureQuality: 95, resizeQuality: 0.95 },
 } as const;
 
 export async function loadSettings(): Promise<Settings> {
