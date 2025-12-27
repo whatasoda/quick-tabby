@@ -4,12 +4,14 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
+    "prepare": "panda codegen",
+    "dev": "panda codegen && vite",
+    "build": "panda codegen && vite build",
     "test": "bun test"
   },
   "devDependencies": {
     "@crxjs/vite-plugin": "^2.3.0",
+    "@pandacss/dev": "^1.7.2",
     "@types/bun": "latest",
     "@types/chrome": "^0.1.32",
     "typescript": "^5.9.3",
