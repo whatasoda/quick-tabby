@@ -4,6 +4,7 @@ export const mockTabs: TabInfo[] = [
   {
     id: 1,
     windowId: 1,
+    index: 0,
     title: "Google - Search Engine",
     url: "https://www.google.com/",
     favIconUrl: "https://www.google.com/favicon.ico",
@@ -13,6 +14,7 @@ export const mockTabs: TabInfo[] = [
   {
     id: 2,
     windowId: 1,
+    index: 3,
     title: "GitHub - Where the world builds software",
     url: "https://github.com/",
     favIconUrl: "https://github.githubassets.com/favicons/favicon.svg",
@@ -22,6 +24,7 @@ export const mockTabs: TabInfo[] = [
   {
     id: 3,
     windowId: 1,
+    index: 1,
     title: "Stack Overflow - Where Developers Learn & Share",
     url: "https://stackoverflow.com/",
     favIconUrl: "https://cdn.sstatic.net/Sites/stackoverflow/Img/favicon.ico",
@@ -31,6 +34,7 @@ export const mockTabs: TabInfo[] = [
   {
     id: 4,
     windowId: 1,
+    index: 5,
     title: "MDN Web Docs",
     url: "https://developer.mozilla.org/",
     favIconUrl: "https://developer.mozilla.org/favicon.ico",
@@ -40,6 +44,7 @@ export const mockTabs: TabInfo[] = [
   {
     id: 5,
     windowId: 1,
+    index: 2,
     title: "Tab without thumbnail - Example",
     url: "https://example.com/",
     favIconUrl: undefined,
@@ -48,6 +53,7 @@ export const mockTabs: TabInfo[] = [
   {
     id: 6,
     windowId: 2,
+    index: 0,
     title: "YouTube - Another Window",
     url: "https://www.youtube.com/",
     favIconUrl: "https://www.youtube.com/favicon.ico",
@@ -57,6 +63,7 @@ export const mockTabs: TabInfo[] = [
   {
     id: 7,
     windowId: 1,
+    index: 6,
     title: "Twitter / X",
     url: "https://twitter.com/",
     favIconUrl: "https://abs.twimg.com/favicons/twitter.ico",
@@ -65,6 +72,7 @@ export const mockTabs: TabInfo[] = [
   {
     id: 8,
     windowId: 1,
+    index: 4,
     title:
       "Very Long Tab Title That Should Be Truncated When Displayed In The UI Component",
     url: "https://example.com/very/long/path/that/should/also/be/truncated",

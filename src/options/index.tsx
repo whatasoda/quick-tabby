@@ -1,4 +1,3 @@
-import { render } from "solid-js/web";
 import { createSignal, createResource, createEffect, For, onMount, onCleanup, Show } from "solid-js";
 import "./index.css";
 import { css } from "../../styled-system/css";
@@ -35,7 +34,7 @@ const styles = {
     right: "xl",
     background: "success",
     color: "white",
-    padding: "sm lg",
+    padding: "8px 16px",
     borderRadius: "md",
     fontSize: "lg",
     opacity: 0,
@@ -63,7 +62,7 @@ const styles = {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: "md 0",
+    padding: "12px 0",
     borderBottom: "1px solid token(colors.borderLighter)",
     _last: {
       borderBottom: "none",
@@ -102,11 +101,6 @@ const styles = {
       cursor: "pointer",
     },
   }),
-  keybindingInput: css({
-    display: "flex",
-    alignItems: "center",
-    gap: "sm",
-  }),
   keybindingDisplay: css({
     fontFamily: "monospace",
     background: "surfaceHover",
@@ -115,20 +109,16 @@ const styles = {
     fontSize: "12px",
     minWidth: "80px",
     textAlign: "center",
+    cursor: "pointer",
+    _hover: {
+      background: "borderLight",
+    },
   }),
   keybindingDisplayRecording: css({
     background: "primary",
     color: "white",
-  }),
-  recordBtn: css({
-    padding: "xs sm",
-    fontSize: "12px",
-    background: "borderLight",
-    border: "1px solid token(colors.border)",
-    borderRadius: "md",
-    cursor: "pointer",
     _hover: {
-      background: "surfaceHover",
+      background: "primary",
     },
   }),
   shortcutList: css({
@@ -140,7 +130,7 @@ const styles = {
     display: "flex",
     flexDirection: "column",
     gap: "xs",
-    padding: "md 0",
+    padding: "12px 0",
     borderBottom: "1px solid token(colors.borderLighter)",
     _last: {
       borderBottom: "none",
@@ -157,9 +147,11 @@ const styles = {
   shortcutKey: css({
     fontFamily: "monospace",
     background: "surfaceHover",
-    padding: "xs sm",
+    padding: "6px 12px",
     borderRadius: "md",
     fontSize: "12px",
+    minWidth: "80px",
+    textAlign: "center",
   }),
   shortcutSettings: css({
     display: "flex",
@@ -170,7 +162,7 @@ const styles = {
   linkButton: css({
     display: "inline-block",
     marginTop: "md",
-    padding: "sm lg",
+    padding: "12px 16px",
     background: "primary",
     color: "white",
     textDecoration: "none",
@@ -458,20 +450,16 @@ export function App() {
           {([key, label]) => (
             <div class={styles.settingRow}>
               <div class={styles.settingLabel}>{label}</div>
-              <div class={styles.keybindingInput}>
-                <div
-                  class={`${styles.keybindingDisplay} ${recordingKey() === key ? styles.keybindingDisplayRecording : ""}`}
-                  tabIndex={0}
-                  onKeyDown={(e) => handleKeyDown(e, key)}
-                  onBlur={() => setRecordingKey(null)}
-                >
-                  {recordingKey() === key
-                    ? "Press key..."
-                    : keybindingToString(settings().keybindings[key])}
-                </div>
-                <button class={styles.recordBtn} onClick={() => startRecording(key)}>
-                  Edit
-                </button>
+              <div
+                class={`${styles.keybindingDisplay} ${recordingKey() === key ? styles.keybindingDisplayRecording : ""}`}
+                tabIndex={0}
+                onClick={() => startRecording(key)}
+                onKeyDown={(e) => handleKeyDown(e, key)}
+                onBlur={() => setRecordingKey(null)}
+              >
+                {recordingKey() === key
+                  ? "Press key..."
+                  : keybindingToString(settings().keybindings[key])}
               </div>
             </div>
           )}
@@ -516,7 +504,3 @@ export function App() {
   );
 }
 
-const root = document.getElementById("app");
-if (root) {
-  render(() => <App />, root);
-}

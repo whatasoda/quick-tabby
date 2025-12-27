@@ -1,4 +1,4 @@
-import { createSignal, onMount } from "solid-js";
+import { createSignal, onMount, Show } from "solid-js";
 import { css } from "../../../styled-system/css";
 import type { Settings, PopupSize } from "../../shared/types.ts";
 import {
@@ -61,6 +61,8 @@ const styles = {
     overflow: "hidden",
     boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
     background: "#fff",
+    display: "flex",
+    flexDirection: "column",
   }),
 };
 
@@ -86,10 +88,14 @@ export function PopupPreview() {
   }
 
   function updateSettings(partial: Partial<Settings>) {
+    // Unmount first to force re-read of settings
+    setMounted(false);
     const newSettings = { ...settings(), ...partial };
     setSettings(newSettings);
     updateMockSettings(newSettings);
     applySize(newSettings);
+    // Re-mount after a tick
+    setTimeout(() => setMounted(true), 0);
   }
 
   const frameWidth = () => {
@@ -157,7 +163,9 @@ export function PopupPreview() {
           height: `${frameHeight()}px`,
         }}
       >
-        {mounted() && <PopupApp />}
+        <Show when={mounted()}>
+          <PopupApp />
+        </Show>
       </div>
     </div>
   );
