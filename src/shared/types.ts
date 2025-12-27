@@ -21,3 +21,27 @@ export type MessageResponse =
   | { type: "MRU_TABS"; tabs: TabInfo[] }
   | { type: "SUCCESS" }
   | { type: "ERROR"; message: string };
+
+// Settings types
+export type PopupSize = "small" | "medium" | "large";
+
+export interface Keybinding {
+  key: string;
+  ctrl?: boolean;
+  alt?: boolean;
+  shift?: boolean;
+  meta?: boolean;
+}
+
+export interface Settings {
+  popupSize: PopupSize;
+  previewModeEnabled: boolean;
+  enableModeToggle: boolean;
+  keybindings: {
+    moveDown: Keybinding;
+    moveUp: Keybinding;
+    confirm: Keybinding;
+    cancel: Keybinding;
+    toggleMode: Keybinding;
+  };
+}
