@@ -7,6 +7,7 @@ interface TabListProps {
   tabs: TabInfo[];
   selectedIndex: number;
   onSelect: (index: number) => void;
+  showTabIndex?: boolean;
 }
 
 const tabListStyle = css({
@@ -36,6 +37,8 @@ export function TabList(props: TabListProps) {
               tab={tab}
               isSelected={index() === props.selectedIndex}
               onSelect={() => props.onSelect(index())}
+              index={index() + 1}
+              showIndex={props.showTabIndex}
             />
           </div>
         )}

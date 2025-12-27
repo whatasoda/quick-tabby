@@ -6,6 +6,8 @@ interface TabItemProps {
   tab: TabInfo;
   isSelected: boolean;
   onSelect: () => void;
+  index?: number;
+  showIndex?: boolean;
 }
 
 const styles = {
@@ -32,6 +34,17 @@ const styles = {
   tabItemBody: css({
     display: "flex",
     gap: "8px",
+  }),
+  tabIndex: css({
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "20px",
+    height: "16px",
+    fontSize: "xs",
+    fontWeight: 500,
+    color: "text.muted",
+    flexShrink: 0,
   }),
   tabFavicon: css({
     width: "16px",
@@ -69,7 +82,7 @@ const styles = {
     justifyContent: "center",
     width: "100%",
     height: "100%",
-    background: "linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%)",
+    background: "linear-gradient(135deg, token(colors.surface) 0%, token(colors.surfaceHover) 100%)",
   }),
   tabFaviconLarge: css({
     width: "24px",
@@ -96,6 +109,9 @@ export function TabItem(props: TabItemProps) {
       onClick={props.onSelect}
     >
       <div class={styles.tabItemHeader}>
+        <Show when={props.showIndex && props.index !== undefined}>
+          <span class={styles.tabIndex}>{props.index}</span>
+        </Show>
         <img
           class={styles.tabFavicon}
           src={props.tab.favIconUrl || ""}
