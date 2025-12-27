@@ -188,7 +188,7 @@ async function getShortcuts(): Promise<ShortcutInfo[]> {
   }));
 }
 
-function App() {
+export function App() {
   const [shortcuts] = createResource(getShortcuts);
   const [settings, setSettings] = createSignal<Settings>(DEFAULT_SETTINGS);
   const [saved, setSaved] = createSignal(false);

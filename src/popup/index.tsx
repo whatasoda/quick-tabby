@@ -208,7 +208,7 @@ function applyPopupSize(settings: Settings) {
   document.documentElement.style.setProperty("--tab-list-width", `${tabListWidth}px`);
 }
 
-function App() {
+export function App() {
   const [windowOnly, setWindowOnly] = createSignal(false);
   const [selectedIndex, setSelectedIndex] = createSignal(1);
   const [settings, setSettings] = createSignal<Settings | null>(null);
