@@ -16,6 +16,7 @@ import type {
   Settings,
 } from "../shared/types.ts";
 import { TabList } from "./components/TabList.tsx";
+import { KeybindingsModal } from "./components/KeybindingsModal.tsx";
 import {
   loadSettings,
   POPUP_SIZES,
@@ -141,24 +142,29 @@ const styles = {
   }),
   footer: css({
     display: "flex",
-    justifyContent: "center",
-    gap: "lg",
-    padding: "sm lg",
+    justifyContent: "flex-end",
+    gap: "xs",
+    padding: "xs sm",
     borderTop: "1px solid token(colors.border)",
     background: "surfaceAlt",
   }),
-  hint: css({
-    fontSize: "sm",
-    color: "text.secondary",
-  }),
-  kbd: css({
-    display: "inline-block",
-    padding: "2px 6px",
-    fontFamily: "monospace",
-    fontSize: "xs",
-    background: "surfaceHover",
+  iconButton: css({
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "28px",
+    height: "28px",
+    padding: 0,
+    border: "none",
+    background: "transparent",
     borderRadius: "sm",
-    margin: "0 2px",
+    cursor: "pointer",
+    color: "text.secondary",
+    transition: "all 0.15s",
+    _hover: {
+      background: "surfaceHover",
+      color: "text.primary",
+    },
   }),
 };
 
@@ -212,6 +218,7 @@ function App() {
   const [windowOnly, setWindowOnly] = createSignal(false);
   const [selectedIndex, setSelectedIndex] = createSignal(1);
   const [settings, setSettings] = createSignal<Settings | null>(null);
+  const [showKeybindingsModal, setShowKeybindingsModal] = createSignal(false);
   const [currentWindowId, setCurrentWindowId] = createSignal<number | null>(
     null
   );
@@ -296,6 +303,10 @@ function App() {
     if (tabList && tabList[index]) {
       switchToTab(tabList[index].id);
     }
+  }
+
+  function openSettings() {
+    chrome.runtime.openOptionsPage();
   }
 
   onMount(async () => {
@@ -407,17 +418,39 @@ function App() {
         </Show>
 
         <div class={styles.footer}>
-          <span class={styles.hint}>
-            <span class={styles.kbd}>j</span>/<span class={styles.kbd}>k</span> navigate
-          </span>
-          <span class={styles.hint}>
-            <span class={styles.kbd}>Enter</span> switch
-          </span>
-          <span class={styles.hint}>
-            <span class={styles.kbd}>Tab</span> toggle mode
-          </span>
+          <button
+            class={styles.iconButton}
+            onClick={() => setShowKeybindingsModal(true)}
+            title="キーボードショートカット"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M12 16v-4" />
+              <path d="M12 8h.01" />
+            </svg>
+          </button>
+          <button
+            class={styles.iconButton}
+            onClick={openSettings}
+            title="設定"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3" />
+              <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+            </svg>
+          </button>
         </div>
       </div>
+
+      <Show when={showKeybindingsModal() && settings()}>
+        {(currentSettings) => (
+          <KeybindingsModal
+            settings={currentSettings()}
+            onClose={() => setShowKeybindingsModal(false)}
+            onOpenSettings={openSettings}
+          />
+        )}
+      </Show>
     </div>
   );
 }
