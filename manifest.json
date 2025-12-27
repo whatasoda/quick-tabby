@@ -32,12 +32,6 @@
       },
       "description": "Switch to most recent tab"
     },
-    "toggle-recent-same-window": {
-      "suggested_key": {
-        "default": "Alt+Shift+W"
-      },
-      "description": "Switch to most recent tab in current window"
-    },
     "open-popup-all-windows": {
       "suggested_key": {
         "default": "Alt+Shift+A"
