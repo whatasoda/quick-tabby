@@ -7,25 +7,18 @@ export default defineConfig({
   jsxFramework: "solid",
   outdir: "styled-system",
 
+  conditions: {
+    extend: {
+      dark: '[data-theme="dark"] &',
+    },
+  },
+
   theme: {
     extend: {
       tokens: {
         colors: {
           primary: { value: "#4285f4" },
           primaryHover: { value: "#3367d6" },
-          background: { value: "#fff" },
-          surface: { value: "#f5f5f5" },
-          surfaceAlt: { value: "#fafafa" },
-          surfaceHover: { value: "#e8e8e8" },
-          border: { value: "#e0e0e0" },
-          borderLight: { value: "#f0f0f0" },
-          borderLighter: { value: "#eee" },
-          selected: { value: "#e8f0fe" },
-          text: {
-            primary: { value: "#333" },
-            secondary: { value: "#666" },
-            muted: { value: "#999" },
-          },
           success: { value: "#4caf50" },
         },
         spacing: {
@@ -52,6 +45,48 @@ export default defineConfig({
         },
         shadows: {
           sm: { value: "0 1px 3px rgba(0, 0, 0, 0.1)" },
+        },
+      },
+      semanticTokens: {
+        colors: {
+          background: {
+            value: { base: "#fff", _dark: "#1a1a1a" },
+          },
+          surface: {
+            value: { base: "#f5f5f5", _dark: "#2a2a2a" },
+          },
+          surfaceAlt: {
+            value: { base: "#fafafa", _dark: "#252525" },
+          },
+          surfaceHover: {
+            value: { base: "#e8e8e8", _dark: "#3a3a3a" },
+          },
+          border: {
+            value: { base: "#e0e0e0", _dark: "#404040" },
+          },
+          borderLight: {
+            value: { base: "#f0f0f0", _dark: "#353535" },
+          },
+          borderLighter: {
+            value: { base: "#eee", _dark: "#303030" },
+          },
+          selected: {
+            value: { base: "#e8f0fe", _dark: "#1e3a5f" },
+          },
+          text: {
+            primary: {
+              value: { base: "#333", _dark: "#e8e8e8" },
+            },
+            secondary: {
+              value: { base: "#666", _dark: "#a0a0a0" },
+            },
+            muted: {
+              value: { base: "#999", _dark: "#707070" },
+            },
+          },
+          overlay: {
+            value: { base: "rgba(0, 0, 0, 0.4)", _dark: "rgba(0, 0, 0, 0.6)" },
+          },
         },
       },
     },

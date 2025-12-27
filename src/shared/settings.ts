@@ -1,4 +1,4 @@
-import type { Settings, Keybinding, PopupSize } from "./types.ts";
+import type { Settings, Keybinding, PopupSize, ThemePreference, DefaultMode, CommandName } from "./types.ts";
 
 const SETTINGS_KEY = "quicktabby:settings";
 
@@ -6,13 +6,19 @@ export const DEFAULT_SETTINGS: Settings = {
   popupSize: "medium",
   previewModeEnabled: false,
   thumbnailQuality: "standard",
-  enableModeToggle: true,
+  defaultMode: "lastUsed",
+  themePreference: "auto",
   keybindings: {
     moveDown: { key: "j" },
     moveUp: { key: "k" },
     confirm: { key: "Enter" },
     cancel: { key: "Escape" },
     toggleMode: { key: "Tab" },
+  },
+  commandSettings: {
+    "_execute_action": { selectOnClose: true },
+    "open-popup-all-windows": { selectOnClose: true },
+    "open-popup-current-window": { selectOnClose: true },
   },
 };
 
@@ -22,21 +28,41 @@ export const THUMBNAIL_QUALITIES = {
   ultra: { size: 800, captureQuality: 95, resizeQuality: 0.95 },
 } as const;
 
+interface LegacySettings extends Partial<Settings> {
+  enableModeToggle?: boolean;
+}
+
 export async function loadSettings(): Promise<Settings> {
   const result = await chrome.storage.local.get(SETTINGS_KEY);
-  const stored = result[SETTINGS_KEY] as Partial<Settings> | undefined;
+  const stored = result[SETTINGS_KEY] as LegacySettings | undefined;
 
   if (!stored) {
     return DEFAULT_SETTINGS;
+  }
+
+  // Migration: convert enableModeToggle to defaultMode
+  let defaultMode = stored.defaultMode;
+  if (defaultMode === undefined && stored.enableModeToggle !== undefined) {
+    // If enableModeToggle was true, use lastUsed; if false, use "all" (fixed mode)
+    defaultMode = stored.enableModeToggle ? "lastUsed" : "all";
+    // Clean up legacy setting
+    const { enableModeToggle, ...cleanedStored } = stored;
+    const migratedSettings = { ...cleanedStored, defaultMode };
+    await chrome.storage.local.set({ [SETTINGS_KEY]: migratedSettings });
   }
 
   // Merge with defaults to handle missing fields
   return {
     ...DEFAULT_SETTINGS,
     ...stored,
+    defaultMode: defaultMode ?? DEFAULT_SETTINGS.defaultMode,
     keybindings: {
       ...DEFAULT_SETTINGS.keybindings,
       ...stored.keybindings,
+    },
+    commandSettings: {
+      ...DEFAULT_SETTINGS.commandSettings,
+      ...stored.commandSettings,
     },
   };
 }
@@ -49,8 +75,16 @@ export function matchesKeybinding(
   event: KeyboardEvent,
   binding: Keybinding
 ): boolean {
-  const keyMatches =
-    event.key === binding.key || event.key.toLowerCase() === binding.key;
+  // For single character keys, use event.code to handle Alt/Option key combinations
+  // (on Mac, Alt+Q produces "œ" in event.key, but event.code is still "KeyQ")
+  let keyMatches: boolean;
+  if (binding.key.length === 1) {
+    const expectedCode = `Key${binding.key.toUpperCase()}`;
+    keyMatches = event.code === expectedCode;
+  } else {
+    keyMatches = event.key === binding.key || event.key.toLowerCase() === binding.key;
+  }
+
   const ctrlMatches = !!binding.ctrl === event.ctrlKey;
   const altMatches = !!binding.alt === event.altKey;
   const shiftMatches = !!binding.shift === event.shiftKey;
@@ -107,4 +141,45 @@ export function getTabListWidth(): number {
 
 export function getMaxPopupWidth(): number {
   return MAX_POPUP_WIDTH;
+}
+
+export function getEffectiveTheme(preference: ThemePreference): "light" | "dark" {
+  if (preference === "auto") {
+    return window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light";
+  }
+  return preference;
+}
+
+export function applyTheme(preference: ThemePreference): void {
+  const theme = getEffectiveTheme(preference);
+  document.documentElement.setAttribute("data-theme", theme);
+}
+
+export function setupThemeListener(
+  preference: ThemePreference,
+  onThemeChange: () => void
+): () => void {
+  if (preference !== "auto") {
+    return () => {};
+  }
+
+  const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+  const handler = () => onThemeChange();
+  mediaQuery.addEventListener("change", handler);
+  return () => mediaQuery.removeEventListener("change", handler);
+}
+
+// Parse Chrome shortcut string (e.g., "Alt+Shift+Q") into Keybinding
+export function parseShortcut(shortcut: string): Keybinding {
+  const parts = shortcut.split("+");
+  const key = parts[parts.length - 1];
+  return {
+    key: key.length === 1 ? key.toLowerCase() : key,
+    ctrl: parts.includes("Ctrl"),
+    alt: parts.includes("Alt"),
+    shift: parts.includes("Shift"),
+    meta: parts.includes("Command") || parts.includes("Meta"),
+  };
 }

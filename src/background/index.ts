@@ -3,7 +3,12 @@ import {
   getMRUTabs,
   switchToTab,
 } from "./mru-tracker.ts";
-import { initializeCommands } from "./commands.ts";
+import {
+  initializeCommands,
+  getLaunchInfo,
+  clearLaunchInfo,
+  setPopupPort,
+} from "./commands.ts";
 import {
   initThumbnailCache,
   captureAndStoreThumbnail,
@@ -16,6 +21,16 @@ import type { MessageType, MessageResponse } from "../shared/types.ts";
   initializeCommands();
   console.log("QuickTabby background service worker initialized");
 })();
+
+// Handle popup port connection
+chrome.runtime.onConnect.addListener((port) => {
+  if (port.name === "popup") {
+    setPopupPort(port);
+    port.onDisconnect.addListener(() => {
+      setPopupPort(null);
+    });
+  }
+});
 
 chrome.runtime.onMessage.addListener(
   (
@@ -61,6 +76,23 @@ async function handleMessage(
         );
       }
       return { type: "SUCCESS" };
+    }
+    case "GET_LAUNCH_INFO": {
+      return { type: "LAUNCH_INFO", info: getLaunchInfo() };
+    }
+    case "CLEAR_LAUNCH_INFO": {
+      clearLaunchInfo();
+      return { type: "SUCCESS" };
+    }
+    case "POPUP_OPENED":
+    case "POPUP_CLOSING":
+    case "CLOSE_POPUP": {
+      // These are handled via port connection, not message passing
+      return { type: "SUCCESS" };
+    }
+    default: {
+      const _exhaustive: never = message;
+      return { type: "ERROR", message: `Unknown message type: ${(_exhaustive as MessageType).type}` };
     }
   }
 }

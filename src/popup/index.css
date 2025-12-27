@@ -10,8 +10,12 @@ body {
   margin: 0;
   font-family: system-ui, -apple-system, sans-serif;
   font-size: 13px;
-  background: #fff;
-  color: #333;
+  background: var(--colors-background);
+  color: var(--colors-text-primary);
   overflow-x: hidden;
   overflow-y: auto;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
 }

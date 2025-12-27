@@ -1,18 +1,23 @@
 import { render } from "solid-js/web";
-import { createSignal, createResource, For, onMount, Show } from "solid-js";
+import { createSignal, createResource, createEffect, For, onMount, onCleanup, Show } from "solid-js";
 import "./index.css";
 import { css } from "../../styled-system/css";
 import type {
   Settings,
   PopupSize,
   ThumbnailQuality,
+  ThemePreference,
+  DefaultMode,
   Keybinding,
+  CommandName,
 } from "../shared/types.ts";
 import {
   loadSettings,
   saveSettings,
   DEFAULT_SETTINGS,
   keybindingToString,
+  applyTheme,
+  setupThemeListener,
 } from "../shared/settings.ts";
 
 const styles = {
@@ -119,7 +124,7 @@ const styles = {
     padding: "xs sm",
     fontSize: "12px",
     background: "borderLight",
-    border: "1px solid #ddd",
+    border: "1px solid token(colors.border)",
     borderRadius: "md",
     cursor: "pointer",
     _hover: {
@@ -133,13 +138,18 @@ const styles = {
   }),
   shortcutItem: css({
     display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: "sm 0",
+    flexDirection: "column",
+    gap: "xs",
+    padding: "md 0",
     borderBottom: "1px solid token(colors.borderLighter)",
     _last: {
       borderBottom: "none",
     },
+  }),
+  shortcutHeader: css({
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
   }),
   shortcutName: css({
     fontSize: "lg",
@@ -150,6 +160,12 @@ const styles = {
     padding: "xs sm",
     borderRadius: "md",
     fontSize: "12px",
+  }),
+  shortcutSettings: css({
+    display: "flex",
+    alignItems: "center",
+    gap: "md",
+    paddingLeft: "sm",
   }),
   linkButton: css({
     display: "inline-block",
@@ -194,9 +210,31 @@ export function App() {
   const [saved, setSaved] = createSignal(false);
   const [recordingKey, setRecordingKey] = createSignal<string | null>(null);
 
+  let cleanupThemeListener: (() => void) | undefined;
+
   onMount(async () => {
     const loaded = await loadSettings();
     setSettings(loaded);
+    applyTheme(loaded.themePreference);
+    cleanupThemeListener = setupThemeListener(
+      loaded.themePreference,
+      () => applyTheme(loaded.themePreference)
+    );
+  });
+
+  onCleanup(() => {
+    cleanupThemeListener?.();
+  });
+
+  // Re-apply theme when settings change
+  createEffect(() => {
+    const currentSettings = settings();
+    applyTheme(currentSettings.themePreference);
+    cleanupThemeListener?.();
+    cleanupThemeListener = setupThemeListener(
+      currentSettings.themePreference,
+      () => applyTheme(currentSettings.themePreference)
+    );
   });
 
   async function updateSetting<K extends keyof Settings>(
@@ -220,6 +258,27 @@ export function App() {
     setSettings(newSettings);
     await saveSettings(newSettings);
     showSaved();
+  }
+
+  async function updateCommandSetting(
+    command: CommandName,
+    key: keyof Settings["commandSettings"][CommandName],
+    value: boolean
+  ) {
+    const newSettings = {
+      ...settings(),
+      commandSettings: {
+        ...settings().commandSettings,
+        [command]: { ...settings().commandSettings[command], [key]: value },
+      },
+    };
+    setSettings(newSettings);
+    await saveSettings(newSettings);
+    showSaved();
+  }
+
+  function isValidCommandName(name: string): name is CommandName {
+    return ["_execute_action", "open-popup-all-windows", "open-popup-current-window"].includes(name);
   }
 
   function showSaved() {
@@ -264,6 +323,30 @@ export function App() {
 
       <div class={styles.section}>
         <h2 class={styles.sectionTitle}>Appearance</h2>
+        <div class={styles.settingRow}>
+          <div>
+            <div class={styles.settingLabel}>Theme</div>
+          </div>
+          <div class={styles.radioGroup}>
+            <For each={[
+              { value: "auto", label: "Auto" },
+              { value: "light", label: "Light" },
+              { value: "dark", label: "Dark" },
+            ] as { value: ThemePreference; label: string }[]}>
+              {(option) => (
+                <label class={styles.radioOption}>
+                  <input
+                    type="radio"
+                    name="themePreference"
+                    checked={settings().themePreference === option.value}
+                    onChange={() => updateSetting("themePreference", option.value)}
+                  />
+                  {option.label}
+                </label>
+              )}
+            </For>
+          </div>
+        </div>
         <div class={styles.settingRow}>
           <div>
             <div class={styles.settingLabel}>Popup Size</div>
@@ -332,20 +415,30 @@ export function App() {
         </Show>
         <div class={styles.settingRow}>
           <div>
-            <div class={styles.settingLabel}>Enable Mode Toggle</div>
+            <div class={styles.settingLabel}>Default Mode</div>
             <div class={styles.settingDescription}>
-              Allow switching between All/Window mode
+              Initial mode when opening the popup
             </div>
           </div>
-          <label class={styles.checkboxLabel}>
-            <input
-              type="checkbox"
-              checked={settings().enableModeToggle}
-              onChange={(e) =>
-                updateSetting("enableModeToggle", e.target.checked)
-              }
-            />
-          </label>
+          <div class={styles.radioGroup}>
+            <For each={[
+              { value: "lastUsed", label: "Last Used" },
+              { value: "all", label: "All Windows" },
+              { value: "currentWindow", label: "Current Window" },
+            ] as { value: DefaultMode; label: string }[]}>
+              {(option) => (
+                <label class={styles.radioOption}>
+                  <input
+                    type="radio"
+                    name="defaultMode"
+                    checked={settings().defaultMode === option.value}
+                    onChange={() => updateSetting("defaultMode", option.value)}
+                  />
+                  {option.label}
+                </label>
+              )}
+            </For>
+          </div>
         </div>
       </div>
 
@@ -391,8 +484,22 @@ export function App() {
           <For each={shortcuts()}>
             {(shortcut) => (
               <div class={styles.shortcutItem}>
-                <span class={styles.shortcutName}>{shortcut.description}</span>
-                <span class={styles.shortcutKey}>{shortcut.shortcut}</span>
+                <div class={styles.shortcutHeader}>
+                  <span class={styles.shortcutName}>{shortcut.description}</span>
+                  <span class={styles.shortcutKey}>{shortcut.shortcut}</span>
+                </div>
+                <Show when={isValidCommandName(shortcut.name)}>
+                  <div class={styles.shortcutSettings}>
+                    <label class={styles.checkboxLabel}>
+                      <input
+                        type="checkbox"
+                        checked={settings().commandSettings[shortcut.name as CommandName]?.selectOnClose ?? true}
+                        onChange={(e) => updateCommandSetting(shortcut.name as CommandName, "selectOnClose", e.target.checked)}
+                      />
+                      <span>Select on re-press</span>
+                    </label>
+                  </div>
+                </Show>
               </div>
             )}
           </For>
@@ -401,8 +508,8 @@ export function App() {
           Change Shortcuts
         </button>
         <p class={styles.note}>
-          Opens Chrome's extension shortcuts page where you can customize
-          keyboard shortcuts.
+          Opens Chrome's extension shortcuts page. "Select on re-press" switches
+          to the selected tab when pressing the shortcut again to close the popup.
         </p>
       </div>
     </div>
