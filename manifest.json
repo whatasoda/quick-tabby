@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "QuickTabby",
+  "version": "0.1.0",
+  "description": "Quick tab switching with keyboard",
+  "permissions": ["tabs", "storage"],
+  "action": {
+    "default_popup": "src/popup/index.html"
+  },
+  "background": {
+    "service_worker": "src/background/index.ts",
+    "type": "module"
+  },
+  "commands": {
+    "_execute_action": {
+      "suggested_key": {
+        "default": "Alt+Q"
+      }
+    }
+  }
+}

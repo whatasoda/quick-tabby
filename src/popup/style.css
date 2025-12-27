@@ -1,0 +1,12 @@
+body {
+  width: 300px;
+  min-height: 200px;
+  margin: 0;
+  padding: 16px;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+}
