@@ -1,0 +1,38 @@
+{
+  "manifest_version": 3,
+  "name": "QuickTabby",
+  "version": "0.1.0",
+  "description": "Quick tab switching with keyboard",
+  "permissions": ["tabs", "storage", "activeTab"],
+  "action": {
+    "default_popup": "src/popup/index.html"
+  },
+  "options_ui": {
+    "page": "src/options/index.html",
+    "open_in_tab": true
+  },
+  "background": {
+    "service_worker": "src/background/index.ts",
+    "type": "module"
+  },
+  "commands": {
+    "_execute_action": {
+      "suggested_key": {
+        "default": "Alt+Q"
+      },
+      "description": "Open QuickTabby popup"
+    },
+    "toggle-recent": {
+      "suggested_key": {
+        "default": "Alt+Shift+Q"
+      },
+      "description": "Switch to most recent tab"
+    },
+    "toggle-recent-same-window": {
+      "suggested_key": {
+        "default": "Alt+Shift+W"
+      },
+      "description": "Switch to most recent tab in current window"
+    }
+  }
+}
