@@ -6,12 +6,12 @@ interface TabItemProps {
   tab: TabInfo;
   isSelected: boolean;
   onSelect: () => void;
-  index?: number;
   showIndex?: boolean;
 }
 
 const styles = {
   tabItem: css({
+    position: "relative",
     display: "flex",
     flexDirection: "column",
     padding: "8px 12px",
@@ -36,15 +36,15 @@ const styles = {
     gap: "8px",
   }),
   tabIndex: css({
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    width: "20px",
-    height: "16px",
-    fontSize: "xs",
+    position: "absolute",
+    right: 0,
+    bottom: 0,
+    fontSize: "10px",
     fontWeight: 500,
-    color: "text.muted",
-    flexShrink: 0,
+    color: "text.secondary",
+    background: "borderLight",
+    padding: "2px 6px",
+    borderTopLeftRadius: "md",
   }),
   tabFavicon: css({
     width: "16px",
@@ -109,9 +109,6 @@ export function TabItem(props: TabItemProps) {
       onClick={props.onSelect}
     >
       <div class={styles.tabItemHeader}>
-        <Show when={props.showIndex && props.index !== undefined}>
-          <span class={styles.tabIndex}>{props.index}</span>
-        </Show>
         <img
           class={styles.tabFavicon}
           src={props.tab.favIconUrl || ""}
@@ -149,6 +146,9 @@ export function TabItem(props: TabItemProps) {
         </div>
         <div class={styles.tabUrl}>{props.tab.url}</div>
       </div>
+      <Show when={props.showIndex}>
+        <span class={styles.tabIndex}>#{props.tab.index + 1}</span>
+      </Show>
     </div>
   );
 }

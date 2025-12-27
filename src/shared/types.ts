@@ -1,6 +1,7 @@
 export interface TabInfo {
   id: number;
   windowId: number;
+  index: number; // Tab position in window (0-based, left to right)
   title: string;
   url: string;
   favIconUrl?: string;

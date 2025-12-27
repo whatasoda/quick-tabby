@@ -41,7 +41,7 @@ const styles = {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: "xs 0",
+    padding: "4px 0",
     borderBottom: "1px solid token(colors.borderLight)",
     _last: {
       borderBottom: "none",
@@ -78,8 +78,8 @@ const styles = {
     cursor: "pointer",
     background: "none",
     border: "none",
-    padding: "xs sm",
-    borderRadius: "sm",
+    padding: "8px 12px",
+    borderRadius: "md",
     _hover: {
       background: "surfaceHover",
     },

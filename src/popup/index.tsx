@@ -1,4 +1,3 @@
-import { render } from "solid-js/web";
 import {
   createSignal,
   createResource,
@@ -34,14 +33,16 @@ const styles = {
   popupContainer: css({
     display: "flex",
     flexDirection: "column",
-    height: "100%",
+    flex: 1,
+    minHeight: 0,
   }),
   popupContainerPreviewEnabled: css({
     flexDirection: "row",
   }),
   mainContent: css({
     width: "var(--tab-list-width)",
-    flexShrink: 0,
+    flex: 1,
+    minHeight: 0,
     display: "flex",
     flexDirection: "column",
   }),
@@ -124,9 +125,9 @@ const styles = {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: "xs sm",
     borderTop: "1px solid token(colors.border)",
     background: "surfaceAlt",
+    marginTop: "auto",
   }),
   footerLeft: css({
     display: "flex",
@@ -141,8 +142,8 @@ const styles = {
     fontSize: "sm",
     color: "text.secondary",
     cursor: "pointer",
-    padding: "xs sm",
-    borderRadius: "sm",
+    padding: "8px 12px",
+    borderRadius: "md",
     transition: "all 0.15s",
     userSelect: "none",
     _hover: {
@@ -154,12 +155,12 @@ const styles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    width: "28px",
-    height: "28px",
-    padding: 0,
+    width: "32px",
+    height: "32px",
+    padding: "8px",
     border: "none",
     background: "transparent",
-    borderRadius: "sm",
+    borderRadius: "md",
     cursor: "pointer",
     color: "text.secondary",
     transition: "all 0.15s",
@@ -521,7 +522,3 @@ export function App() {
   );
 }
 
-const root = document.getElementById("app");
-if (root) {
-  render(() => <App />, root);
-}

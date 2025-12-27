@@ -49,9 +49,30 @@ const chromeRuntimeMock = {
       case "CAPTURE_CURRENT_TAB":
         console.log("[Mock] Capture current tab");
         return { type: "SUCCESS" };
+      case "GET_LAUNCH_INFO":
+        return { type: "LAUNCH_INFO", info: { mode: null } };
+      case "CLEAR_LAUNCH_INFO":
+        return { type: "SUCCESS" };
       default:
+        console.log("[Mock] Unknown message type:", message);
         return { type: "ERROR", message: "Unknown message type" };
     }
+  },
+  connect: (options: { name: string }) => {
+    console.log("[Mock] Runtime connect:", options.name);
+    return {
+      onMessage: {
+        addListener: (callback: (msg: unknown) => void) => {
+          console.log("[Mock] Port onMessage listener added");
+        },
+      },
+      disconnect: () => {
+        console.log("[Mock] Port disconnected");
+      },
+    };
+  },
+  openOptionsPage: () => {
+    console.log("[Mock] Open options page");
   },
 };
 
