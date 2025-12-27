@@ -101,11 +101,6 @@ const styles = {
       cursor: "pointer",
     },
   }),
-  keybindingInput: css({
-    display: "flex",
-    alignItems: "center",
-    gap: "sm",
-  }),
   keybindingDisplay: css({
     fontFamily: "monospace",
     background: "surfaceHover",
@@ -114,22 +109,16 @@ const styles = {
     fontSize: "12px",
     minWidth: "80px",
     textAlign: "center",
+    cursor: "pointer",
+    _hover: {
+      background: "borderLight",
+    },
   }),
   keybindingDisplayRecording: css({
     background: "primary",
     color: "white",
-  }),
-  recordBtn: css({
-    padding: "6px 12px",
-    fontSize: "12px",
-    background: "borderLight",
-    border: "1px solid token(colors.border)",
-    borderRadius: "md",
-    cursor: "pointer",
-    minWidth: "80px",
-    textAlign: "center",
     _hover: {
-      background: "surfaceHover",
+      background: "primary",
     },
   }),
   shortcutList: css({
@@ -461,20 +450,16 @@ export function App() {
           {([key, label]) => (
             <div class={styles.settingRow}>
               <div class={styles.settingLabel}>{label}</div>
-              <div class={styles.keybindingInput}>
-                <div
-                  class={`${styles.keybindingDisplay} ${recordingKey() === key ? styles.keybindingDisplayRecording : ""}`}
-                  tabIndex={0}
-                  onKeyDown={(e) => handleKeyDown(e, key)}
-                  onBlur={() => setRecordingKey(null)}
-                >
-                  {recordingKey() === key
-                    ? "Press key..."
-                    : keybindingToString(settings().keybindings[key])}
-                </div>
-                <button class={styles.recordBtn} onClick={() => startRecording(key)}>
-                  Edit
-                </button>
+              <div
+                class={`${styles.keybindingDisplay} ${recordingKey() === key ? styles.keybindingDisplayRecording : ""}`}
+                tabIndex={0}
+                onClick={() => startRecording(key)}
+                onKeyDown={(e) => handleKeyDown(e, key)}
+                onBlur={() => setRecordingKey(null)}
+              >
+                {recordingKey() === key
+                  ? "Press key..."
+                  : keybindingToString(settings().keybindings[key])}
               </div>
             </div>
           )}
