@@ -14,7 +14,7 @@ const styles = {
   tabItem: css({
     display: "flex",
     flexDirection: "column",
-    padding: "sm md",
+    padding: "8px 12px",
     cursor: "pointer",
     borderBottom: "1px solid token(colors.borderLight)",
     transition: "background 0.1s",

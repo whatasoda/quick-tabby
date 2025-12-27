@@ -34,7 +34,7 @@ const styles = {
     right: "xl",
     background: "success",
     color: "white",
-    padding: "sm lg",
+    padding: "8px 16px",
     borderRadius: "md",
     fontSize: "lg",
     opacity: 0,
@@ -62,7 +62,7 @@ const styles = {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: "md 0",
+    padding: "12px 0",
     borderBottom: "1px solid token(colors.borderLighter)",
     _last: {
       borderBottom: "none",
@@ -120,7 +120,7 @@ const styles = {
     color: "white",
   }),
   recordBtn: css({
-    padding: "sm md",
+    padding: "8px 12px",
     fontSize: "12px",
     background: "borderLight",
     border: "1px solid token(colors.border)",
@@ -139,7 +139,7 @@ const styles = {
     display: "flex",
     flexDirection: "column",
     gap: "xs",
-    padding: "md 0",
+    padding: "12px 0",
     borderBottom: "1px solid token(colors.borderLighter)",
     _last: {
       borderBottom: "none",
@@ -156,7 +156,7 @@ const styles = {
   shortcutKey: css({
     fontFamily: "monospace",
     background: "surfaceHover",
-    padding: "xs sm",
+    padding: "4px 8px",
     borderRadius: "md",
     fontSize: "12px",
   }),
@@ -169,7 +169,7 @@ const styles = {
   linkButton: css({
     display: "inline-block",
     marginTop: "md",
-    padding: "md lg",
+    padding: "12px 16px",
     background: "primary",
     color: "white",
     textDecoration: "none",
