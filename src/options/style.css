@@ -89,3 +89,110 @@ h1 {
   color: #666;
   margin-top: 8px;
 }
+
+.setting-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.setting-row:last-child {
+  border-bottom: none;
+}
+
+.setting-row.sub-setting {
+  padding-left: 24px;
+  background: #fafafa;
+}
+
+.setting-label {
+  font-size: 14px;
+}
+
+.setting-description {
+  font-size: 12px;
+  color: #666;
+  margin-top: 4px;
+}
+
+.radio-group {
+  display: flex;
+  gap: 8px;
+}
+
+.radio-option {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.radio-option input {
+  cursor: pointer;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.checkbox-label input {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.keybinding-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.keybinding-display {
+  font-family: monospace;
+  background: #e8e8e8;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  min-width: 80px;
+  text-align: center;
+}
+
+.keybinding-display.recording {
+  background: #4285f4;
+  color: white;
+}
+
+.record-btn {
+  padding: 4px 8px;
+  font-size: 12px;
+  background: #f0f0f0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.record-btn:hover {
+  background: #e8e8e8;
+}
+
+.saved-indicator {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  background: #4caf50;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 14px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.saved-indicator.visible {
+  opacity: 1;
+}

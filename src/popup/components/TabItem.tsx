@@ -13,40 +13,42 @@ export function TabItem(props: TabItemProps) {
       class={`tab-item ${props.isSelected ? "selected" : ""}`}
       onClick={props.onSelect}
     >
-      <div class="tab-thumbnail-container">
-        <Show
-          when={props.tab.thumbnailUrl}
-          fallback={
-            <div class="tab-thumbnail-placeholder">
-              <img
-                class="tab-favicon-large"
-                src={props.tab.favIconUrl || ""}
-                alt=""
-                onError={(e) => {
-                  (e.target as HTMLImageElement).style.display = "none";
-                }}
-              />
-            </div>
-          }
-        >
-          <img
-            class="tab-thumbnail"
-            src={props.tab.thumbnailUrl}
-            alt=""
-            loading="lazy"
-          />
-        </Show>
-      </div>
-      <img
-        class="tab-favicon"
-        src={props.tab.favIconUrl || ""}
-        alt=""
-        onError={(e) => {
-          (e.target as HTMLImageElement).style.display = "none";
-        }}
-      />
-      <div class="tab-info">
+      <div class="tab-item-header">
+        <img
+          class="tab-favicon"
+          src={props.tab.favIconUrl || ""}
+          alt=""
+          onError={(e) => {
+            (e.target as HTMLImageElement).style.display = "none";
+          }}
+        />
         <div class="tab-title">{props.tab.title || "Untitled"}</div>
+      </div>
+      <div class="tab-item-body">
+        <div class="tab-thumbnail-container">
+          <Show
+            when={props.tab.thumbnailUrl}
+            fallback={
+              <div class="tab-thumbnail-placeholder">
+                <img
+                  class="tab-favicon-large"
+                  src={props.tab.favIconUrl || ""}
+                  alt=""
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).style.display = "none";
+                  }}
+                />
+              </div>
+            }
+          >
+            <img
+              class="tab-thumbnail"
+              src={props.tab.thumbnailUrl}
+              alt=""
+              loading="lazy"
+            />
+          </Show>
+        </div>
         <div class="tab-url">{props.tab.url}</div>
       </div>
     </div>
