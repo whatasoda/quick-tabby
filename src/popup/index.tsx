@@ -13,7 +13,11 @@ import type {
   Settings,
 } from "../shared/types.ts";
 import { TabList } from "./components/TabList.tsx";
-import { loadSettings, POPUP_SIZES } from "../shared/settings.ts";
+import {
+  loadSettings,
+  POPUP_SIZES,
+  matchesKeybinding,
+} from "../shared/settings.ts";
 
 async function fetchMRUTabs(
   windowOnly: boolean,
@@ -82,30 +86,52 @@ function App() {
 
   function handleKeyDown(e: KeyboardEvent) {
     const tabList = tabs();
-    if (!tabList || tabList.length === 0) return;
+    const currentSettings = settings();
+    if (!tabList || tabList.length === 0 || !currentSettings) return;
 
-    switch (e.key) {
-      case "ArrowDown":
-      case "j":
-        e.preventDefault();
-        setSelectedIndex((i) => Math.min(i + 1, tabList.length - 1));
-        break;
-      case "ArrowUp":
-      case "k":
-        e.preventDefault();
-        setSelectedIndex((i) => Math.max(i - 1, 0));
-        break;
-      case "Enter":
-        e.preventDefault();
-        const tab = tabList[selectedIndex()];
-        if (tab) {
-          switchToTab(tab.id);
-        }
-        break;
-      case "Tab":
-        e.preventDefault();
-        toggleMode();
-        break;
+    const { keybindings } = currentSettings;
+
+    // Also allow arrow keys as built-in navigation
+    if (
+      matchesKeybinding(e, keybindings.moveDown) ||
+      e.key === "ArrowDown"
+    ) {
+      e.preventDefault();
+      setSelectedIndex((i) => Math.min(i + 1, tabList.length - 1));
+      return;
+    }
+
+    if (
+      matchesKeybinding(e, keybindings.moveUp) ||
+      e.key === "ArrowUp"
+    ) {
+      e.preventDefault();
+      setSelectedIndex((i) => Math.max(i - 1, 0));
+      return;
+    }
+
+    if (matchesKeybinding(e, keybindings.confirm)) {
+      e.preventDefault();
+      const tab = tabList[selectedIndex()];
+      if (tab) {
+        switchToTab(tab.id);
+      }
+      return;
+    }
+
+    if (matchesKeybinding(e, keybindings.cancel)) {
+      e.preventDefault();
+      window.close();
+      return;
+    }
+
+    if (
+      currentSettings.enableModeToggle &&
+      matchesKeybinding(e, keybindings.toggleMode)
+    ) {
+      e.preventDefault();
+      toggleMode();
+      return;
     }
   }
 
@@ -149,13 +175,15 @@ function App() {
     <div class="popup-container">
       <div class="header">
         <h1>QuickTabby</h1>
-        <button
-          class={`mode-toggle ${windowOnly() ? "active" : ""}`}
-          onClick={toggleMode}
-          title="Toggle window-only mode (Tab)"
-        >
-          {windowOnly() ? "Window" : "All"}
-        </button>
+        <Show when={settings()?.enableModeToggle}>
+          <button
+            class={`mode-toggle ${windowOnly() ? "active" : ""}`}
+            onClick={toggleMode}
+            title="Toggle window-only mode (Tab)"
+          >
+            {windowOnly() ? "Window" : "All"}
+          </button>
+        </Show>
       </div>
 
       <Show when={tabs.loading}>
