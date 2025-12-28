@@ -135,12 +135,17 @@ export function createMRUTrackerService(deps: MRUTrackerDependencies): MRUTracke
     for (const window of windows) {
       if (window.id === undefined || !window.tabs) continue;
 
-      for (const tab of window.tabs) {
-        if (tab.id === undefined) continue;
+      // Sort tabs: inactive tabs by index first, then active tab last
+      // This ensures active tab ends up at the front of MRU (added last)
+      const sortedTabs = [...window.tabs].sort((a, b) => {
+        if (a.active) return 1;
+        if (b.active) return -1;
+        return (a.index ?? 0) - (b.index ?? 0);
+      });
 
-        if (tab.active) {
-          state = addTabToMRU(state, tab.id, window.id, config);
-        }
+      for (const tab of sortedTabs) {
+        if (tab.id === undefined) continue;
+        state = addTabToMRU(state, tab.id, window.id, config);
       }
     }
 

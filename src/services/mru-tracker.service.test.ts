@@ -111,13 +111,17 @@ describe("MRUTrackerService", () => {
       expect(state.global).toContain(2);
     });
 
-    test("should initialize with active tabs when state is empty", async () => {
+    test("should initialize with all tabs when state is empty", async () => {
       const service = createMRUTrackerService(deps);
 
       await service.initialize();
 
       const state = service.getState();
+      // All tabs should be in MRU (mockWindows has tabs 1 and 2)
       expect(state.global).toContain(1);
+      expect(state.global).toContain(2);
+      // Active tab (1) should be at the front
+      expect(state.global[0]).toBe(1);
     });
 
     test("should load existing state from storage", async () => {
@@ -204,10 +208,32 @@ describe("MRUTrackerService", () => {
     });
 
     test("should return null when MRU has fewer than 2 items", async () => {
-      const service = createMRUTrackerService(deps);
-      await service.initialize();
+      // Create a single-tab scenario
+      const singleTabMockWindows = createMockWindows({
+        windows: [
+          {
+            id: 100,
+            focused: true,
+            tabs: [
+              {
+                id: 1,
+                windowId: 100,
+                index: 0,
+                title: "Tab 1",
+                url: "https://example.com/1",
+                active: true,
+              },
+            ],
+          },
+        ],
+      });
+      singleTabMockWindows._setCurrentWindowId(100);
 
-      mockTabs._triggerActivated(1, 100);
+      const service = createMRUTrackerService({
+        ...deps,
+        windows: singleTabMockWindows,
+      });
+      await service.initialize();
 
       const previousTab = service.getPreviousTab(false);
 
