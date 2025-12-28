@@ -1,51 +1,10 @@
 import { For } from "solid-js";
-import { css } from "../../../styled-system/css";
 import type {
   Settings,
   ThemePreference,
   PopupSize,
 } from "../../core/settings/settings-types";
-
-const styles = {
-  section: css({
-    background: "background",
-    borderRadius: "xl",
-    padding: "lg",
-    marginBottom: "lg",
-    boxShadow: "sm",
-  }),
-  sectionTitle: css({
-    fontSize: "lg",
-    fontWeight: 600,
-    color: "text.secondary",
-    margin: "0 0 12px",
-    textTransform: "uppercase",
-    letterSpacing: "0.5px",
-  }),
-  settingRow: css({
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: "12px 0",
-    borderBottom: "1px solid token(colors.borderLighter)",
-    _last: {
-      borderBottom: "none",
-    },
-  }),
-  settingLabel: css({
-    fontSize: "lg",
-  }),
-  radioGroup: css({
-    display: "flex",
-    gap: "sm",
-  }),
-  radioOption: css({
-    display: "flex",
-    alignItems: "center",
-    gap: "xs",
-    cursor: "pointer",
-  }),
-};
+import { sectionStyles, formStyles } from "./styles";
 
 const THEME_OPTIONS: { value: ThemePreference; label: string }[] = [
   { value: "auto", label: "Auto" },
@@ -62,17 +21,17 @@ interface AppearanceSectionProps {
 
 export function AppearanceSection(props: AppearanceSectionProps) {
   return (
-    <div class={styles.section}>
-      <h2 class={styles.sectionTitle}>Appearance</h2>
+    <div class={sectionStyles.section}>
+      <h2 class={sectionStyles.sectionTitle}>Appearance</h2>
 
-      <div class={styles.settingRow}>
+      <div class={formStyles.settingRow}>
         <div>
-          <div class={styles.settingLabel}>Theme</div>
+          <div class={formStyles.settingLabel}>Theme</div>
         </div>
-        <div class={styles.radioGroup}>
+        <div class={formStyles.radioGroup}>
           <For each={THEME_OPTIONS}>
             {(option) => (
-              <label class={styles.radioOption}>
+              <label class={formStyles.radioOption}>
                 <input
                   type="radio"
                   name="themePreference"
@@ -88,14 +47,14 @@ export function AppearanceSection(props: AppearanceSectionProps) {
         </div>
       </div>
 
-      <div class={styles.settingRow}>
+      <div class={formStyles.settingRow}>
         <div>
-          <div class={styles.settingLabel}>Popup Size</div>
+          <div class={formStyles.settingLabel}>Popup Size</div>
         </div>
-        <div class={styles.radioGroup}>
+        <div class={formStyles.radioGroup}>
           <For each={SIZE_OPTIONS}>
             {(size) => (
-              <label class={styles.radioOption}>
+              <label class={formStyles.radioOption}>
                 <input
                   type="radio"
                   name="popupSize"

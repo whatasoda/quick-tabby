@@ -1,37 +1,10 @@
 import { For, Show, type Accessor } from "solid-js";
 import { css } from "../../../styled-system/css";
-import type { Settings, KeybindingList } from "../../core/settings/settings-types";
+import type { Settings } from "../../core/settings/settings-types";
 import { keybindingToString } from "../../core/keybindings/keybinding-matcher";
+import { sectionStyles, formStyles } from "./styles";
 
 const styles = {
-  section: css({
-    background: "background",
-    borderRadius: "xl",
-    padding: "lg",
-    marginBottom: "lg",
-    boxShadow: "sm",
-  }),
-  sectionTitle: css({
-    fontSize: "lg",
-    fontWeight: 600,
-    color: "text.secondary",
-    margin: "0 0 12px",
-    textTransform: "uppercase",
-    letterSpacing: "0.5px",
-  }),
-  settingRow: css({
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: "12px 0",
-    borderBottom: "1px solid token(colors.borderLighter)",
-    _last: {
-      borderBottom: "none",
-    },
-  }),
-  settingLabel: css({
-    fontSize: "lg",
-  }),
   keybindingChipGroup: css({
     display: "flex",
     flexWrap: "wrap",
@@ -103,13 +76,13 @@ interface KeybindingsSectionProps {
 
 export function KeybindingsSection(props: KeybindingsSectionProps) {
   return (
-    <div class={styles.section}>
-      <h2 class={styles.sectionTitle}>Popup Keybindings</h2>
+    <div class={sectionStyles.section}>
+      <h2 class={sectionStyles.sectionTitle}>Popup Keybindings</h2>
 
       <For each={KEYBINDING_LABELS}>
         {([key, label]) => (
-          <div class={styles.settingRow}>
-            <div class={styles.settingLabel}>{label}</div>
+          <div class={formStyles.settingRow}>
+            <div class={formStyles.settingLabel}>{label}</div>
             <div class={styles.keybindingChipGroup}>
               <For each={props.settings.keybindings[key]}>
                 {(binding, index) => (

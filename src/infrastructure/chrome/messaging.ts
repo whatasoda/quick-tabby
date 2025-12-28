@@ -94,3 +94,31 @@ export function openOptionsPage(): void {
 export async function getWindowInstance(): Promise<chrome.windows.Window> {
   return chrome.windows.getCurrent();
 }
+
+/**
+ * Shortcut information from Chrome commands
+ */
+export interface ShortcutInfo {
+  name: string;
+  description: string;
+  shortcut: string;
+}
+
+/**
+ * Get all registered keyboard shortcuts for this extension
+ */
+export async function getCommands(): Promise<ShortcutInfo[]> {
+  const commands = await chrome.commands.getAll();
+  return commands.map((cmd) => ({
+    name: cmd.name ?? "",
+    description: cmd.description ?? "",
+    shortcut: cmd.shortcut ?? "Not set",
+  }));
+}
+
+/**
+ * Open Chrome's extension shortcuts settings page
+ */
+export function openShortcutsPage(): void {
+  chrome.tabs.create({ url: "chrome://extensions/shortcuts" });
+}

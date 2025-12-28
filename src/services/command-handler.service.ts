@@ -12,19 +12,7 @@ import type {
 } from "../infrastructure/chrome/types.ts";
 import type { SettingsService } from "./settings.service.ts";
 import type { CommandName } from "../core/settings/settings-types.ts";
-
-/**
- * Launch mode override for popup
- */
-export type DisplayMode = "all" | "currentWindow" | null;
-
-/**
- * Launch info tracking which command opened the popup
- */
-export interface LaunchInfo {
-  mode: DisplayMode;
-  command: CommandName | null;
-}
+import type { DisplayMode, LaunchInfo } from "../shared/types.ts";
 
 /**
  * Command handler service interface

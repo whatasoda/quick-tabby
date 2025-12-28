@@ -1,71 +1,10 @@
 import { For, Show } from "solid-js";
-import { css } from "../../../styled-system/css";
 import type {
   Settings,
   ThumbnailQuality,
   DefaultMode,
 } from "../../core/settings/settings-types";
-
-const styles = {
-  section: css({
-    background: "background",
-    borderRadius: "xl",
-    padding: "lg",
-    marginBottom: "lg",
-    boxShadow: "sm",
-  }),
-  sectionTitle: css({
-    fontSize: "lg",
-    fontWeight: 600,
-    color: "text.secondary",
-    margin: "0 0 12px",
-    textTransform: "uppercase",
-    letterSpacing: "0.5px",
-  }),
-  settingRow: css({
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: "12px 0",
-    borderBottom: "1px solid token(colors.borderLighter)",
-    _last: {
-      borderBottom: "none",
-    },
-  }),
-  settingRowSubSetting: css({
-    paddingLeft: "xl",
-    background: "surfaceAlt",
-  }),
-  settingLabel: css({
-    fontSize: "lg",
-  }),
-  settingDescription: css({
-    fontSize: "12px",
-    color: "text.secondary",
-    marginTop: "xs",
-  }),
-  radioGroup: css({
-    display: "flex",
-    gap: "sm",
-  }),
-  radioOption: css({
-    display: "flex",
-    alignItems: "center",
-    gap: "xs",
-    cursor: "pointer",
-  }),
-  checkboxLabel: css({
-    display: "flex",
-    alignItems: "center",
-    gap: "sm",
-    cursor: "pointer",
-    "& input": {
-      width: "16px",
-      height: "16px",
-      cursor: "pointer",
-    },
-  }),
-};
+import { sectionStyles, formStyles } from "./styles";
 
 const THUMBNAIL_OPTIONS: ThumbnailQuality[] = ["standard", "high", "ultra"];
 
@@ -82,17 +21,17 @@ interface BehaviorSectionProps {
 
 export function BehaviorSection(props: BehaviorSectionProps) {
   return (
-    <div class={styles.section}>
-      <h2 class={styles.sectionTitle}>Behavior</h2>
+    <div class={sectionStyles.section}>
+      <h2 class={sectionStyles.sectionTitle}>Behavior</h2>
 
-      <div class={styles.settingRow}>
+      <div class={formStyles.settingRow}>
         <div>
-          <div class={styles.settingLabel}>Preview Mode</div>
-          <div class={styles.settingDescription}>
+          <div class={formStyles.settingLabel}>Preview Mode</div>
+          <div class={formStyles.settingDescription}>
             Show enlarged thumbnail of selected tab
           </div>
         </div>
-        <label class={styles.checkboxLabel}>
+        <label class={formStyles.checkboxLabel}>
           <input
             type="checkbox"
             checked={props.settings.previewModeEnabled}
@@ -104,17 +43,17 @@ export function BehaviorSection(props: BehaviorSectionProps) {
       </div>
 
       <Show when={props.settings.previewModeEnabled}>
-        <div class={`${styles.settingRow} ${styles.settingRowSubSetting}`}>
+        <div class={`${formStyles.settingRow} ${formStyles.settingRowSubSetting}`}>
           <div>
-            <div class={styles.settingLabel}>Thumbnail Quality</div>
-            <div class={styles.settingDescription}>
+            <div class={formStyles.settingLabel}>Thumbnail Quality</div>
+            <div class={formStyles.settingDescription}>
               Higher quality uses more storage
             </div>
           </div>
-          <div class={styles.radioGroup}>
+          <div class={formStyles.radioGroup}>
             <For each={THUMBNAIL_OPTIONS}>
               {(quality) => (
-                <label class={styles.radioOption}>
+                <label class={formStyles.radioOption}>
                   <input
                     type="radio"
                     name="thumbnailQuality"
@@ -131,17 +70,17 @@ export function BehaviorSection(props: BehaviorSectionProps) {
         </div>
       </Show>
 
-      <div class={styles.settingRow}>
+      <div class={formStyles.settingRow}>
         <div>
-          <div class={styles.settingLabel}>Default Mode</div>
-          <div class={styles.settingDescription}>
+          <div class={formStyles.settingLabel}>Default Mode</div>
+          <div class={formStyles.settingDescription}>
             Initial mode when opening the popup
           </div>
         </div>
-        <div class={styles.radioGroup}>
+        <div class={formStyles.radioGroup}>
           <For each={DEFAULT_MODE_OPTIONS}>
             {(option) => (
-              <label class={styles.radioOption}>
+              <label class={formStyles.radioOption}>
                 <input
                   type="radio"
                   name="defaultMode"

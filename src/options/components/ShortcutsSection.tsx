@@ -1,23 +1,10 @@
 import { createResource, For, Show } from "solid-js";
 import { css } from "../../../styled-system/css";
 import type { Settings, CommandName } from "../../core/settings/settings-types";
+import { getCommands, openShortcutsPage } from "../../infrastructure/chrome/messaging";
+import { sectionStyles, formStyles } from "./styles";
 
 const styles = {
-  section: css({
-    background: "background",
-    borderRadius: "xl",
-    padding: "lg",
-    marginBottom: "lg",
-    boxShadow: "sm",
-  }),
-  sectionTitle: css({
-    fontSize: "lg",
-    fontWeight: 600,
-    color: "text.secondary",
-    margin: "0 0 12px",
-    textTransform: "uppercase",
-    letterSpacing: "0.5px",
-  }),
   shortcutList: css({
     display: "flex",
     flexDirection: "column",
@@ -56,17 +43,6 @@ const styles = {
     gap: "md",
     paddingLeft: "sm",
   }),
-  checkboxLabel: css({
-    display: "flex",
-    alignItems: "center",
-    gap: "sm",
-    cursor: "pointer",
-    "& input": {
-      width: "16px",
-      height: "16px",
-      cursor: "pointer",
-    },
-  }),
   linkButton: css({
     display: "inline-block",
     marginTop: "md",
@@ -89,31 +65,12 @@ const styles = {
   }),
 };
 
-interface ShortcutInfo {
-  name: string;
-  description: string;
-  shortcut: string;
-}
-
-async function getShortcuts(): Promise<ShortcutInfo[]> {
-  const commands = await chrome.commands.getAll();
-  return commands.map((cmd) => ({
-    name: cmd.name ?? "",
-    description: cmd.description ?? "",
-    shortcut: cmd.shortcut ?? "Not set",
-  }));
-}
-
 function isValidCommandName(name: string): name is CommandName {
   return [
     "_execute_action",
     "open-popup-all-windows",
     "open-popup-current-window",
   ].includes(name);
-}
-
-function openShortcutsPage() {
-  chrome.tabs.create({ url: "chrome://extensions/shortcuts" });
 }
 
 interface ShortcutsSectionProps {
@@ -126,11 +83,11 @@ interface ShortcutsSectionProps {
 }
 
 export function ShortcutsSection(props: ShortcutsSectionProps) {
-  const [shortcuts] = createResource(getShortcuts);
+  const [shortcuts] = createResource(getCommands);
 
   return (
-    <div class={styles.section}>
-      <h2 class={styles.sectionTitle}>Global Shortcuts</h2>
+    <div class={sectionStyles.section}>
+      <h2 class={sectionStyles.sectionTitle}>Global Shortcuts</h2>
 
       <div class={styles.shortcutList}>
         <For each={shortcuts()}>
@@ -142,7 +99,7 @@ export function ShortcutsSection(props: ShortcutsSectionProps) {
               </div>
               <Show when={isValidCommandName(shortcut.name)}>
                 <div class={styles.shortcutSettings}>
-                  <label class={styles.checkboxLabel}>
+                  <label class={formStyles.checkboxLabel}>
                     <input
                       type="checkbox"
                       checked={

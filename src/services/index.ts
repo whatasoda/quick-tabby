@@ -18,8 +18,6 @@ export type {
 export { createThumbnailCacheService } from "./thumbnail-cache.service.ts";
 
 export type {
-  DisplayMode as LaunchModeOverride,
-  LaunchInfo,
   CommandHandlerService,
   CommandHandlerDependencies,
 } from "./command-handler.service.ts";
