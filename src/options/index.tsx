@@ -20,7 +20,8 @@ import type {
   KeybindingList,
   CommandName,
 } from "../core/settings/settings-types.ts";
-import { loadSettings, saveSettings, DEFAULT_SETTINGS } from "../shared/settings.ts";
+import { loadSettings, saveSettings } from "../shared/settings.ts";
+import { DEFAULT_SETTINGS } from "../core/settings/settings-defaults.ts";
 import { keybindingToString } from "../core/keybindings/keybinding-matcher.ts";
 import { createThemeControl } from "../shared/theme.ts";
 

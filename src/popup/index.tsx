@@ -13,14 +13,14 @@ import type { Settings } from "../core/settings/settings-types.ts";
 import { TabList } from "./components/TabList.tsx";
 import { KeybindingsModal } from "./components/KeybindingsModal.tsx";
 import { FiHelpCircle, FiSettings } from "solid-icons/fi";
+import { loadSettings } from "../shared/settings.ts";
 import {
-  loadSettings,
   POPUP_SIZES,
   getPreviewWidth,
   getTabListWidth,
   getMaxPopupWidth,
   THUMBNAIL_QUALITIES,
-} from "../shared/settings.ts";
+} from "../core/settings/settings-defaults.ts";
 import { matchesAnyKeybinding } from "../core/keybindings/keybinding-matcher.ts";
 import { createThemeControl } from "../shared/theme.ts";
 

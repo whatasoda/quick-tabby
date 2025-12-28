@@ -1,6 +1,6 @@
 import type { MessageType, MessageResponse } from "../../shared/types.ts";
 import type { Settings } from "../../core/settings/settings-types.ts";
-import { DEFAULT_SETTINGS } from "../../shared/settings.ts";
+import { DEFAULT_SETTINGS } from "../../core/settings/settings-defaults.ts";
 import { getMockTabs } from "./tab-data.ts";
 
 const mockStorage: Record<string, unknown> = {

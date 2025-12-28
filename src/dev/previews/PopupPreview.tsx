@@ -7,7 +7,7 @@ import {
   getPreviewWidth,
   getTabListWidth,
   getMaxPopupWidth,
-} from "../../shared/settings.ts";
+} from "../../core/settings/settings-defaults.ts";
 import { updateMockSettings } from "../mocks/chrome-api.ts";
 import { App as PopupApp } from "../../popup/index.tsx";
 

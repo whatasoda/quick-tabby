@@ -1,32 +1,7 @@
 import type { Settings, Keybinding } from "../core/settings/settings-types.ts";
+import { DEFAULT_SETTINGS } from "../core/settings/settings-defaults.ts";
 
 const SETTINGS_KEY = "quicktabby:settings";
-
-export const DEFAULT_SETTINGS: Settings = {
-  popupSize: "medium",
-  previewModeEnabled: false,
-  thumbnailQuality: "standard",
-  defaultMode: "lastUsed",
-  themePreference: "auto",
-  keybindings: {
-    moveDown: [{ key: "j" }],
-    moveUp: [{ key: "k" }],
-    confirm: [{ key: "Enter" }],
-    cancel: [{ key: "Escape" }],
-    toggleMode: [{ key: "Tab" }],
-  },
-  commandSettings: {
-    _execute_action: { selectOnClose: true },
-    "open-popup-all-windows": { selectOnClose: true },
-    "open-popup-current-window": { selectOnClose: true },
-  },
-};
-
-export const THUMBNAIL_QUALITIES = {
-  standard: { size: 200, captureQuality: 70, resizeQuality: 0.8 },
-  high: { size: 400, captureQuality: 85, resizeQuality: 0.9 },
-  ultra: { size: 800, captureQuality: 95, resizeQuality: 0.95 },
-} as const;
 
 // Legacy keybindings format (single keybinding per action)
 interface LegacyKeybindings {
@@ -102,34 +77,4 @@ export async function loadSettings(): Promise<Settings> {
 
 export async function saveSettings(settings: Settings): Promise<void> {
   await chrome.storage.local.set({ [SETTINGS_KEY]: settings });
-}
-
-// Chrome popup max width is 800px
-// Fixed 1:1.75 ratio for tab list:preview
-const MAX_POPUP_WIDTH = 800;
-const BORDER_WIDTH = 1;
-const RATIO_TAB_LIST = 1;
-const RATIO_PREVIEW = 1.75;
-const AVAILABLE_WIDTH = MAX_POPUP_WIDTH - BORDER_WIDTH;
-const TAB_LIST_WIDTH = Math.round(
-  (AVAILABLE_WIDTH * RATIO_TAB_LIST) / (RATIO_TAB_LIST + RATIO_PREVIEW)
-); // 290px
-const PREVIEW_WIDTH = AVAILABLE_WIDTH - TAB_LIST_WIDTH; // 509px
-
-export const POPUP_SIZES = {
-  small: { height: 400 },
-  medium: { height: 500 },
-  large: { height: 600 },
-} as const;
-
-export function getPreviewWidth(): number {
-  return PREVIEW_WIDTH;
-}
-
-export function getTabListWidth(): number {
-  return TAB_LIST_WIDTH;
-}
-
-export function getMaxPopupWidth(): number {
-  return MAX_POPUP_WIDTH;
 }
