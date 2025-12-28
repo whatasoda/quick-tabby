@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none">
+  <!-- ダークテーマ用（明るめの灰色） -->
+  <!-- Q の円形部分 -->
+  <circle cx="58" cy="68" r="48" stroke="#9ca3af" stroke-width="10" fill="none"/>
+
+  <!-- Q の尻尾（内側にはみ出すように始点を調整） -->
+  <path d="M80 96 Q100 112 108 108 Q116 104 120 110" stroke="#9ca3af" stroke-width="10" stroke-linecap="round" fill="none"/>
+
+  <!-- 左耳（外側の端を上に） -->
+  <path d="M20 38 L36 8 L52 20" stroke="#9ca3af" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+
+  <!-- 右耳（外側の端を上に） -->
+  <path d="M64 20 L80 8 L96 38" stroke="#9ca3af" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+</svg>

@@ -51,6 +51,26 @@ const thumbnailCleanup = createThumbnailCleanupService({
 });
 
 // =============================================================================
+// Icon Theme Handling
+// =============================================================================
+
+function updateIcon(isDark: boolean) {
+  const theme = isDark ? "dark" : "light";
+  chrome.action.setIcon({
+    path: {
+      16: `icons/icon-${theme}-16.png`,
+      32: `icons/icon-${theme}-32.png`,
+      48: `icons/icon-${theme}-48.png`,
+      128: `icons/icon-${theme}-128.png`,
+    },
+  });
+}
+
+// Listen for color scheme changes
+const darkQuery = matchMedia("(prefers-color-scheme: dark)");
+darkQuery.addEventListener("change", (e) => updateIcon(e.matches));
+
+// =============================================================================
 // Initialization
 // =============================================================================
 
@@ -59,6 +79,7 @@ const thumbnailCleanup = createThumbnailCleanupService({
   await mruTracker.initialize();
   commandHandler.initialize();
   thumbnailCleanup.initialize();
+  updateIcon(darkQuery.matches);
   console.log("QuickTabby background service worker initialized");
 })();
 
