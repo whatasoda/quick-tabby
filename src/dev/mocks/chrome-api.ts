@@ -51,7 +51,7 @@ const chromeRuntimeMock = {
         console.log("[Mock] Capture current tab");
         return { type: "SUCCESS" };
       case "GET_LAUNCH_INFO":
-        return { type: "LAUNCH_INFO", info: { mode: null } };
+        return { type: "LAUNCH_INFO", info: { mode: null, command: null } };
       case "CLEAR_LAUNCH_INFO":
         return { type: "SUCCESS" };
       default:

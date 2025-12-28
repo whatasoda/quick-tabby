@@ -141,11 +141,11 @@ export function PopupPreview() {
             type="checkbox"
             id="modeToggle"
             class={styles.checkbox}
-            checked={settings().enableModeToggle}
-            onChange={(e) => updateSettings({ enableModeToggle: e.target.checked })}
+            checked={settings().defaultMode === "lastUsed"}
+            onChange={(e) => updateSettings({ defaultMode: e.target.checked ? "lastUsed" : "all" })}
           />
           <label for="modeToggle" class={styles.label}>
-            Mode Toggle
+            Mode Toggle (lastUsed)
           </label>
         </div>
       </div>

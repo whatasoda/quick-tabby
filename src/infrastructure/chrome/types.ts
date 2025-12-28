@@ -18,9 +18,9 @@ export interface ChromeEvent<T extends (...args: never[]) => void> {
 // Storage API
 // =============================================================================
 
-export interface ChromeStorageArea<T = unknown> {
-  get<K extends string>(key: K): Promise<{ [P in K]: T | undefined }>;
-  set(items: Record<string, T>): Promise<void>;
+export interface ChromeStorageArea {
+  get<T = unknown>(key: string): Promise<Record<string, T | undefined>>;
+  set(items: Record<string, unknown>): Promise<void>;
 }
 
 export interface ChromeStorageAPI {

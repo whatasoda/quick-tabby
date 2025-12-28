@@ -104,7 +104,7 @@ export function keybindingsToString(bindings: KeybindingList): string {
  */
 export function parseShortcut(shortcut: string): Keybinding {
   const parts = shortcut.split("+");
-  const key = parts[parts.length - 1];
+  const key = parts[parts.length - 1] ?? "";
 
   return {
     key: key.length === 1 ? key.toLowerCase() : key,

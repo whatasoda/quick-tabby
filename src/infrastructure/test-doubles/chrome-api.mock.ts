@@ -14,6 +14,7 @@ import type {
   ChromeStorageArea,
   ChromeTabsAPI,
   ChromeWindowsAPI,
+  MessageSender,
   Port,
   TabInfo,
   WindowInfo,
@@ -33,8 +34,8 @@ export function createMockStorageArea(): ChromeStorageArea & {
     _data: data,
     _clear: () => data.clear(),
 
-    async get<K extends string>(key: K) {
-      return { [key]: data.get(key) } as { [P in K]: unknown | undefined };
+    async get<T = unknown>(key: string) {
+      return { [key]: data.get(key) } as Record<string, T | undefined>;
     },
 
     async set(items: Record<string, unknown>) {
@@ -234,9 +235,9 @@ export function createMockRuntime(): ChromeRuntimeAPI & {
   const connectListeners: ((port: Port) => void)[] = [];
   const messageListeners: ((
     message: unknown,
-    sender: unknown,
-    sendResponse: (r: unknown) => void,
-  ) => void)[] = [];
+    sender: MessageSender,
+    sendResponse: (response: unknown) => void,
+  ) => boolean | undefined)[] = [];
 
   return {
     _messages: messages,
@@ -246,7 +247,7 @@ export function createMockRuntime(): ChromeRuntimeAPI & {
       connectListeners.forEach((cb) => cb(port));
     },
     _triggerMessage: (message: unknown, sendResponse: (response: unknown) => void) => {
-      messageListeners.forEach((cb) => cb(message, {}, sendResponse));
+      messageListeners.forEach((cb) => cb(message, {} as MessageSender, sendResponse));
     },
 
     async sendMessage<TMessage, TResponse>(message: TMessage): Promise<TResponse> {

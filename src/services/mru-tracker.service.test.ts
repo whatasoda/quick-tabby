@@ -147,9 +147,9 @@ describe("MRUTrackerService", () => {
 
       const tabs = await service.getMRUTabs(false);
 
-      expect(tabs[0].id).toBe(3);
-      expect(tabs[1].id).toBe(2);
-      expect(tabs[2].id).toBe(1);
+      expect(tabs[0]?.id).toBe(3);
+      expect(tabs[1]?.id).toBe(2);
+      expect(tabs[2]?.id).toBe(1);
     });
 
     test("should filter by window when windowOnly is true", async () => {
