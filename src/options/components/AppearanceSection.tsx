@@ -1,10 +1,5 @@
 import type { PopupSize, Settings, ThemePreference } from "../../core/settings/settings-types";
-import {
-  FormField,
-  RadioGroup,
-  Section,
-  type RadioOption,
-} from "../../shared/ui";
+import { FormField, RadioGroup, type RadioOption, Section } from "../../shared/ui";
 
 const THEME_OPTIONS: RadioOption<ThemePreference>[] = [
   { value: "auto", label: "Auto" },

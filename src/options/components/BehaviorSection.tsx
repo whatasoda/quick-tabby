@@ -1,12 +1,6 @@
 import { Show } from "solid-js";
 import type { DefaultMode, Settings, ThumbnailQuality } from "../../core/settings/settings-types";
-import {
-  Checkbox,
-  FormField,
-  RadioGroup,
-  Section,
-  type RadioOption,
-} from "../../shared/ui";
+import { Checkbox, FormField, RadioGroup, type RadioOption, Section } from "../../shared/ui";
 
 const THUMBNAIL_OPTIONS: RadioOption<ThumbnailQuality>[] = [
   { value: "standard", label: "Standard" },

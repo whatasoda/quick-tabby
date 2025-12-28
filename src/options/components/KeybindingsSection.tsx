@@ -81,7 +81,7 @@ export function KeybindingsSection(props: KeybindingsSectionProps) {
                   onKeyDown={(e) => props.onKeyDown(e, key)}
                   onBlur={() => props.onStopRecording()}
                   ref={(el) => el?.focus()}
-                  tabIndex={0}
+                  tabindex={0}
                 >
                   Press key...
                 </div>
