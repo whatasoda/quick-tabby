@@ -8,10 +8,10 @@ import {
 } from "solid-js";
 import "./index.css";
 import { css } from "../../styled-system/css";
-import type { TabInfo, MessageType, MessageResponse } from "../shared/types.ts";
 import type { Settings } from "../core/settings/settings-types.ts";
 import { TabList } from "./components/TabList.tsx";
 import { KeybindingsModal } from "./components/KeybindingsModal.tsx";
+import { PreviewPanel } from "./components/PreviewPanel.tsx";
 import { FiHelpCircle, FiSettings } from "solid-icons/fi";
 import { loadSettings } from "../shared/settings.ts";
 import {
@@ -23,6 +23,20 @@ import {
 } from "../core/settings/settings-defaults.ts";
 import { matchesAnyKeybinding } from "../core/keybindings/keybinding-matcher.ts";
 import { createThemeControl } from "../shared/theme.ts";
+import {
+  getMRUTabs,
+  switchToTab,
+  captureCurrentTab,
+  getLaunchInfo,
+  clearLaunchInfo,
+  connectPopup,
+  openOptionsPage,
+  getCurrentWindow,
+} from "../infrastructure/chrome/messaging.ts";
+import {
+  loadWindowOnlyMode,
+  saveWindowOnlyMode,
+} from "../infrastructure/chrome/mode-storage.ts";
 
 const styles = {
   popupContainer: css({
@@ -40,71 +54,6 @@ const styles = {
     minHeight: 0,
     display: "flex",
     flexDirection: "column",
-  }),
-  previewPanel: css({
-    width: "var(--preview-width, 180px)",
-    maxHeight: "var(--popup-height)",
-    background: "surfaceAlt",
-    padding: "md",
-    flexShrink: 0,
-    borderRight: "1px solid token(colors.border)",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    overflow: "hidden",
-  }),
-  previewThumbnail: css({
-    width: "100%",
-    maxWidth: "100%",
-    height: "auto",
-    maxHeight: "calc(var(--popup-height) - 80px)",
-    objectFit: "contain",
-    borderRadius: "lg",
-    background: "background",
-    boxShadow: "sm",
-    filter: "blur(0.5px)",
-  }),
-  previewPlaceholder: css({
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    aspectRatio: "14 / 9",
-    background:
-      "linear-gradient(135deg, token(colors.surface) 0%, token(colors.surfaceHover) 100%)",
-    borderRadius: "lg",
-  }),
-  previewFavicon: css({
-    width: "32px",
-    height: "32px",
-    opacity: 0.5,
-  }),
-  previewNoThumbnail: css({
-    marginTop: "sm",
-    fontSize: "sm",
-    color: "text.muted",
-  }),
-  previewInfo: css({
-    marginTop: "sm",
-    height: "56px",
-    flexShrink: 0,
-  }),
-  previewTitle: css({
-    fontWeight: 500,
-    fontSize: "12px",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    display: "-webkit-box",
-    WebkitLineClamp: 2,
-    WebkitBoxOrient: "vertical",
-  }),
-  previewUrl: css({
-    fontSize: "sm",
-    color: "text.secondary",
-    whiteSpace: "nowrap",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    marginTop: "2px",
   }),
   loading: css({
     padding: "xl",
@@ -166,38 +115,6 @@ const styles = {
   }),
 };
 
-async function fetchMRUTabs(
-  windowOnly: boolean,
-  windowId: number
-): Promise<TabInfo[]> {
-  const message: MessageType = { type: "GET_MRU_TABS", windowOnly, windowId };
-  const response = (await chrome.runtime.sendMessage(message)) as
-    | MessageResponse
-    | null
-    | undefined;
-  if (response?.type === "MRU_TABS") {
-    return response.tabs;
-  }
-  return [];
-}
-
-async function switchToTab(tabId: number): Promise<void> {
-  const message: MessageType = { type: "SWITCH_TO_TAB", tabId };
-  await chrome.runtime.sendMessage(message);
-  window.close();
-}
-
-const MODE_STORAGE_KEY = "windowOnlyMode";
-
-async function loadMode(): Promise<boolean> {
-  const result = await chrome.storage.local.get(MODE_STORAGE_KEY);
-  return result[MODE_STORAGE_KEY] ?? false;
-}
-
-async function saveMode(windowOnly: boolean): Promise<void> {
-  await chrome.storage.local.set({ [MODE_STORAGE_KEY]: windowOnly });
-}
-
 function applyPopupSize(settings: Settings) {
   const size = POPUP_SIZES[settings.popupSize];
   const tabListWidth = getTabListWidth();
@@ -240,7 +157,7 @@ export function App() {
     },
     (params) =>
       params !== null
-        ? fetchMRUTabs(params.windowOnly, params.windowId)
+        ? getMRUTabs(params.windowOnly, params.windowId)
         : Promise.resolve([])
   );
   const themeControl = createMemo(createThemeControl);
@@ -256,7 +173,7 @@ export function App() {
     const newMode = !windowOnly();
     setWindowOnly(newMode);
     setSelectedIndex(1);
-    saveMode(newMode);
+    saveWindowOnlyMode(newMode);
   }
 
   function handleKeyDown(e: KeyboardEvent) {
@@ -311,8 +228,8 @@ export function App() {
     }
   }
 
-  function openSettings() {
-    chrome.runtime.openOptionsPage();
+  function handleOpenSettings() {
+    openOptionsPage();
   }
 
   let port: chrome.runtime.Port | undefined;
@@ -337,29 +254,24 @@ export function App() {
 
   onMount(async () => {
     // Connect to background to track popup state
-    port = chrome.runtime.connect({ name: "popup" });
+    port = connectPopup();
     port.onMessage.addListener(handlePortMessage);
 
     const [currentWindow, loadedSettings] = await Promise.all([
-      chrome.windows.getCurrent(),
+      getCurrentWindow(),
       loadSettings(),
     ]);
 
     // Check for launch info (from mode-fixed shortcuts)
-    const launchInfoResponse = (await chrome.runtime.sendMessage({
-      type: "GET_LAUNCH_INFO",
-    })) as MessageResponse | null | undefined;
+    const launchInfo = await getLaunchInfo();
 
     let initialWindowOnly = false;
 
-    if (
-      launchInfoResponse?.type === "LAUNCH_INFO" &&
-      launchInfoResponse.info.mode !== null
-    ) {
+    if (launchInfo?.mode !== null && launchInfo?.mode !== undefined) {
       // Use the override mode from shortcut
-      initialWindowOnly = launchInfoResponse.info.mode === "currentWindow";
+      initialWindowOnly = launchInfo.mode === "currentWindow";
       // Clear the info after use
-      await chrome.runtime.sendMessage({ type: "CLEAR_LAUNCH_INFO" });
+      await clearLaunchInfo();
     } else {
       // Opened via _execute_action (direct popup open)
       // Determine initial mode based on defaultMode setting
@@ -371,7 +283,7 @@ export function App() {
           initialWindowOnly = true;
           break;
         case "lastUsed":
-          initialWindowOnly = await loadMode();
+          initialWindowOnly = await loadWindowOnlyMode();
           break;
       }
     }
@@ -389,12 +301,7 @@ export function App() {
     // Capture current tab and refresh to get updated thumbnail
     const thumbnailConfig =
       THUMBNAIL_QUALITIES[loadedSettings.thumbnailQuality];
-    const captureMessage: MessageType = {
-      type: "CAPTURE_CURRENT_TAB",
-      windowId: currentWindow.id,
-      thumbnailConfig,
-    };
-    chrome.runtime.sendMessage(captureMessage).then(() => {
+    captureCurrentTab(currentWindow.id, thumbnailConfig).then(() => {
       refetch();
     });
   });
@@ -412,48 +319,7 @@ export function App() {
       class={`${styles.popupContainer} ${isPreviewEnabled() ? styles.popupContainerPreviewEnabled : ""}`}
     >
       <Show when={isPreviewEnabled()}>
-        <div class={styles.previewPanel}>
-          <Show
-            when={selectedTab()}
-            fallback={
-              <div class={styles.previewPlaceholder}>
-                <div class={styles.previewNoThumbnail}>
-                  Select a tab to preview
-                </div>
-              </div>
-            }
-          >
-            {(tab) => (
-              <>
-                <Show
-                  when={tab().thumbnailUrl}
-                  fallback={
-                    <div class={styles.previewPlaceholder}>
-                      <img
-                        class={styles.previewFavicon}
-                        src={tab().favIconUrl || ""}
-                        alt=""
-                      />
-                      <div class={styles.previewNoThumbnail}>
-                        No preview available
-                      </div>
-                    </div>
-                  }
-                >
-                  <img
-                    class={styles.previewThumbnail}
-                    src={tab().thumbnailUrl}
-                    alt={tab().title}
-                  />
-                </Show>
-                <div class={styles.previewInfo}>
-                  <div class={styles.previewTitle}>{tab().title}</div>
-                  <div class={styles.previewUrl}>{tab().url}</div>
-                </div>
-              </>
-            )}
-          </Show>
-        </div>
+        <PreviewPanel selectedTab={selectedTab()} />
       </Show>
 
       <div class={styles.mainContent}>
@@ -497,7 +363,7 @@ export function App() {
             </button>
             <button
               class={styles.iconButton}
-              onClick={openSettings}
+              onClick={handleOpenSettings}
               title="設定"
             >
               <FiSettings size={16} />
@@ -511,7 +377,7 @@ export function App() {
           <KeybindingsModal
             settings={currentSettings()}
             onClose={() => setShowKeybindingsModal(false)}
-            onOpenSettings={openSettings}
+            onOpenSettings={handleOpenSettings}
           />
         )}
       </Show>
