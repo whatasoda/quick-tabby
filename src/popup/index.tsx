@@ -13,15 +13,10 @@ import { TabList } from "./components/TabList.tsx";
 import { KeybindingsModal } from "./components/KeybindingsModal.tsx";
 import { PreviewPanel } from "./components/PreviewPanel.tsx";
 import { Footer } from "./components/Footer.tsx";
+import { PopupWindow } from "./components/PopupWindow.tsx";
 import { usePopupKeyboard } from "./hooks/usePopupKeyboard.ts";
 import { loadSettings } from "../shared/settings.ts";
-import {
-  POPUP_SIZES,
-  getPreviewWidth,
-  getTabListWidth,
-  getMaxPopupWidth,
-  THUMBNAIL_QUALITIES,
-} from "../core/settings/settings-defaults.ts";
+import { THUMBNAIL_QUALITIES } from "../core/settings/settings-defaults.ts";
 import { createThemeControl } from "../shared/theme.ts";
 import {
   getMRUTabs,
@@ -55,44 +50,12 @@ const styles = {
     display: "flex",
     flexDirection: "column",
   }),
-  loading: css({
-    padding: "xl",
-    textAlign: "center",
-    color: "text.secondary",
-  }),
   empty: css({
     padding: "xl",
     textAlign: "center",
     color: "text.secondary",
   }),
 };
-
-function applyPopupSize(settings: Settings) {
-  const size = POPUP_SIZES[settings.popupSize];
-  const tabListWidth = getTabListWidth();
-  const previewWidth = getPreviewWidth();
-
-  const totalWidth = settings.previewModeEnabled
-    ? getMaxPopupWidth()
-    : tabListWidth;
-
-  document.documentElement.style.setProperty(
-    "--popup-width",
-    `${totalWidth}px`
-  );
-  document.documentElement.style.setProperty(
-    "--popup-height",
-    `${size.height}px`
-  );
-  document.documentElement.style.setProperty(
-    "--preview-width",
-    `${previewWidth}px`
-  );
-  document.documentElement.style.setProperty(
-    "--tab-list-width",
-    `${tabListWidth}px`
-  );
-}
 
 export function App() {
   const [windowOnly, setWindowOnly] = createSignal(false);
@@ -222,7 +185,6 @@ export function App() {
 
     setWindowOnly(initialWindowOnly);
     setSettings(loadedSettings);
-    applyPopupSize(loadedSettings);
     themeControl().applyTheme(loadedSettings.themePreference);
 
     if (currentWindow.id !== undefined) {
@@ -245,51 +207,52 @@ export function App() {
   const isPreviewEnabled = () => settings()?.previewModeEnabled ?? false;
 
   return (
-    <div
-      class={`${styles.popupContainer} ${isPreviewEnabled() ? styles.popupContainerPreviewEnabled : ""}`}
-    >
-      <Show when={isPreviewEnabled()}>
-        <PreviewPanel selectedTab={selectedTab()} />
-      </Show>
-
-      <div class={styles.mainContent}>
-        <Show when={tabs.loading}>
-          <div class={styles.loading}>Loading...</div>
+    <PopupWindow settings={settings()}>
+      <div
+        class={`${styles.popupContainer} ${isPreviewEnabled() ? styles.popupContainerPreviewEnabled : ""}`}
+      >
+        <Show when={isPreviewEnabled()}>
+          <PreviewPanel selectedTab={selectedTab()} />
         </Show>
 
-        <Show when={!tabs.loading && tabs()}>
-          {(tabList) => (
-            <Show
-              when={tabList().length > 0}
-              fallback={<div class={styles.empty}>No recent tabs</div>}
-            >
-              <TabList
-                tabs={tabList()}
-                selectedIndex={selectedIndex()}
-                onSelect={handleSelect}
-                showTabIndex={windowOnly()}
-              />
-            </Show>
-          )}
-        </Show>
+        <div class={styles.mainContent}>
+          <Show
+            when={tabs()}
+            fallback={<div class={styles.empty}>Loading tabs...</div>}
+          >
+            {(tabList) => (
+              <Show
+                when={tabList().length > 0}
+                fallback={<div class={styles.empty}>No recent tabs</div>}
+              >
+                <TabList
+                  tabs={tabList()}
+                  selectedIndex={selectedIndex()}
+                  onSelect={handleSelect}
+                  showTabIndex={windowOnly()}
+                />
+              </Show>
+            )}
+          </Show>
 
-        <Footer
-          windowOnly={windowOnly()}
-          onToggleMode={toggleMode}
-          onOpenKeybindings={() => setShowKeybindingsModal(true)}
-          onOpenSettings={handleOpenSettings}
-        />
-      </div>
-
-      <Show when={showKeybindingsModal() && settings()}>
-        {(currentSettings) => (
-          <KeybindingsModal
-            settings={currentSettings()}
-            onClose={() => setShowKeybindingsModal(false)}
+          <Footer
+            windowOnly={windowOnly()}
+            onToggleMode={toggleMode}
+            onOpenKeybindings={() => setShowKeybindingsModal(true)}
             onOpenSettings={handleOpenSettings}
           />
-        )}
-      </Show>
-    </div>
+        </div>
+
+        <Show when={showKeybindingsModal() && settings()}>
+          {(currentSettings) => (
+            <KeybindingsModal
+              settings={currentSettings()}
+              onClose={() => setShowKeybindingsModal(false)}
+              onOpenSettings={handleOpenSettings}
+            />
+          )}
+        </Show>
+      </div>
+    </PopupWindow>
   );
 }
