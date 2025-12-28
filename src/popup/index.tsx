@@ -12,7 +12,8 @@ import type { Settings } from "../core/settings/settings-types.ts";
 import { TabList } from "./components/TabList.tsx";
 import { KeybindingsModal } from "./components/KeybindingsModal.tsx";
 import { PreviewPanel } from "./components/PreviewPanel.tsx";
-import { FiHelpCircle, FiSettings } from "solid-icons/fi";
+import { Footer } from "./components/Footer.tsx";
+import { usePopupKeyboard } from "./hooks/usePopupKeyboard.ts";
 import { loadSettings } from "../shared/settings.ts";
 import {
   POPUP_SIZES,
@@ -21,7 +22,6 @@ import {
   getMaxPopupWidth,
   THUMBNAIL_QUALITIES,
 } from "../core/settings/settings-defaults.ts";
-import { matchesAnyKeybinding } from "../core/keybindings/keybinding-matcher.ts";
 import { createThemeControl } from "../shared/theme.ts";
 import {
   getMRUTabs,
@@ -64,54 +64,6 @@ const styles = {
     padding: "xl",
     textAlign: "center",
     color: "text.secondary",
-  }),
-  footer: css({
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    borderTop: "1px solid token(colors.border)",
-    background: "surfaceAlt",
-    marginTop: "auto",
-  }),
-  footerLeft: css({
-    display: "flex",
-    alignItems: "center",
-  }),
-  footerRight: css({
-    display: "flex",
-    alignItems: "center",
-    gap: "xs",
-  }),
-  modeIndicator: css({
-    fontSize: "sm",
-    color: "text.secondary",
-    cursor: "pointer",
-    padding: "8px 12px",
-    borderRadius: "md",
-    transition: "all 0.15s",
-    userSelect: "none",
-    _hover: {
-      background: "surfaceHover",
-      color: "text.primary",
-    },
-  }),
-  iconButton: css({
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    width: "32px",
-    height: "32px",
-    padding: "8px",
-    border: "none",
-    background: "transparent",
-    borderRadius: "md",
-    cursor: "pointer",
-    color: "text.secondary",
-    transition: "all 0.15s",
-    _hover: {
-      background: "surfaceHover",
-      color: "text.primary",
-    },
   }),
 };
 
@@ -176,50 +128,30 @@ export function App() {
     saveWindowOnlyMode(newMode);
   }
 
-  function handleKeyDown(e: KeyboardEvent) {
-    const tabList = tabs();
-    const currentSettings = settings();
-    if (!currentSettings || !tabList || tabList.length === 0) return;
-
-    const { keybindings } = currentSettings;
-
-    // Also allow arrow keys as built-in navigation
-    if (
-      matchesAnyKeybinding(e, keybindings.moveDown) ||
-      e.key === "ArrowDown"
-    ) {
-      e.preventDefault();
-      setSelectedIndex((i) => Math.min(i + 1, tabList.length - 1));
-      return;
-    }
-
-    if (matchesAnyKeybinding(e, keybindings.moveUp) || e.key === "ArrowUp") {
-      e.preventDefault();
+  // Keyboard handling via hook
+  usePopupKeyboard({
+    settings,
+    onMoveDown: () => {
+      const tabList = tabs();
+      if (tabList) {
+        setSelectedIndex((i) => Math.min(i + 1, tabList.length - 1));
+      }
+    },
+    onMoveUp: () => {
       setSelectedIndex((i) => Math.max(i - 1, 0));
-      return;
-    }
-
-    if (matchesAnyKeybinding(e, keybindings.confirm)) {
-      e.preventDefault();
-      const tab = tabList[selectedIndex()];
+    },
+    onConfirm: () => {
+      const tabList = tabs();
+      const tab = tabList?.[selectedIndex()];
       if (tab) {
         switchToTab(tab.id);
       }
-      return;
-    }
-
-    if (matchesAnyKeybinding(e, keybindings.cancel)) {
-      e.preventDefault();
+    },
+    onCancel: () => {
       window.close();
-      return;
-    }
-
-    if (matchesAnyKeybinding(e, keybindings.toggleMode)) {
-      e.preventDefault();
-      toggleMode();
-      return;
-    }
-  }
+    },
+    onToggleMode: toggleMode,
+  });
 
   function handleSelect(index: number) {
     const tabList = tabs();
@@ -296,7 +228,6 @@ export function App() {
     if (currentWindow.id !== undefined) {
       setCurrentWindowId(currentWindow.id);
     }
-    document.addEventListener("keydown", handleKeyDown);
 
     // Capture current tab and refresh to get updated thumbnail
     const thumbnailConfig =
@@ -307,7 +238,6 @@ export function App() {
   });
 
   onCleanup(() => {
-    document.removeEventListener("keydown", handleKeyDown);
     port?.disconnect();
     themeControl().cleanup();
   });
@@ -343,33 +273,12 @@ export function App() {
           )}
         </Show>
 
-        <div class={styles.footer}>
-          <div class={styles.footerLeft}>
-            <span
-              class={styles.modeIndicator}
-              onClick={toggleMode}
-              title="Click to toggle mode"
-            >
-              {windowOnly() ? "Current Window" : "All Windows"}
-            </span>
-          </div>
-          <div class={styles.footerRight}>
-            <button
-              class={styles.iconButton}
-              onClick={() => setShowKeybindingsModal(true)}
-              title="キーボードショートカット"
-            >
-              <FiHelpCircle size={16} />
-            </button>
-            <button
-              class={styles.iconButton}
-              onClick={handleOpenSettings}
-              title="設定"
-            >
-              <FiSettings size={16} />
-            </button>
-          </div>
-        </div>
+        <Footer
+          windowOnly={windowOnly()}
+          onToggleMode={toggleMode}
+          onOpenKeybindings={() => setShowKeybindingsModal(true)}
+          onOpenSettings={handleOpenSettings}
+        />
       </div>
 
       <Show when={showKeybindingsModal() && settings()}>
