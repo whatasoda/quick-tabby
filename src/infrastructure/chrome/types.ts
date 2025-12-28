@@ -162,6 +162,28 @@ export interface ChromeActionAPI {
 }
 
 // =============================================================================
+// Alarms API
+// =============================================================================
+
+export interface AlarmInfo {
+  name: string;
+  scheduledTime: number;
+  periodInMinutes?: number;
+}
+
+export interface AlarmCreateInfo {
+  when?: number;
+  delayInMinutes?: number;
+  periodInMinutes?: number;
+}
+
+export interface ChromeAlarmsAPI {
+  create(name: string, alarmInfo: AlarmCreateInfo): void;
+  clear(name: string): Promise<boolean>;
+  onAlarm: ChromeEvent<(alarm: AlarmInfo) => void>;
+}
+
+// =============================================================================
 // Aggregated Chrome API
 // =============================================================================
 
@@ -172,4 +194,5 @@ export interface ChromeAPI {
   runtime: ChromeRuntimeAPI;
   commands: ChromeCommandsAPI;
   action: ChromeActionAPI;
+  alarms: ChromeAlarmsAPI;
 }
