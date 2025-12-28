@@ -1,5 +1,6 @@
 import { FiHelpCircle, FiSettings } from "solid-icons/fi";
 import { css } from "../../../styled-system/css";
+import { Button } from "../../shared/ui";
 
 const styles = {
   footer: css({
@@ -32,24 +33,6 @@ const styles = {
       color: "text.primary",
     },
   }),
-  iconButton: css({
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    width: "32px",
-    height: "32px",
-    padding: "8px",
-    border: "none",
-    background: "transparent",
-    borderRadius: "md",
-    cursor: "pointer",
-    color: "text.secondary",
-    transition: "all 0.15s",
-    _hover: {
-      background: "surfaceHover",
-      color: "text.primary",
-    },
-  }),
 };
 
 interface FooterProps {
@@ -72,16 +55,17 @@ export function Footer(props: FooterProps) {
         </span>
       </div>
       <div class={styles.footerRight}>
-        <button
-          class={styles.iconButton}
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={props.onOpenKeybindings}
           title="キーボードショートカット"
         >
           <FiHelpCircle size={16} />
-        </button>
-        <button class={styles.iconButton} onClick={props.onOpenSettings} title="設定">
+        </Button>
+        <Button variant="ghost" size="icon" onClick={props.onOpenSettings} title="設定">
           <FiSettings size={16} />
-        </button>
+        </Button>
       </div>
     </div>
   );

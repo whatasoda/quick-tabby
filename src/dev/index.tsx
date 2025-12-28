@@ -19,12 +19,14 @@ function DevApp() {
         <h1>QuickTabby Dev Preview</h1>
         <div class="preview-tabs">
           <button
+            type="button"
             class={activePreview() === "popup" ? "active" : ""}
             onClick={() => setActivePreview("popup")}
           >
             Popup
           </button>
           <button
+            type="button"
             class={activePreview() === "options" ? "active" : ""}
             onClick={() => setActivePreview("options")}
           >

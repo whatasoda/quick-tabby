@@ -1,7 +1,7 @@
-import { onCleanup, onMount } from "solid-js";
 import { css } from "../../../styled-system/css";
 import { keybindingToString } from "../../core/keybindings/keybinding-matcher.ts";
 import type { Settings } from "../../core/settings/settings-types.ts";
+import { Button, Modal } from "../../shared/ui";
 
 interface KeybindingsModalProps {
   settings: Settings;
@@ -10,23 +10,6 @@ interface KeybindingsModalProps {
 }
 
 const styles = {
-  overlay: css({
-    position: "fixed",
-    inset: 0,
-    background: "overlay",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    zIndex: 1000,
-  }),
-  modal: css({
-    background: "background",
-    borderRadius: "lg",
-    padding: "lg",
-    minWidth: "200px",
-    maxWidth: "280px",
-    boxShadow: "0 4px 20px rgba(0, 0, 0, 0.15)",
-  }),
   title: css({
     fontSize: "md",
     fontWeight: 600,
@@ -72,18 +55,6 @@ const styles = {
     paddingTop: "sm",
     borderTop: "1px solid token(colors.border)",
   }),
-  settingsLink: css({
-    fontSize: "sm",
-    color: "primary",
-    cursor: "pointer",
-    background: "none",
-    border: "none",
-    padding: "8px 12px",
-    borderRadius: "md",
-    _hover: {
-      background: "surfaceHover",
-    },
-  }),
 };
 
 const KEYBINDING_LABELS: Record<string, string> = {
@@ -95,26 +66,6 @@ const KEYBINDING_LABELS: Record<string, string> = {
 };
 
 export function KeybindingsModal(props: KeybindingsModalProps) {
-  const handleKeyDown = (e: KeyboardEvent) => {
-    if (e.key === "Escape") {
-      props.onClose();
-    }
-  };
-
-  const handleOverlayClick = (e: MouseEvent) => {
-    if (e.target === e.currentTarget) {
-      props.onClose();
-    }
-  };
-
-  onMount(() => {
-    document.addEventListener("keydown", handleKeyDown);
-  });
-
-  onCleanup(() => {
-    document.removeEventListener("keydown", handleKeyDown);
-  });
-
   const keybindings = () => {
     return Object.entries(props.settings.keybindings) as [
       keyof typeof props.settings.keybindings,
@@ -123,27 +74,25 @@ export function KeybindingsModal(props: KeybindingsModalProps) {
   };
 
   return (
-    <div class={styles.overlay} onClick={handleOverlayClick}>
-      <div class={styles.modal}>
-        <div class={styles.title}>キーボードショートカット</div>
-        <div class={styles.table}>
-          {keybindings().map(([key, bindings]) => (
-            <div class={styles.row}>
-              <span class={styles.label}>{KEYBINDING_LABELS[key]}</span>
-              <div class={styles.kbdGroup}>
-                {bindings.map((binding) => (
-                  <span class={styles.kbd}>{keybindingToString(binding)}</span>
-                ))}
-              </div>
+    <Modal onClose={props.onClose} size="sm">
+      <div class={styles.title}>キーボードショートカット</div>
+      <div class={styles.table}>
+        {keybindings().map(([key, bindings]) => (
+          <div class={styles.row}>
+            <span class={styles.label}>{KEYBINDING_LABELS[key]}</span>
+            <div class={styles.kbdGroup}>
+              {bindings.map((binding) => (
+                <span class={styles.kbd}>{keybindingToString(binding)}</span>
+              ))}
             </div>
-          ))}
-        </div>
-        <div class={styles.footer}>
-          <button class={styles.settingsLink} onClick={props.onOpenSettings}>
-            設定を開く
-          </button>
-        </div>
+          </div>
+        ))}
       </div>
-    </div>
+      <div class={styles.footer}>
+        <Button variant="link" onClick={props.onOpenSettings}>
+          設定を開く
+        </Button>
+      </div>
+    </Modal>
   );
 }
