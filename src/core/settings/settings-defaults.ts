@@ -21,7 +21,7 @@ export const DEFAULT_SETTINGS: Settings = {
     toggleMode: [{ key: "Tab" }],
   },
   commandSettings: {
-    "_execute_action": { selectOnClose: true },
+    _execute_action: { selectOnClose: true },
     "open-popup-all-windows": { selectOnClose: true },
     "open-popup-current-window": { selectOnClose: true },
   },
@@ -30,11 +30,11 @@ export const DEFAULT_SETTINGS: Settings = {
 /**
  * Thumbnail quality presets
  */
-export const THUMBNAIL_QUALITIES: Record<string, ThumbnailConfig> = {
+export const THUMBNAIL_QUALITIES = {
   standard: { size: 200, captureQuality: 70, resizeQuality: 0.8 },
   high: { size: 400, captureQuality: 85, resizeQuality: 0.9 },
   ultra: { size: 800, captureQuality: 95, resizeQuality: 0.95 },
-} as const;
+} as const satisfies Record<string, ThumbnailConfig>;
 
 /**
  * Popup size presets (height in pixels)

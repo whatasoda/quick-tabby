@@ -1,9 +1,9 @@
-import { onMount, onCleanup, type Accessor } from "solid-js";
+import { onMount, onCleanup, type Accessor, type Resource } from "solid-js";
 import type { Settings } from "../../core/settings/settings-types.ts";
 import { matchesAnyKeybinding } from "../../core/keybindings/keybinding-matcher.ts";
 
 interface UsePopupKeyboardOptions {
-  settings: Accessor<Settings | null>;
+  settings: Accessor<Settings | null> | Resource<Settings | null>;
   onMoveDown: () => void;
   onMoveUp: () => void;
   onConfirm: () => void;

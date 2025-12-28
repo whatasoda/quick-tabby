@@ -118,7 +118,7 @@ export function KeybindingsModal(props: KeybindingsModalProps) {
   const keybindings = () => {
     return Object.entries(props.settings.keybindings) as [
       keyof typeof props.settings.keybindings,
-      typeof props.settings.keybindings.moveDown
+      typeof props.settings.keybindings.moveDown,
     ][];
   };
 

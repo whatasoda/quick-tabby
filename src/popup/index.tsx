@@ -1,37 +1,22 @@
-import {
-  createSignal,
-  createResource,
-  createMemo,
-  onMount,
-  onCleanup,
-  Show,
-} from "solid-js";
+import { createSignal, createResource, createMemo, Show } from "solid-js";
 import "./index.css";
 import { css } from "../../styled-system/css";
-import type { Settings } from "../core/settings/settings-types.ts";
-import { TabList } from "./components/TabList.tsx";
-import { KeybindingsModal } from "./components/KeybindingsModal.tsx";
-import { PreviewPanel } from "./components/PreviewPanel.tsx";
-import { Footer } from "./components/Footer.tsx";
-import { PopupWindow } from "./components/PopupWindow.tsx";
-import { usePopupKeyboard } from "./hooks/usePopupKeyboard.ts";
-import { loadSettings } from "../shared/settings.ts";
-import { THUMBNAIL_QUALITIES } from "../core/settings/settings-defaults.ts";
-import { createThemeControl } from "../shared/theme.ts";
+import { TabList } from "./components/TabList";
+import { KeybindingsModal } from "./components/KeybindingsModal";
+import { PreviewPanel } from "./components/PreviewPanel";
+import { Footer } from "./components/Footer";
+import { PopupWindow } from "./components/PopupWindow";
+import { usePopupKeyboard } from "./hooks/usePopupKeyboard";
+import { usePopupPort } from "./hooks/usePopupPort";
+import { loadSettings } from "../shared/settings";
 import {
-  getMRUTabs,
   switchToTab,
-  captureCurrentTab,
-  getLaunchInfo,
-  clearLaunchInfo,
-  connectPopup,
   openOptionsPage,
-  getCurrentWindow,
-} from "../infrastructure/chrome/messaging.ts";
-import {
-  loadWindowOnlyMode,
-  saveWindowOnlyMode,
-} from "../infrastructure/chrome/mode-storage.ts";
+  getWindowInstance,
+} from "../infrastructure/chrome/messaging";
+import { useCaptureScreenshot } from "./hooks/useCaptureScreenShot";
+import { useDisplayModeControl } from "./hooks/useDisplayModeControl";
+import { useTabs } from "./hooks/useTabs";
 
 const styles = {
   popupContainer: css({
@@ -58,42 +43,44 @@ const styles = {
 };
 
 export function App() {
-  const [windowOnly, setWindowOnly] = createSignal(false);
-  const [selectedIndex, setSelectedIndex] = createSignal(1);
-  const [settings, setSettings] = createSignal<Settings | null>(null);
-  const [showKeybindingsModal, setShowKeybindingsModal] = createSignal(false);
-  const [currentWindowId, setCurrentWindowId] = createSignal<number | null>(
-    null
-  );
-  const [tabs, { refetch }] = createResource(
-    () => {
-      const wid = currentWindowId();
-      return wid !== null ? { windowOnly: windowOnly(), windowId: wid } : null;
+  const [getSelectedIndex, setSelectedIndex] = createSignal(1);
+  const [getShouldShowKeybindingsModal, setShouldShowKeybindingsModal] =
+    createSignal(false);
+
+  const [settings] = createResource(loadSettings);
+  const [windowInstance] = createResource(getWindowInstance);
+
+  const { displayMode, toggleMode } = useDisplayModeControl({
+    settings: settings,
+    onToggleMode: () => {
+      setSelectedIndex(1);
     },
-    (params) =>
-      params !== null
-        ? getMRUTabs(params.windowOnly, params.windowId)
-        : Promise.resolve([])
-  );
-  const themeControl = createMemo(createThemeControl);
+  });
+
+  const { tabs, refetchTabs } = useTabs({ windowInstance, displayMode });
 
   // Get selected tab for preview display
   const selectedTab = createMemo(() => {
     const tabList = tabs();
-    const index = selectedIndex();
+    const index = getSelectedIndex();
     return tabList?.[index] ?? null;
   });
 
-  function toggleMode() {
-    const newMode = !windowOnly();
-    setWindowOnly(newMode);
-    setSelectedIndex(1);
-    saveWindowOnlyMode(newMode);
+  function handleSelect(index: number) {
+    const tabList = tabs();
+    const tab = tabList?.[index];
+    if (tab) {
+      switchToTab(tab.id);
+    }
+  }
+
+  function handleOpenSettings() {
+    openOptionsPage();
   }
 
   // Keyboard handling via hook
   usePopupKeyboard({
-    settings,
+    settings: settings,
     onMoveDown: () => {
       const tabList = tabs();
       if (tabList) {
@@ -104,150 +91,64 @@ export function App() {
       setSelectedIndex((i) => Math.max(i - 1, 0));
     },
     onConfirm: () => {
-      const tabList = tabs();
-      const tab = tabList?.[selectedIndex()];
-      if (tab) {
-        switchToTab(tab.id);
-      }
+      handleSelect(getSelectedIndex());
     },
     onCancel: () => {
       window.close();
     },
-    onToggleMode: toggleMode,
+    onToggleMode: () => {
+      toggleMode();
+    },
   });
 
-  function handleSelect(index: number) {
-    const tabList = tabs();
-    if (tabList && tabList[index]) {
-      switchToTab(tabList[index].id);
-    }
-  }
-
-  function handleOpenSettings() {
-    openOptionsPage();
-  }
-
-  let port: chrome.runtime.Port | undefined;
-
-  // Handle close popup message from background
-  function handlePortMessage(message: {
-    type: string;
-    selectFocused?: boolean;
-  }) {
-    if (message.type === "CLOSE_POPUP") {
-      if (message.selectFocused) {
-        const tabList = tabs();
-        const tab = tabList?.[selectedIndex()];
-        if (tab) {
-          switchToTab(tab.id);
-          return;
-        }
+  // Port communication via hook
+  usePopupPort({
+    onClosePopup: (selectFocused) => {
+      if (selectFocused) {
+        handleSelect(getSelectedIndex());
       }
       window.close();
-    }
-  }
-
-  onMount(async () => {
-    // Connect to background to track popup state
-    port = connectPopup();
-    port.onMessage.addListener(handlePortMessage);
-
-    const [currentWindow, loadedSettings] = await Promise.all([
-      getCurrentWindow(),
-      loadSettings(),
-    ]);
-
-    // Check for launch info (from mode-fixed shortcuts)
-    const launchInfo = await getLaunchInfo();
-
-    let initialWindowOnly = false;
-
-    if (launchInfo?.mode !== null && launchInfo?.mode !== undefined) {
-      // Use the override mode from shortcut
-      initialWindowOnly = launchInfo.mode === "currentWindow";
-      // Clear the info after use
-      await clearLaunchInfo();
-    } else {
-      // Opened via _execute_action (direct popup open)
-      // Determine initial mode based on defaultMode setting
-      switch (loadedSettings.defaultMode) {
-        case "all":
-          initialWindowOnly = false;
-          break;
-        case "currentWindow":
-          initialWindowOnly = true;
-          break;
-        case "lastUsed":
-          initialWindowOnly = await loadWindowOnlyMode();
-          break;
-      }
-    }
-
-    setWindowOnly(initialWindowOnly);
-    setSettings(loadedSettings);
-    themeControl().applyTheme(loadedSettings.themePreference);
-
-    if (currentWindow.id !== undefined) {
-      setCurrentWindowId(currentWindow.id);
-    }
-
-    // Capture current tab and refresh to get updated thumbnail
-    const thumbnailConfig =
-      THUMBNAIL_QUALITIES[loadedSettings.thumbnailQuality];
-    captureCurrentTab(currentWindow.id, thumbnailConfig).then(() => {
-      refetch();
-    });
+    },
   });
 
-  onCleanup(() => {
-    port?.disconnect();
-    themeControl().cleanup();
-  });
+  useCaptureScreenshot({ windowInstance, settings, refetchTabs });
 
-  const isPreviewEnabled = () => settings()?.previewModeEnabled ?? false;
+  const isPreviewEnabled = settings()?.previewModeEnabled ?? false;
 
   return (
-    <PopupWindow settings={settings()}>
+    <PopupWindow settings={settings}>
       <div
-        class={`${styles.popupContainer} ${isPreviewEnabled() ? styles.popupContainerPreviewEnabled : ""}`}
+        class={`${styles.popupContainer} ${isPreviewEnabled ? styles.popupContainerPreviewEnabled : ""}`}
       >
-        <Show when={isPreviewEnabled()}>
+        <Show when={isPreviewEnabled}>
           <PreviewPanel selectedTab={selectedTab()} />
         </Show>
 
-        <div class={styles.mainContent}>
-          <Show
-            when={tabs()}
-            fallback={<div class={styles.empty}>Loading tabs...</div>}
-          >
-            {(tabList) => (
-              <Show
-                when={tabList().length > 0}
-                fallback={<div class={styles.empty}>No recent tabs</div>}
-              >
-                <TabList
-                  tabs={tabList()}
-                  selectedIndex={selectedIndex()}
-                  onSelect={handleSelect}
-                  showTabIndex={windowOnly()}
-                />
-              </Show>
-            )}
-          </Show>
+        <Show when={displayMode()}>
+          {(displayMode) => (
+            <div class={styles.mainContent}>
+              <TabList
+                tabs={tabs() ?? []}
+                selectedIndex={getSelectedIndex()}
+                onSelect={handleSelect}
+                showTabIndex={displayMode() === "currentWindow"}
+              />
 
-          <Footer
-            windowOnly={windowOnly()}
-            onToggleMode={toggleMode}
-            onOpenKeybindings={() => setShowKeybindingsModal(true)}
-            onOpenSettings={handleOpenSettings}
-          />
-        </div>
+              <Footer
+                windowOnly={displayMode() === "currentWindow"}
+                onToggleMode={toggleMode}
+                onOpenKeybindings={() => setShouldShowKeybindingsModal(true)}
+                onOpenSettings={handleOpenSettings}
+              />
+            </div>
+          )}
+        </Show>
 
-        <Show when={showKeybindingsModal() && settings()}>
+        <Show when={getShouldShowKeybindingsModal() && settings()}>
           {(currentSettings) => (
             <KeybindingsModal
               settings={currentSettings()}
-              onClose={() => setShowKeybindingsModal(false)}
+              onClose={() => setShouldShowKeybindingsModal(false)}
               onOpenSettings={handleOpenSettings}
             />
           )}

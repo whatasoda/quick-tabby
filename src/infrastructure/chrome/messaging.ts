@@ -91,6 +91,6 @@ export function openOptionsPage(): void {
 /**
  * Get the current window
  */
-export async function getCurrentWindow(): Promise<chrome.windows.Window> {
+export async function getWindowInstance(): Promise<chrome.windows.Window> {
   return chrome.windows.getCurrent();
 }

@@ -1,4 +1,13 @@
-import { createSignal, onCleanup, Show, type JSX } from "solid-js";
+import {
+  createEffect,
+  createMemo,
+  createSignal,
+  onCleanup,
+  Show,
+  type Accessor,
+  type JSX,
+  type Resource,
+} from "solid-js";
 import { css } from "../../../styled-system/css";
 import type { Settings } from "../../core/settings/settings-types.ts";
 import {
@@ -7,6 +16,7 @@ import {
   getTabListWidth,
   getMaxPopupWidth,
 } from "../../core/settings/settings-defaults.ts";
+import { createThemeControl } from "../../shared/theme.ts";
 
 const styles = {
   loading: css({
@@ -43,29 +53,34 @@ function applyPopupSize(settings: Settings) {
 }
 
 interface PopupWindowProps {
-  settings: Settings | null;
+  settings: Accessor<Settings | null> | Resource<Settings | null>;
   children: JSX.Element;
 }
 
 export function PopupWindow(props: PopupWindowProps) {
   const [showFallback, setShowFallback] = createSignal(false);
+  const themeControl = createMemo(createThemeControl);
 
-  const timer = setTimeout(() => setShowFallback(true), 200);
-  onCleanup(() => clearTimeout(timer));
+  createEffect<(() => void) | undefined>((cleanUp) => {
+    cleanUp?.();
 
-  // Apply size when settings become available
-  const settingsReady = () => {
-    const s = props.settings;
-    if (s) {
-      applyPopupSize(s);
-      return true;
+    const settings = props.settings();
+    if (settings) {
+      applyPopupSize(settings);
+      themeControl().applyTheme(settings.themePreference);
+    } else {
+      const timer = setTimeout(() => setShowFallback(true), 200);
+      return () => clearTimeout(timer);
     }
-    return false;
-  };
+  });
+
+  onCleanup(() => {
+    themeControl().cleanup();
+  });
 
   return (
     <Show
-      when={settingsReady()}
+      when={props.settings()}
       fallback={
         <Show when={showFallback()}>
           <div class={styles.loading}>Loading...</div>

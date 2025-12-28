@@ -16,13 +16,13 @@ import type { CommandName } from "../core/settings/settings-types.ts";
 /**
  * Launch mode override for popup
  */
-export type LaunchModeOverride = "all" | "currentWindow" | null;
+export type DisplayMode = "all" | "currentWindow" | null;
 
 /**
  * Launch info tracking which command opened the popup
  */
 export interface LaunchInfo {
-  mode: LaunchModeOverride;
+  mode: DisplayMode;
   command: CommandName | null;
 }
 
@@ -86,7 +86,8 @@ export function createCommandHandlerService(
     if (!popupPort) return false;
 
     const settings = await deps.settingsService.load();
-    const selectFocused = settings.commandSettings[command]?.selectOnClose ?? true;
+    const selectFocused =
+      settings.commandSettings[command]?.selectOnClose ?? true;
 
     try {
       popupPort.postMessage({ type: "CLOSE_POPUP", selectFocused });

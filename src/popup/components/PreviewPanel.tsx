@@ -59,7 +59,7 @@ const styles = {
     textOverflow: "ellipsis",
     display: "-webkit-box",
     WebkitLineClamp: 2,
-    WebkitBoxOrient: "vertical",
+    boxOrient: "vertical",
   }),
   url: css({
     fontSize: "sm",

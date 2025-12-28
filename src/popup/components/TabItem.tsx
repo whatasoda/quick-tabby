@@ -82,7 +82,8 @@ const styles = {
     justifyContent: "center",
     width: "100%",
     height: "100%",
-    background: "linear-gradient(135deg, token(colors.surface) 0%, token(colors.surfaceHover) 100%)",
+    background:
+      "linear-gradient(135deg, token(colors.surface) 0%, token(colors.surfaceHover) 100%)",
   }),
   tabFaviconLarge: css({
     width: "24px",
@@ -95,7 +96,7 @@ const styles = {
     color: "text.secondary",
     display: "-webkit-box",
     WebkitLineClamp: 2,
-    WebkitBoxOrient: "vertical",
+    boxOrient: "vertical",
     overflow: "hidden",
     wordBreak: "break-all",
     minWidth: 0,

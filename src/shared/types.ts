@@ -25,18 +25,22 @@ export interface MRUState {
   byWindow: Record<number, number[]>;
 }
 
-export type LaunchModeOverride = "all" | "currentWindow" | null;
+export type DisplayMode = "all" | "currentWindow" | null;
 
 // Launch info tracking which command opened the popup
 export interface LaunchInfo {
-  mode: LaunchModeOverride;
+  mode: DisplayMode;
   command: CommandName | null;
 }
 
 export type MessageType =
   | { type: "GET_MRU_TABS"; windowOnly?: boolean; windowId?: number }
   | { type: "SWITCH_TO_TAB"; tabId: number }
-  | { type: "CAPTURE_CURRENT_TAB"; windowId?: number; thumbnailConfig?: ThumbnailConfig }
+  | {
+      type: "CAPTURE_CURRENT_TAB";
+      windowId?: number;
+      thumbnailConfig?: ThumbnailConfig;
+    }
   | { type: "GET_LAUNCH_INFO" }
   | { type: "CLEAR_LAUNCH_INFO" }
   | { type: "POPUP_OPENED" }
