@@ -1,6 +1,9 @@
 export type {
+  AlarmCreateInfo,
+  AlarmInfo,
   CaptureVisibleTabOptions,
   ChromeActionAPI,
+  ChromeAlarmsAPI,
   ChromeAPI,
   ChromeCommandsAPI,
   ChromeEvent,
@@ -24,6 +27,7 @@ export type {
 } from "./types.ts";
 
 import { createChromeAction } from "./action.ts";
+import { createChromeAlarms } from "./alarms.ts";
 import { createChromeCommands } from "./commands.ts";
 import { createChromeRuntime } from "./runtime.ts";
 import { createChromeStorage } from "./storage.ts";
@@ -39,16 +43,18 @@ export function createChromeAPI(): ChromeAPI {
     runtime: createChromeRuntime(),
     commands: createChromeCommands(),
     action: createChromeAction(),
+    alarms: createChromeAlarms(),
   };
 }
 
 export {
+  createChromeAction,
+  createChromeAlarms,
+  createChromeCommands,
+  createChromeRuntime,
   createChromeStorage,
   createChromeTabs,
   createChromeWindows,
-  createChromeRuntime,
-  createChromeCommands,
-  createChromeAction,
 };
 
 export * from "./messaging.ts";

@@ -46,6 +46,13 @@ export interface ThumbnailStore {
   prune(maxCount: number): Promise<void>;
 
   /**
+   * Delete thumbnails older than maxAge milliseconds
+   * @param maxAge - Maximum age in milliseconds
+   * @returns Number of deleted thumbnails
+   */
+  deleteExpired(maxAge: number): Promise<number>;
+
+  /**
    * Check if the database is initialized
    */
   isInitialized(): boolean;

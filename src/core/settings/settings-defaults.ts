@@ -2,7 +2,7 @@
  * Default settings values
  */
 
-import type { Settings, ThumbnailConfig } from "./settings-types.ts";
+import type { Settings, ThumbnailConfig, ThumbnailTTL } from "./settings-types.ts";
 
 /**
  * Default application settings
@@ -11,6 +11,7 @@ export const DEFAULT_SETTINGS: Settings = {
   popupSize: "medium",
   previewModeEnabled: false,
   thumbnailQuality: "standard",
+  thumbnailTTL: "24h",
   defaultMode: "lastUsed",
   themePreference: "auto",
   keybindings: {
@@ -35,6 +36,16 @@ export const THUMBNAIL_QUALITIES = {
   high: { size: 400, captureQuality: 85, resizeQuality: 0.9 },
   ultra: { size: 800, captureQuality: 95, resizeQuality: 0.95 },
 } as const satisfies Record<string, ThumbnailConfig>;
+
+/**
+ * Thumbnail TTL values in milliseconds
+ */
+export const THUMBNAIL_TTL_MS = {
+  "1h": 60 * 60 * 1000,
+  "24h": 24 * 60 * 60 * 1000,
+  "7d": 7 * 24 * 60 * 60 * 1000,
+  "30d": 30 * 24 * 60 * 60 * 1000,
+} as const satisfies Record<ThumbnailTTL, number>;
 
 /**
  * Popup size presets (height in pixels)

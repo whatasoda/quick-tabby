@@ -20,3 +20,8 @@ export type {
   ThumbnailCacheService,
 } from "./thumbnail-cache.service.ts";
 export { createThumbnailCacheService } from "./thumbnail-cache.service.ts";
+export type {
+  ThumbnailCleanupDependencies,
+  ThumbnailCleanupService,
+} from "./thumbnail-cleanup.service.ts";
+export { createThumbnailCleanupService } from "./thumbnail-cleanup.service.ts";

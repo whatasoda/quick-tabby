@@ -11,6 +11,7 @@ import {
   createMRUTrackerService,
   createSettingsService,
   createThumbnailCacheService,
+  createThumbnailCleanupService,
 } from "../services/index.ts";
 import type { MessageResponse, MessageType } from "../shared/types.ts";
 
@@ -43,6 +44,12 @@ const commandHandler = createCommandHandlerService({
   settingsService,
 });
 
+const thumbnailCleanup = createThumbnailCleanupService({
+  alarms: chromeAPI.alarms,
+  thumbnailStore,
+  settingsService,
+});
+
 // =============================================================================
 // Initialization
 // =============================================================================
@@ -51,6 +58,7 @@ const commandHandler = createCommandHandlerService({
   await thumbnailCache.initialize();
   await mruTracker.initialize();
   commandHandler.initialize();
+  thumbnailCleanup.initialize();
   console.log("QuickTabby background service worker initialized");
 })();
 

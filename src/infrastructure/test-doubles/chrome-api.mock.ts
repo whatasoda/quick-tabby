@@ -6,7 +6,9 @@
  */
 
 import type {
+  AlarmInfo,
   ChromeActionAPI,
+  ChromeAlarmsAPI,
   ChromeAPI,
   ChromeCommandsAPI,
   ChromeRuntimeAPI,
@@ -367,6 +369,53 @@ export function createMockAction(): ChromeActionAPI & {
 }
 
 // =============================================================================
+// Mock Alarms
+// =============================================================================
+
+export function createMockAlarms(): ChromeAlarmsAPI & {
+  _alarms: Map<string, AlarmInfo>;
+  _triggerAlarm: (name: string) => void;
+} {
+  const alarms = new Map<string, AlarmInfo>();
+  const alarmListeners: ((alarm: AlarmInfo) => void)[] = [];
+
+  return {
+    _alarms: alarms,
+    _triggerAlarm: (name: string) => {
+      const alarm = alarms.get(name);
+      if (alarm) {
+        alarmListeners.forEach((cb) => cb(alarm));
+      }
+    },
+
+    create(name, alarmInfo) {
+      const alarm: AlarmInfo = {
+        name,
+        scheduledTime: alarmInfo.when ?? Date.now() + (alarmInfo.delayInMinutes ?? 0) * 60 * 1000,
+        periodInMinutes: alarmInfo.periodInMinutes,
+      };
+      alarms.set(name, alarm);
+    },
+
+    async clear(name) {
+      const existed = alarms.has(name);
+      alarms.delete(name);
+      return existed;
+    },
+
+    onAlarm: {
+      addListener(callback) {
+        alarmListeners.push(callback);
+      },
+      removeListener(callback) {
+        const index = alarmListeners.indexOf(callback);
+        if (index >= 0) alarmListeners.splice(index, 1);
+      },
+    },
+  };
+}
+
+// =============================================================================
 // Full Mock Chrome API
 // =============================================================================
 
@@ -383,5 +432,6 @@ export function createMockChromeAPI(options?: MockChromeAPIOptions): ChromeAPI {
     runtime: createMockRuntime(),
     commands: createMockCommands(),
     action: createMockAction(),
+    alarms: createMockAlarms(),
   };
 }

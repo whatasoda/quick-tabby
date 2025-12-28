@@ -67,5 +67,19 @@ export function createMockThumbnailStore(): ThumbnailStore & {
         thumbnails.set(tabId, thumbnail);
       }
     },
+
+    async deleteExpired(maxAge: number): Promise<number> {
+      const expirationTime = Date.now() - maxAge;
+      let deleted = 0;
+
+      for (const [tabId, thumbnail] of thumbnails) {
+        if (thumbnail.capturedAt < expirationTime) {
+          thumbnails.delete(tabId);
+          deleted++;
+        }
+      }
+
+      return deleted;
+    },
   };
 }
