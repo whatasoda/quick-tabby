@@ -50,3 +50,5 @@ export {
   createChromeCommands,
   createChromeAction,
 };
+
+export * from "./messaging.ts";
