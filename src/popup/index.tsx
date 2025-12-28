@@ -21,11 +21,8 @@ import { useTabs } from "./hooks/useTabs";
 const styles = {
   popupContainer: css({
     display: "flex",
-    flexDirection: "column",
     flex: 1,
     minHeight: 0,
-  }),
-  popupContainerPreviewEnabled: css({
     flexDirection: "row",
   }),
   mainContent: css({
@@ -35,16 +32,11 @@ const styles = {
     display: "flex",
     flexDirection: "column",
   }),
-  empty: css({
-    padding: "xl",
-    textAlign: "center",
-    color: "text.secondary",
-  }),
 };
 
 export function App() {
-  const [getSelectedIndex, setSelectedIndex] = createSignal(1);
-  const [getShouldShowKeybindingsModal, setShouldShowKeybindingsModal] =
+  const [selectedIndex, setSelectedIndex] = createSignal(1);
+  const [shouldShowKeybindingsModal, setShouldShowKeybindingsModal] =
     createSignal(false);
 
   const [settings] = createResource(loadSettings);
@@ -62,7 +54,7 @@ export function App() {
   // Get selected tab for preview display
   const selectedTab = createMemo(() => {
     const tabList = tabs();
-    const index = getSelectedIndex();
+    const index = selectedIndex();
     return tabList?.[index] ?? null;
   });
 
@@ -91,7 +83,7 @@ export function App() {
       setSelectedIndex((i) => Math.max(i - 1, 0));
     },
     onConfirm: () => {
-      handleSelect(getSelectedIndex());
+      handleSelect(selectedIndex());
     },
     onCancel: () => {
       window.close();
@@ -105,7 +97,7 @@ export function App() {
   usePopupPort({
     onClosePopup: (selectFocused) => {
       if (selectFocused) {
-        handleSelect(getSelectedIndex());
+        handleSelect(selectedIndex());
       }
       window.close();
     },
@@ -113,14 +105,10 @@ export function App() {
 
   useCaptureScreenshot({ windowInstance, settings, refetchTabs });
 
-  const isPreviewEnabled = settings()?.previewModeEnabled ?? false;
-
   return (
     <PopupWindow settings={settings}>
-      <div
-        class={`${styles.popupContainer} ${isPreviewEnabled ? styles.popupContainerPreviewEnabled : ""}`}
-      >
-        <Show when={isPreviewEnabled}>
+      <div class={styles.popupContainer}>
+        <Show when={settings()?.previewModeEnabled ?? false}>
           <PreviewPanel selectedTab={selectedTab()} />
         </Show>
 
@@ -129,7 +117,7 @@ export function App() {
             <div class={styles.mainContent}>
               <TabList
                 tabs={tabs() ?? []}
-                selectedIndex={getSelectedIndex()}
+                selectedIndex={selectedIndex()}
                 onSelect={handleSelect}
                 showTabIndex={displayMode() === "currentWindow"}
               />
@@ -144,7 +132,7 @@ export function App() {
           )}
         </Show>
 
-        <Show when={getShouldShowKeybindingsModal() && settings()}>
+        <Show when={shouldShowKeybindingsModal() && settings()}>
           {(currentSettings) => (
             <KeybindingsModal
               settings={currentSettings()}
