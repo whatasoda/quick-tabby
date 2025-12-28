@@ -46,7 +46,7 @@ export function TabList(props: TabListProps) {
   createEffect(() => {
     const index = props.selectedIndex;
     if (index >= 0 && index < props.tabs.length) {
-      virtualizer.scrollToIndex(index, { align: "auto", behavior: "smooth" });
+      virtualizer.scrollToIndex(index, { align: "auto" });
     }
   });
 
