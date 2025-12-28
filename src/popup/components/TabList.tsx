@@ -1,5 +1,5 @@
 import { createVirtualizer } from "@tanstack/solid-virtual";
-import { createEffect, createSignal, For, Show } from "solid-js";
+import { createEffect, For, Show } from "solid-js";
 import { css } from "../../../styled-system/css";
 import type { TabInfo } from "../../shared/types.ts";
 import { TabItem } from "./TabItem.tsx";
@@ -32,13 +32,13 @@ const styles = {
 };
 
 export function TabList(props: TabListProps) {
-  const [scrollElement, setScrollElement] = createSignal<HTMLDivElement | null>(null);
+  let scrollElement!: HTMLDivElement;
 
   const virtualizer = createVirtualizer({
     get count() {
       return props.tabs.length;
     },
-    getScrollElement: () => scrollElement(),
+    getScrollElement: () => scrollElement,
     estimateSize: () => TAB_ITEM_HEIGHT,
     overscan: 3,
   });
@@ -51,7 +51,7 @@ export function TabList(props: TabListProps) {
   });
 
   return (
-    <div class={styles.tabListContainer} ref={setScrollElement}>
+    <div class={styles.tabListContainer} ref={scrollElement}>
       <div class={styles.tabListInner} style={{ height: `${virtualizer.getTotalSize()}px` }}>
         <For each={virtualizer.getVirtualItems()}>
           {(virtualItem) => {
