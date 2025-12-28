@@ -2,7 +2,7 @@
  * Settings Migration Tests
  */
 
-import { describe, expect, test } from "bun:test";
+import { describe, expect, test } from "vitest";
 import { DEFAULT_SETTINGS } from "./settings-defaults.ts";
 import { migrateSettings } from "./settings-migration.ts";
 

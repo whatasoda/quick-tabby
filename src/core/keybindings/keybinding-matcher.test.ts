@@ -2,7 +2,7 @@
  * Keybinding Matcher Tests
  */
 
-import { describe, expect, test } from "bun:test";
+import { describe, expect, test } from "vitest";
 import {
   isValidKeybindingKey,
   type KeyEvent,
