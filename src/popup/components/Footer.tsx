@@ -1,5 +1,5 @@
-import { css } from "../../../styled-system/css";
 import { FiHelpCircle, FiSettings } from "solid-icons/fi";
+import { css } from "../../../styled-system/css";
 
 const styles = {
   footer: css({
@@ -79,11 +79,7 @@ export function Footer(props: FooterProps) {
         >
           <FiHelpCircle size={16} />
         </button>
-        <button
-          class={styles.iconButton}
-          onClick={props.onOpenSettings}
-          title="設定"
-        >
+        <button class={styles.iconButton} onClick={props.onOpenSettings} title="設定">
           <FiSettings size={16} />
         </button>
       </div>

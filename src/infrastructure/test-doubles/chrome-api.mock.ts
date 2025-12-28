@@ -6,17 +6,18 @@
  */
 
 import type {
+  ChromeActionAPI,
   ChromeAPI,
+  ChromeCommandsAPI,
+  ChromeRuntimeAPI,
   ChromeStorageAPI,
   ChromeStorageArea,
   ChromeTabsAPI,
   ChromeWindowsAPI,
-  ChromeRuntimeAPI,
-  ChromeCommandsAPI,
-  ChromeActionAPI,
+  MessageSender,
+  Port,
   TabInfo,
   WindowInfo,
-  Port,
 } from "../chrome/types.ts";
 
 // =============================================================================
@@ -33,8 +34,8 @@ export function createMockStorageArea(): ChromeStorageArea & {
     _data: data,
     _clear: () => data.clear(),
 
-    async get<K extends string>(key: K) {
-      return { [key]: data.get(key) } as { [P in K]: unknown | undefined };
+    async get<T = unknown>(key: string) {
+      return { [key]: data.get(key) } as Record<string, T | undefined>;
     },
 
     async set(items: Record<string, unknown>) {
@@ -77,7 +78,10 @@ export function createMockTabs(options?: MockTabsOptions): ChromeTabsAPI & {
 } {
   let tabs = options?.tabs ?? [];
   const activatedListeners: ((info: { tabId: number; windowId: number }) => void)[] = [];
-  const removedListeners: ((tabId: number, info: { windowId: number; isWindowClosing: boolean }) => void)[] = [];
+  const removedListeners: ((
+    tabId: number,
+    info: { windowId: number; isWindowClosing: boolean },
+  ) => void)[] = [];
 
   return {
     _tabs: tabs,
@@ -172,7 +176,7 @@ export function createMockWindows(options?: MockWindowsOptions): ChromeWindowsAP
   _setCurrentWindowId: (id: number) => void;
   _triggerRemoved: (windowId: number) => void;
 } {
-  let windows = options?.windows ?? [{ id: 1, focused: true }];
+  const windows = options?.windows ?? [{ id: 1, focused: true }];
   let currentWindowId = 1;
   const removedListeners: ((windowId: number) => void)[] = [];
 
@@ -187,7 +191,9 @@ export function createMockWindows(options?: MockWindowsOptions): ChromeWindowsAP
     },
 
     async getCurrent() {
-      return windows.find((w) => w.id === currentWindowId) ?? { id: currentWindowId, focused: true };
+      return (
+        windows.find((w) => w.id === currentWindowId) ?? { id: currentWindowId, focused: true }
+      );
     },
 
     async update(windowId, updateInfo) {
@@ -227,7 +233,11 @@ export function createMockRuntime(): ChromeRuntimeAPI & {
   const messages: unknown[] = [];
   const ports: Port[] = [];
   const connectListeners: ((port: Port) => void)[] = [];
-  const messageListeners: ((message: unknown, sender: unknown, sendResponse: (r: unknown) => void) => void)[] = [];
+  const messageListeners: ((
+    message: unknown,
+    sender: MessageSender,
+    sendResponse: (response: unknown) => void,
+  ) => boolean | undefined)[] = [];
 
   return {
     _messages: messages,
@@ -237,7 +247,7 @@ export function createMockRuntime(): ChromeRuntimeAPI & {
       connectListeners.forEach((cb) => cb(port));
     },
     _triggerMessage: (message: unknown, sendResponse: (response: unknown) => void) => {
-      messageListeners.forEach((cb) => cb(message, {}, sendResponse));
+      messageListeners.forEach((cb) => cb(message, {} as MessageSender, sendResponse));
     },
 
     async sendMessage<TMessage, TResponse>(message: TMessage): Promise<TResponse> {

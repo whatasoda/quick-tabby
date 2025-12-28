@@ -1,6 +1,6 @@
-import { onMount, onCleanup, type Accessor, type Resource } from "solid-js";
-import type { Settings } from "../../core/settings/settings-types.ts";
+import { type Accessor, onCleanup, onMount, type Resource } from "solid-js";
 import { matchesAnyKeybinding } from "../../core/keybindings/keybinding-matcher.ts";
+import type { Settings } from "../../core/settings/settings-types.ts";
 
 interface UsePopupKeyboardOptions {
   settings: Accessor<Settings | null> | Resource<Settings | null>;
@@ -12,8 +12,7 @@ interface UsePopupKeyboardOptions {
 }
 
 export function usePopupKeyboard(options: UsePopupKeyboardOptions) {
-  const { settings, onMoveDown, onMoveUp, onConfirm, onCancel, onToggleMode } =
-    options;
+  const { settings, onMoveDown, onMoveUp, onConfirm, onCancel, onToggleMode } = options;
 
   function handleKeyDown(e: KeyboardEvent) {
     const currentSettings = settings();
@@ -21,10 +20,7 @@ export function usePopupKeyboard(options: UsePopupKeyboardOptions) {
 
     const { keybindings } = currentSettings;
 
-    if (
-      matchesAnyKeybinding(e, keybindings.moveDown) ||
-      e.key === "ArrowDown"
-    ) {
+    if (matchesAnyKeybinding(e, keybindings.moveDown) || e.key === "ArrowDown") {
       e.preventDefault();
       onMoveDown();
       return;

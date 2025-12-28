@@ -2,9 +2,7 @@ import type { ThemePreference } from "../core/settings/settings-types.ts";
 
 function getEffectiveTheme(preference: ThemePreference): "light" | "dark" {
   if (preference === "auto") {
-    return window.matchMedia("(prefers-color-scheme: dark)").matches
-      ? "dark"
-      : "light";
+    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
   }
   return preference;
 }
@@ -14,10 +12,7 @@ function applyTheme(preference: ThemePreference): void {
   document.documentElement.setAttribute("data-theme", theme);
 }
 
-function setupThemeListener(
-  preference: ThemePreference,
-  onThemeChange: () => void
-): () => void {
+function setupThemeListener(preference: ThemePreference, onThemeChange: () => void): () => void {
   if (preference !== "auto") {
     return () => {};
   }
@@ -35,9 +30,7 @@ export function createThemeControl() {
     applyTheme: (preference: ThemePreference) => {
       applyTheme(preference);
       cleanupThemeListener?.();
-      cleanupThemeListener = setupThemeListener(preference, () =>
-        applyTheme(preference)
-      );
+      cleanupThemeListener = setupThemeListener(preference, () => applyTheme(preference));
     },
     cleanup: () => {
       cleanupThemeListener?.();

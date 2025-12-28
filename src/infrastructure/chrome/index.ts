@@ -1,35 +1,35 @@
 export type {
+  CaptureVisibleTabOptions,
+  ChromeActionAPI,
   ChromeAPI,
+  ChromeCommandsAPI,
+  ChromeEvent,
+  ChromeRuntimeAPI,
   ChromeStorageAPI,
   ChromeStorageArea,
   ChromeTabsAPI,
   ChromeWindowsAPI,
-  ChromeRuntimeAPI,
-  ChromeCommandsAPI,
-  ChromeActionAPI,
-  ChromeEvent,
-  TabInfo,
-  TabActiveInfo,
-  TabRemoveInfo,
-  TabQueryInfo,
-  TabUpdateProperties,
-  CaptureVisibleTabOptions,
-  WindowInfo,
-  WindowUpdateInfo,
-  WindowGetInfo,
-  Port,
+  Command,
   ConnectInfo,
   MessageSender,
-  Command,
+  Port,
+  TabActiveInfo,
+  TabInfo,
+  TabQueryInfo,
+  TabRemoveInfo,
+  TabUpdateProperties,
+  WindowGetInfo,
+  WindowInfo,
+  WindowUpdateInfo,
 } from "./types.ts";
 
-import type { ChromeAPI } from "./types.ts";
+import { createChromeAction } from "./action.ts";
+import { createChromeCommands } from "./commands.ts";
+import { createChromeRuntime } from "./runtime.ts";
 import { createChromeStorage } from "./storage.ts";
 import { createChromeTabs } from "./tabs.ts";
+import type { ChromeAPI } from "./types.ts";
 import { createChromeWindows } from "./windows.ts";
-import { createChromeRuntime } from "./runtime.ts";
-import { createChromeCommands } from "./commands.ts";
-import { createChromeAction } from "./action.ts";
 
 export function createChromeAPI(): ChromeAPI {
   return {

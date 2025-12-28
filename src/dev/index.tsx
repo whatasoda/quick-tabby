@@ -1,9 +1,9 @@
-import { render } from "solid-js/web";
 import { createSignal, Show } from "solid-js";
+import { render } from "solid-js/web";
 import "./index.css";
 import { setupChromeMock } from "./mocks/chrome-api.ts";
-import { PopupPreview } from "./previews/PopupPreview.tsx";
 import { OptionsPreview } from "./previews/OptionsPreview.tsx";
+import { PopupPreview } from "./previews/PopupPreview.tsx";
 
 // Setup Chrome API mock before any component imports
 setupChromeMock();

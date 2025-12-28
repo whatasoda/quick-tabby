@@ -73,8 +73,7 @@ export const mockTabs: TabInfo[] = [
     id: 8,
     windowId: 1,
     index: 4,
-    title:
-      "Very Long Tab Title That Should Be Truncated When Displayed In The UI Component",
+    title: "Very Long Tab Title That Should Be Truncated When Displayed In The UI Component",
     url: "https://example.com/very/long/path/that/should/also/be/truncated",
     favIconUrl: "https://example.com/favicon.ico",
     thumbnailUrl:
@@ -82,10 +81,7 @@ export const mockTabs: TabInfo[] = [
   },
 ];
 
-export function getMockTabs(
-  windowOnly: boolean = false,
-  windowId: number = 1
-): TabInfo[] {
+export function getMockTabs(windowOnly: boolean = false, windowId: number = 1): TabInfo[] {
   if (windowOnly) {
     return mockTabs.filter((tab) => tab.windowId === windowId);
   }

@@ -2,11 +2,11 @@
  * IndexedDB Type Guards Tests
  */
 
-import { describe, expect, test } from "bun:test";
+import { describe, expect, test } from "vitest";
 import {
+  isIDBCursorWithValue,
   isIDBOpenDBRequest,
   isIDBRequest,
-  isIDBCursorWithValue,
   isStoredThumbnail,
 } from "./type-guards.ts";
 

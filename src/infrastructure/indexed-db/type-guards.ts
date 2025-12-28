@@ -10,9 +10,7 @@ import type { StoredThumbnail } from "./types.ts";
 /**
  * Type guard to check if an EventTarget is an IDBOpenDBRequest
  */
-export function isIDBOpenDBRequest(
-  target: EventTarget | null
-): target is IDBOpenDBRequest {
+export function isIDBOpenDBRequest(target: EventTarget | null): target is IDBOpenDBRequest {
   return (
     target !== null &&
     typeof target === "object" &&
@@ -24,9 +22,7 @@ export function isIDBOpenDBRequest(
 /**
  * Type guard to check if an EventTarget is an IDBRequest
  */
-export function isIDBRequest<T>(
-  target: EventTarget | null
-): target is IDBRequest<T> {
+export function isIDBRequest<T>(target: EventTarget | null): target is IDBRequest<T> {
   return (
     target !== null &&
     typeof target === "object" &&
@@ -39,9 +35,7 @@ export function isIDBRequest<T>(
 /**
  * Type guard to check if a value is an IDBCursorWithValue
  */
-export function isIDBCursorWithValue(
-  value: unknown
-): value is IDBCursorWithValue {
+export function isIDBCursorWithValue(value: unknown): value is IDBCursorWithValue {
   return (
     value !== null &&
     typeof value === "object" &&

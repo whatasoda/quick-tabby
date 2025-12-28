@@ -2,15 +2,15 @@
  * MRU Operations Tests
  */
 
-import { describe, expect, test } from "bun:test";
+import { describe, expect, test } from "vitest";
 import {
   addTabToMRU,
-  removeTabFromMRU,
-  removeWindowFromMRU,
   getMRUList,
   getPreviousTabId,
-  isTabInMRU,
   getTabPosition,
+  isTabInMRU,
+  removeTabFromMRU,
+  removeWindowFromMRU,
 } from "./mru-operations.ts";
 import { EMPTY_MRU_STATE, type MRUState } from "./mru-state.ts";
 

@@ -5,14 +5,10 @@
  * Uses dependency injection for testability.
  */
 
-import type {
-  ChromeActionAPI,
-  ChromeCommandsAPI,
-  Port,
-} from "../infrastructure/chrome/types.ts";
-import type { SettingsService } from "./settings.service.ts";
 import type { CommandName } from "../core/settings/settings-types.ts";
-import type { DisplayMode, LaunchInfo } from "../shared/types.ts";
+import type { ChromeActionAPI, ChromeCommandsAPI, Port } from "../infrastructure/chrome/types.ts";
+import type { LaunchInfo } from "../shared/types.ts";
+import type { SettingsService } from "./settings.service.ts";
 
 /**
  * Command handler service interface
@@ -65,7 +61,7 @@ export interface CommandHandlerDependencies {
  * @returns Command handler service instance
  */
 export function createCommandHandlerService(
-  deps: CommandHandlerDependencies
+  deps: CommandHandlerDependencies,
 ): CommandHandlerService {
   let launchInfo: LaunchInfo = { mode: null, command: null };
   let popupPort: Port | null = null;
@@ -74,8 +70,7 @@ export function createCommandHandlerService(
     if (!popupPort) return false;
 
     const settings = await deps.settingsService.load();
-    const selectFocused =
-      settings.commandSettings[command]?.selectOnClose ?? true;
+    const selectFocused = settings.commandSettings[command]?.selectOnClose ?? true;
 
     try {
       popupPort.postMessage({ type: "CLOSE_POPUP", selectFocused });
@@ -87,10 +82,7 @@ export function createCommandHandlerService(
     }
   }
 
-  async function handleCommand(
-    command: CommandName,
-    mode: "all" | "currentWindow"
-  ): Promise<void> {
+  async function handleCommand(command: CommandName, mode: "all" | "currentWindow"): Promise<void> {
     if (popupPort !== null) {
       // Popup is open, send close message
       await sendCloseMessage(command);

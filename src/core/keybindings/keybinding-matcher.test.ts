@@ -2,16 +2,16 @@
  * Keybinding Matcher Tests
  */
 
-import { describe, expect, test } from "bun:test";
+import { describe, expect, test } from "vitest";
 import {
-  matchesKeybinding,
-  matchesAnyKeybinding,
-  keybindingToString,
-  keybindingsToString,
-  parseShortcut,
   isValidKeybindingKey,
-  keybindingFromEvent,
   type KeyEvent,
+  keybindingFromEvent,
+  keybindingsToString,
+  keybindingToString,
+  matchesAnyKeybinding,
+  matchesKeybinding,
+  parseShortcut,
 } from "./keybinding-matcher.ts";
 
 /**
@@ -98,25 +98,16 @@ describe("matchesKeybinding", () => {
 
   test("should match special keys (Enter, Escape, Tab)", () => {
     expect(
-      matchesKeybinding(
-        createKeyEvent({ key: "Enter", code: "Enter" }),
-        { key: "Enter" }
-      )
+      matchesKeybinding(createKeyEvent({ key: "Enter", code: "Enter" }), { key: "Enter" }),
     ).toBe(true);
 
     expect(
-      matchesKeybinding(
-        createKeyEvent({ key: "Escape", code: "Escape" }),
-        { key: "Escape" }
-      )
+      matchesKeybinding(createKeyEvent({ key: "Escape", code: "Escape" }), { key: "Escape" }),
     ).toBe(true);
 
-    expect(
-      matchesKeybinding(
-        createKeyEvent({ key: "Tab", code: "Tab" }),
-        { key: "Tab" }
-      )
-    ).toBe(true);
+    expect(matchesKeybinding(createKeyEvent({ key: "Tab", code: "Tab" }), { key: "Tab" })).toBe(
+      true,
+    );
   });
 
   test("should handle Mac Alt key character substitution via code", () => {
@@ -170,9 +161,7 @@ describe("keybindingToString", () => {
   test("should join modifiers with '+'", () => {
     expect(keybindingToString({ key: "j", ctrl: true })).toBe("Ctrl+J");
     expect(keybindingToString({ key: "j", alt: true })).toBe("Alt+J");
-    expect(keybindingToString({ key: "j", ctrl: true, shift: true })).toBe(
-      "Ctrl+Shift+J"
-    );
+    expect(keybindingToString({ key: "j", ctrl: true, shift: true })).toBe("Ctrl+Shift+J");
   });
 
   test("should display Meta as 'Cmd'", () => {

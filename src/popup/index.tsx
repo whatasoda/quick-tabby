@@ -1,21 +1,21 @@
-import { createSignal, createResource, createMemo, Show } from "solid-js";
+import { createMemo, createResource, createSignal, Show } from "solid-js";
 import "./index.css";
 import { css } from "../../styled-system/css";
-import { TabList } from "./components/TabList";
-import { KeybindingsModal } from "./components/KeybindingsModal";
-import { PreviewPanel } from "./components/PreviewPanel";
-import { Footer } from "./components/Footer";
-import { PopupWindow } from "./components/PopupWindow";
-import { usePopupKeyboard } from "./hooks/usePopupKeyboard";
-import { usePopupPort } from "./hooks/usePopupPort";
-import { loadSettings } from "../shared/settings";
 import {
-  switchToTab,
-  openOptionsPage,
   getWindowInstance,
+  openOptionsPage,
+  switchToTab,
 } from "../infrastructure/chrome/messaging";
+import { loadSettings } from "../shared/settings";
+import { Footer } from "./components/Footer";
+import { KeybindingsModal } from "./components/KeybindingsModal";
+import { PopupWindow } from "./components/PopupWindow";
+import { PreviewPanel } from "./components/PreviewPanel";
+import { TabList } from "./components/TabList";
 import { useCaptureScreenshot } from "./hooks/useCaptureScreenShot";
 import { useDisplayModeControl } from "./hooks/useDisplayModeControl";
+import { usePopupKeyboard } from "./hooks/usePopupKeyboard";
+import { usePopupPort } from "./hooks/usePopupPort";
 import { useTabs } from "./hooks/useTabs";
 
 const styles = {
@@ -36,8 +36,7 @@ const styles = {
 
 export function App() {
   const [selectedIndex, setSelectedIndex] = createSignal(1);
-  const [shouldShowKeybindingsModal, setShouldShowKeybindingsModal] =
-    createSignal(false);
+  const [shouldShowKeybindingsModal, setShouldShowKeybindingsModal] = createSignal(false);
 
   const [settings] = createResource(loadSettings);
   const [windowInstance] = createResource(getWindowInstance);

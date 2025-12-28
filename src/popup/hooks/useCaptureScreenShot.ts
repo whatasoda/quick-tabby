@@ -1,7 +1,7 @@
 import { type Accessor, createEffect } from "solid-js";
-import { type Settings } from "../../core/settings/settings-types";
-import { captureCurrentTab } from "../../infrastructure/chrome/messaging";
 import { THUMBNAIL_QUALITIES } from "../../core/settings";
+import type { Settings } from "../../core/settings/settings-types";
+import { captureCurrentTab } from "../../infrastructure/chrome/messaging";
 
 interface UseCaptureScreenshotOptions {
   windowInstance: Accessor<chrome.windows.Window | undefined>;
@@ -27,8 +27,7 @@ export function useCaptureScreenshot({
     }
 
     // Capture current tab and refresh to get updated thumbnail
-    const thumbnailConfig =
-      THUMBNAIL_QUALITIES[currentSettings.thumbnailQuality];
+    const thumbnailConfig = THUMBNAIL_QUALITIES[currentSettings.thumbnailQuality];
     void captureCurrentTab(currentWindow.id, thumbnailConfig).then(() => {
       refetchTabs();
     });

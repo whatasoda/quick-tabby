@@ -1,8 +1,8 @@
-import { For, Show, type Accessor } from "solid-js";
+import { type Accessor, For, Show } from "solid-js";
 import { css } from "../../../styled-system/css";
-import type { Settings } from "../../core/settings/settings-types";
 import { keybindingToString } from "../../core/keybindings/keybinding-matcher";
-import { sectionStyles, formStyles } from "./styles";
+import type { Settings } from "../../core/settings/settings-types";
+import { formStyles, sectionStyles } from "./styles";
 
 const styles = {
   keybindingChipGroup: css({
@@ -113,7 +113,6 @@ export function KeybindingsSection(props: KeybindingsSectionProps) {
               >
                 <div
                   class={`${styles.keybindingChip} ${styles.keybindingChipRecording}`}
-                  tabIndex={0}
                   onKeyDown={(e) => props.onKeyDown(e, key)}
                   onBlur={() => props.onStopRecording()}
                   ref={(el) => el?.focus()}

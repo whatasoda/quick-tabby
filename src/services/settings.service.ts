@@ -5,9 +5,9 @@
  * Uses dependency injection for testability.
  */
 
-import type { ChromeStorageAPI } from "../infrastructure/chrome/types.ts";
-import type { Settings } from "../core/settings/settings-types.ts";
 import { migrateSettings } from "../core/settings/settings-migration.ts";
+import type { Settings } from "../core/settings/settings-types.ts";
+import type { ChromeStorageAPI } from "../infrastructure/chrome/types.ts";
 
 const SETTINGS_KEY = "quicktabby:settings";
 
@@ -39,9 +39,7 @@ export interface SettingsServiceDependencies {
  * @param deps - Service dependencies
  * @returns Settings service instance
  */
-export function createSettingsService(
-  deps: SettingsServiceDependencies
-): SettingsService {
+export function createSettingsService(deps: SettingsServiceDependencies): SettingsService {
   return {
     async load(): Promise<Settings> {
       const result = await deps.storage.local.get<unknown>(SETTINGS_KEY);

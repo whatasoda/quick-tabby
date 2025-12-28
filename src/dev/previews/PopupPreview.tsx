@@ -1,15 +1,15 @@
 import { createSignal, onMount, Show } from "solid-js";
 import { css } from "../../../styled-system/css";
-import type { Settings, PopupSize } from "../../core/settings/settings-types.ts";
 import {
   DEFAULT_SETTINGS,
-  POPUP_SIZES,
+  getMaxPopupWidth,
   getPreviewWidth,
   getTabListWidth,
-  getMaxPopupWidth,
+  POPUP_SIZES,
 } from "../../core/settings/settings-defaults.ts";
-import { updateMockSettings } from "../mocks/chrome-api.ts";
+import type { PopupSize, Settings } from "../../core/settings/settings-types.ts";
 import { App as PopupApp } from "../../popup/index.tsx";
+import { updateMockSettings } from "../mocks/chrome-api.ts";
 
 const styles = {
   container: css({
@@ -115,9 +115,7 @@ export function PopupPreview() {
           <select
             class={styles.select}
             value={settings().popupSize}
-            onChange={(e) =>
-              updateSettings({ popupSize: e.target.value as PopupSize })
-            }
+            onChange={(e) => updateSettings({ popupSize: e.target.value as PopupSize })}
           >
             <option value="small">Small</option>
             <option value="medium">Medium</option>
@@ -131,9 +129,7 @@ export function PopupPreview() {
             id="previewMode"
             class={styles.checkbox}
             checked={settings().previewModeEnabled}
-            onChange={(e) =>
-              updateSettings({ previewModeEnabled: e.target.checked })
-            }
+            onChange={(e) => updateSettings({ previewModeEnabled: e.target.checked })}
           />
           <label for="previewMode" class={styles.label}>
             Preview Mode
@@ -145,13 +141,11 @@ export function PopupPreview() {
             type="checkbox"
             id="modeToggle"
             class={styles.checkbox}
-            checked={settings().enableModeToggle}
-            onChange={(e) =>
-              updateSettings({ enableModeToggle: e.target.checked })
-            }
+            checked={settings().defaultMode === "lastUsed"}
+            onChange={(e) => updateSettings({ defaultMode: e.target.checked ? "lastUsed" : "all" })}
           />
           <label for="modeToggle" class={styles.label}>
-            Mode Toggle
+            Mode Toggle (lastUsed)
           </label>
         </div>
       </div>
