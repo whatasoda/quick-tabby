@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none">
+  <!-- White outline layer (background) -->
+  <circle cx="58" cy="68" r="48" stroke="#ffffff" stroke-width="20" fill="none"/>
+  <path d="M80 96 Q100 112 108 108 Q116 104 120 110" stroke="#ffffff" stroke-width="20" stroke-linecap="round" fill="none"/>
+  <path d="M20 38 L36 8 L52 20" stroke="#ffffff" stroke-width="20" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <path d="M64 20 L80 8 L96 38" stroke="#ffffff" stroke-width="20" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+
+  <!-- Dark foreground layer -->
+  <circle cx="58" cy="68" r="48" stroke="#1f2937" stroke-width="14" fill="none"/>
+  <path d="M80 96 Q100 112 108 108 Q116 104 120 110" stroke="#1f2937" stroke-width="14" stroke-linecap="round" fill="none"/>
+  <path d="M20 38 L36 8 L52 20" stroke="#1f2937" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <path d="M64 20 L80 8 L96 38" stroke="#1f2937" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+</svg>
