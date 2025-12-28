@@ -66,9 +66,25 @@ function updateIcon(isDark: boolean) {
   });
 }
 
-// Listen for color scheme changes
-const darkQuery = matchMedia("(prefers-color-scheme: dark)");
-darkQuery.addEventListener("change", (e) => updateIcon(e.matches));
+// Create offscreen document to detect color scheme changes
+// (Service workers don't have access to matchMedia)
+async function setupColorSchemeDetection() {
+  const offscreenUrl = "src/background/offscreen.html";
+
+  // Check if offscreen document already exists
+  const existingContexts = await chrome.runtime.getContexts({
+    contextTypes: [chrome.runtime.ContextType.OFFSCREEN_DOCUMENT],
+    documentUrls: [chrome.runtime.getURL(offscreenUrl)],
+  });
+
+  if (existingContexts.length === 0) {
+    await chrome.offscreen.createDocument({
+      url: offscreenUrl,
+      reasons: [chrome.offscreen.Reason.MATCH_MEDIA],
+      justification: "Detect system color scheme for icon theming",
+    });
+  }
+}
 
 // =============================================================================
 // Initialization
@@ -79,7 +95,7 @@ darkQuery.addEventListener("change", (e) => updateIcon(e.matches));
   await mruTracker.initialize();
   commandHandler.initialize();
   thumbnailCleanup.initialize();
-  updateIcon(darkQuery.matches);
+  await setupColorSchemeDetection();
   console.log("QuickTabby background service worker initialized");
 })();
 
@@ -112,13 +128,16 @@ chromeAPI.runtime.onMessage.addListener(
       });
 
     return true;
-  },
+  }
 );
 
 async function handleMessage(message: MessageType): Promise<MessageResponse> {
   switch (message.type) {
     case "GET_MRU_TABS": {
-      const tabs = await mruTracker.getMRUTabs(message.windowOnly ?? false, message.windowId);
+      const tabs = await mruTracker.getMRUTabs(
+        message.windowOnly ?? false,
+        message.windowId
+      );
       return { type: "MRU_TABS", tabs };
     }
 
@@ -133,7 +152,11 @@ async function handleMessage(message: MessageType): Promise<MessageResponse> {
         windowId: message.windowId,
       });
       if (tab?.id && tab.windowId) {
-        await thumbnailCache.captureAndStore(tab.id, tab.windowId, message.thumbnailConfig);
+        await thumbnailCache.captureAndStore(
+          tab.id,
+          tab.windowId,
+          message.thumbnailConfig
+        );
       }
       return { type: "SUCCESS" };
     }
@@ -151,6 +174,11 @@ async function handleMessage(message: MessageType): Promise<MessageResponse> {
     case "POPUP_CLOSING":
     case "CLOSE_POPUP": {
       // These are handled via port connection, not message passing
+      return { type: "SUCCESS" };
+    }
+
+    case "COLOR_SCHEME_CHANGED": {
+      updateIcon(message.isDark);
       return { type: "SUCCESS" };
     }
 

@@ -41,7 +41,8 @@ export type MessageType =
   | { type: "CLEAR_LAUNCH_INFO" }
   | { type: "POPUP_OPENED" }
   | { type: "POPUP_CLOSING" }
-  | { type: "CLOSE_POPUP"; selectFocused: boolean };
+  | { type: "CLOSE_POPUP"; selectFocused: boolean }
+  | { type: "COLOR_SCHEME_CHANGED"; isDark: boolean };
 
 export type MessageResponse =
   | { type: "MRU_TABS"; tabs: TabInfo[] }

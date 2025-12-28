@@ -4,8 +4,21 @@ import solid from "vite-plugin-solid";
 import manifest from "./manifest.json";
 
 export default defineConfig({
-  plugins: [solid(), crx({ manifest })],
+  plugins: [
+    solid(),
+    crx({
+      manifest,
+      contentScripts: {
+        injectCss: true,
+      },
+    }),
+  ],
   build: {
     outDir: "dist",
+    rollupOptions: {
+      input: {
+        offscreen: "src/background/offscreen.html",
+      },
+    },
   },
 });
