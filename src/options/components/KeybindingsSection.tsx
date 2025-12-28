@@ -2,7 +2,7 @@ import { type Accessor, For, Show } from "solid-js";
 import { css } from "../../../styled-system/css";
 import { keybindingToString } from "../../core/keybindings/keybinding-matcher";
 import type { Settings } from "../../core/settings/settings-types";
-import { formStyles, sectionStyles } from "./styles";
+import { Button, FormField, Section } from "../../shared/ui";
 
 const styles = {
   keybindingChipGroup: css({
@@ -25,36 +25,6 @@ const styles = {
     background: "primary",
     color: "white",
   }),
-  keybindingRemoveBtn: css({
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    width: "14px",
-    height: "14px",
-    padding: 0,
-    border: "none",
-    background: "transparent",
-    cursor: "pointer",
-    color: "text.secondary",
-    borderRadius: "full",
-    _hover: {
-      background: "borderLight",
-      color: "text.primary",
-    },
-  }),
-  addKeybindingBtn: css({
-    padding: "4px 10px",
-    fontSize: "12px",
-    background: "transparent",
-    border: "1px dashed token(colors.border)",
-    borderRadius: "md",
-    cursor: "pointer",
-    color: "text.secondary",
-    _hover: {
-      background: "surfaceHover",
-      borderStyle: "solid",
-    },
-  }),
 };
 
 const KEYBINDING_LABELS: [keyof Settings["keybindings"], string][] = [
@@ -76,26 +46,24 @@ interface KeybindingsSectionProps {
 
 export function KeybindingsSection(props: KeybindingsSectionProps) {
   return (
-    <div class={sectionStyles.section}>
-      <h2 class={sectionStyles.sectionTitle}>Popup Keybindings</h2>
-
+    <Section title="Popup Keybindings">
       <For each={KEYBINDING_LABELS}>
         {([key, label]) => (
-          <div class={formStyles.settingRow}>
-            <div class={formStyles.settingLabel}>{label}</div>
+          <FormField label={label}>
             <div class={styles.keybindingChipGroup}>
               <For each={props.settings.keybindings[key]}>
                 {(binding, index) => (
                   <div class={styles.keybindingChip}>
                     <span>{keybindingToString(binding)}</span>
                     <Show when={props.settings.keybindings[key].length > 1}>
-                      <button
-                        class={styles.keybindingRemoveBtn}
+                      <Button
+                        variant="ghost"
+                        size="iconSm"
                         onClick={() => props.onRemoveKeybinding(key, index())}
                         title="Remove keybinding"
                       >
                         ×
-                      </button>
+                      </Button>
                     </Show>
                   </div>
                 )}
@@ -103,12 +71,9 @@ export function KeybindingsSection(props: KeybindingsSectionProps) {
               <Show
                 when={props.recordingKey() === key}
                 fallback={
-                  <button
-                    class={styles.addKeybindingBtn}
-                    onClick={() => props.onStartRecording(key)}
-                  >
+                  <Button variant="outline" size="sm" onClick={() => props.onStartRecording(key)}>
                     + Add
-                  </button>
+                  </Button>
                 }
               >
                 <div
@@ -116,14 +81,15 @@ export function KeybindingsSection(props: KeybindingsSectionProps) {
                   onKeyDown={(e) => props.onKeyDown(e, key)}
                   onBlur={() => props.onStopRecording()}
                   ref={(el) => el?.focus()}
+                  tabIndex={0}
                 >
                   Press key...
                 </div>
               </Show>
             </div>
-          </div>
+          </FormField>
         )}
       </For>
-    </div>
+    </Section>
   );
 }

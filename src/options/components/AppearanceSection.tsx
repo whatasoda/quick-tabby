@@ -1,14 +1,22 @@
-import { For } from "solid-js";
 import type { PopupSize, Settings, ThemePreference } from "../../core/settings/settings-types";
-import { formStyles, sectionStyles } from "./styles";
+import {
+  FormField,
+  RadioGroup,
+  Section,
+  type RadioOption,
+} from "../../shared/ui";
 
-const THEME_OPTIONS: { value: ThemePreference; label: string }[] = [
+const THEME_OPTIONS: RadioOption<ThemePreference>[] = [
   { value: "auto", label: "Auto" },
   { value: "light", label: "Light" },
   { value: "dark", label: "Dark" },
 ];
 
-const SIZE_OPTIONS: PopupSize[] = ["small", "medium", "large"];
+const SIZE_OPTIONS: RadioOption<PopupSize>[] = [
+  { value: "small", label: "Small" },
+  { value: "medium", label: "Medium" },
+  { value: "large", label: "Large" },
+];
 
 interface AppearanceSectionProps {
   settings: Settings;
@@ -17,50 +25,24 @@ interface AppearanceSectionProps {
 
 export function AppearanceSection(props: AppearanceSectionProps) {
   return (
-    <div class={sectionStyles.section}>
-      <h2 class={sectionStyles.sectionTitle}>Appearance</h2>
+    <Section title="Appearance">
+      <FormField label="Theme">
+        <RadioGroup
+          name="themePreference"
+          options={THEME_OPTIONS}
+          value={props.settings.themePreference}
+          onChange={(value) => props.onUpdateSetting("themePreference", value)}
+        />
+      </FormField>
 
-      <div class={formStyles.settingRow}>
-        <div>
-          <div class={formStyles.settingLabel}>Theme</div>
-        </div>
-        <div class={formStyles.radioGroup}>
-          <For each={THEME_OPTIONS}>
-            {(option) => (
-              <label class={formStyles.radioOption}>
-                <input
-                  type="radio"
-                  name="themePreference"
-                  checked={props.settings.themePreference === option.value}
-                  onChange={() => props.onUpdateSetting("themePreference", option.value)}
-                />
-                {option.label}
-              </label>
-            )}
-          </For>
-        </div>
-      </div>
-
-      <div class={formStyles.settingRow}>
-        <div>
-          <div class={formStyles.settingLabel}>Popup Size</div>
-        </div>
-        <div class={formStyles.radioGroup}>
-          <For each={SIZE_OPTIONS}>
-            {(size) => (
-              <label class={formStyles.radioOption}>
-                <input
-                  type="radio"
-                  name="popupSize"
-                  checked={props.settings.popupSize === size}
-                  onChange={() => props.onUpdateSetting("popupSize", size)}
-                />
-                {size.charAt(0).toUpperCase() + size.slice(1)}
-              </label>
-            )}
-          </For>
-        </div>
-      </div>
-    </div>
+      <FormField label="Popup Size">
+        <RadioGroup
+          name="popupSize"
+          options={SIZE_OPTIONS}
+          value={props.settings.popupSize}
+          onChange={(value) => props.onUpdateSetting("popupSize", value)}
+        />
+      </FormField>
+    </Section>
   );
 }
