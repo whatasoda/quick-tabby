@@ -19,7 +19,7 @@ import type {
   Keybinding,
   KeybindingList,
   CommandName,
-} from "../shared/types.ts";
+} from "../core/settings/settings-types.ts";
 import {
   loadSettings,
   saveSettings,

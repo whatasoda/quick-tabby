@@ -1,8 +1,5 @@
-import type {
-  MessageType,
-  MessageResponse,
-  Settings,
-} from "../../shared/types.ts";
+import type { MessageType, MessageResponse } from "../../shared/types.ts";
+import type { Settings } from "../../core/settings/settings-types.ts";
 import { DEFAULT_SETTINGS } from "../../shared/settings.ts";
 import { getMockTabs } from "./tab-data.ts";
 

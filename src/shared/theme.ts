@@ -1,4 +1,4 @@
-import type { ThemePreference } from "./types";
+import type { ThemePreference } from "../core/settings/settings-types.ts";
 
 function getEffectiveTheme(preference: ThemePreference): "light" | "dark" {
   if (preference === "auto") {

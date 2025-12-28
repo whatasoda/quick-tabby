@@ -1,6 +1,6 @@
 import { createSignal, onMount, onCleanup, Show, createMemo } from "solid-js";
 import { css } from "../../../styled-system/css";
-import type { Settings, ThemePreference } from "../../shared/types.ts";
+import type { Settings, ThemePreference } from "../../core/settings/settings-types.ts";
 import { DEFAULT_SETTINGS } from "../../shared/settings.ts";
 import { updateMockSettings } from "../mocks/chrome-api.ts";
 import { App as OptionsApp } from "../../options/index.tsx";

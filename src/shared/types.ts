@@ -1,3 +1,15 @@
+/**
+ * Shared types for messaging and tab information
+ *
+ * Settings types are defined in core/settings/settings-types.ts
+ */
+
+import type {
+  CommandName,
+  CommandSettings,
+  ThumbnailConfig,
+} from "../core/settings/settings-types.ts";
+
 export interface TabInfo {
   id: number;
   windowId: number;
@@ -13,26 +25,12 @@ export interface MRUState {
   byWindow: Record<number, number[]>;
 }
 
-export interface ThumbnailConfig {
-  size: number;
-  captureQuality: number;
-  resizeQuality: number;
-}
-
 export type LaunchModeOverride = "all" | "currentWindow" | null;
-
-// Which command opened the popup
-export type CommandName = "_execute_action" | "open-popup-all-windows" | "open-popup-current-window";
 
 // Launch info tracking which command opened the popup
 export interface LaunchInfo {
   mode: LaunchModeOverride;
   command: CommandName | null;
-}
-
-// Per-command settings
-export interface CommandSettings {
-  selectOnClose: boolean; // Whether to select focused tab when closing via shortcut re-press
 }
 
 export type MessageType =
@@ -50,35 +48,3 @@ export type MessageResponse =
   | { type: "SUCCESS" }
   | { type: "ERROR"; message: string }
   | { type: "LAUNCH_INFO"; info: LaunchInfo };
-
-// Settings types
-export type PopupSize = "small" | "medium" | "large";
-export type ThumbnailQuality = "standard" | "high" | "ultra";
-export type ThemePreference = "light" | "dark" | "auto";
-export type DefaultMode = "all" | "currentWindow" | "lastUsed";
-
-export interface Keybinding {
-  key: string;
-  ctrl?: boolean;
-  alt?: boolean;
-  shift?: boolean;
-  meta?: boolean;
-}
-
-export type KeybindingList = Keybinding[];
-
-export interface Settings {
-  popupSize: PopupSize;
-  previewModeEnabled: boolean;
-  thumbnailQuality: ThumbnailQuality;
-  defaultMode: DefaultMode;
-  themePreference: ThemePreference;
-  keybindings: {
-    moveDown: KeybindingList;
-    moveUp: KeybindingList;
-    confirm: KeybindingList;
-    cancel: KeybindingList;
-    toggleMode: KeybindingList;
-  };
-  commandSettings: Record<CommandName, CommandSettings>;
-}

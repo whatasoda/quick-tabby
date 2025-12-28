@@ -1,6 +1,6 @@
 import { createSignal, onMount, Show } from "solid-js";
 import { css } from "../../../styled-system/css";
-import type { Settings, PopupSize } from "../../shared/types.ts";
+import type { Settings, PopupSize } from "../../core/settings/settings-types.ts";
 import {
   DEFAULT_SETTINGS,
   POPUP_SIZES,

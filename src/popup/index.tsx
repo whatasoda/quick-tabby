@@ -8,12 +8,8 @@ import {
 } from "solid-js";
 import "./index.css";
 import { css } from "../../styled-system/css";
-import type {
-  TabInfo,
-  MessageType,
-  MessageResponse,
-  Settings,
-} from "../shared/types.ts";
+import type { TabInfo, MessageType, MessageResponse } from "../shared/types.ts";
+import type { Settings } from "../core/settings/settings-types.ts";
 import { TabList } from "./components/TabList.tsx";
 import { KeybindingsModal } from "./components/KeybindingsModal.tsx";
 import { FiHelpCircle, FiSettings } from "solid-icons/fi";

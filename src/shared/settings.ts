@@ -1,4 +1,4 @@
-import type { Settings, Keybinding, KeybindingList } from "./types.ts";
+import type { Settings } from "../core/settings/settings-types.ts";
 
 const SETTINGS_KEY = "quicktabby:settings";
 
