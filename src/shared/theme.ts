@@ -1,15 +1,8 @@
 import type { ThemePreference } from "../core/settings/settings-types.ts";
 
-function getSystemTheme(): "light" | "dark" {
-  if (typeof window !== "undefined" && typeof window.matchMedia === "function") {
-    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-  }
-  return "light";
-}
-
 function getEffectiveTheme(preference: ThemePreference): "light" | "dark" {
   if (preference === "auto") {
-    return getSystemTheme();
+    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
   }
   return preference;
 }
@@ -21,10 +14,6 @@ function applyTheme(preference: ThemePreference): void {
 
 function setupThemeListener(preference: ThemePreference, onThemeChange: () => void): () => void {
   if (preference !== "auto") {
-    return () => {};
-  }
-
-  if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
     return () => {};
   }
 
