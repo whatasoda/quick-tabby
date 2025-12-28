@@ -6,6 +6,7 @@ export {
   POPUP_LAYOUT,
   POPUP_SIZES,
   THUMBNAIL_QUALITIES,
+  THUMBNAIL_TTL_MS,
 } from "./settings-defaults.ts";
 export type { MigrationResult } from "./settings-migration.ts";
 export { migrateSettings } from "./settings-migration.ts";
@@ -23,4 +24,5 @@ export type {
   ThemePreference,
   ThumbnailConfig,
   ThumbnailQuality,
+  ThumbnailTTL,
 } from "./settings-types.ts";

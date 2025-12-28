@@ -8,6 +8,7 @@
 
 export type PopupSize = "small" | "medium" | "large";
 export type ThumbnailQuality = "standard" | "high" | "ultra";
+export type ThumbnailTTL = "1h" | "24h" | "7d" | "30d";
 export type ThemePreference = "light" | "dark" | "auto";
 export type DefaultMode = "all" | "currentWindow" | "lastUsed";
 
@@ -64,6 +65,7 @@ export interface Settings {
   popupSize: PopupSize;
   previewModeEnabled: boolean;
   thumbnailQuality: ThumbnailQuality;
+  thumbnailTTL: ThumbnailTTL;
   defaultMode: DefaultMode;
   themePreference: ThemePreference;
   keybindings: KeybindingsConfig;
