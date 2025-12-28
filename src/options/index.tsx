@@ -1,15 +1,15 @@
 import { Show } from "solid-js";
 import "./index.css";
 import { css } from "../../styled-system/css";
-import type { Settings, Keybinding } from "../core/settings/settings-types";
-import { useSettings } from "./hooks/useSettings";
-import { useKeybindingRecorder } from "./hooks/useKeybindingRecorder";
-import { OptionsWindow } from "./components/OptionsWindow";
-import { SavedIndicator } from "./components/SavedIndicator";
+import type { Keybinding, Settings } from "../core/settings/settings-types";
 import { AppearanceSection } from "./components/AppearanceSection";
 import { BehaviorSection } from "./components/BehaviorSection";
 import { KeybindingsSection } from "./components/KeybindingsSection";
+import { OptionsWindow } from "./components/OptionsWindow";
+import { SavedIndicator } from "./components/SavedIndicator";
 import { ShortcutsSection } from "./components/ShortcutsSection";
+import { useKeybindingRecorder } from "./hooks/useKeybindingRecorder";
+import { useSettings } from "./hooks/useSettings";
 
 const styles = {
   h1: css({
@@ -19,43 +19,26 @@ const styles = {
 };
 
 export function App() {
-  const {
-    settings,
-    saved,
-    updateSetting,
-    updateKeybindings,
-    updateCommandSetting,
-  } = useSettings();
+  const { settings, saved, updateSetting, updateKeybindings, updateCommandSetting } = useSettings();
 
-  function addKeybinding(
-    key: keyof Settings["keybindings"],
-    binding: Keybinding
-  ) {
+  function addKeybinding(key: keyof Settings["keybindings"], binding: Keybinding) {
     const current = settings()?.keybindings[key];
     if (current) {
       updateKeybindings(key, [...current, binding]);
     }
   }
 
-  function removeKeybinding(
-    key: keyof Settings["keybindings"],
-    index: number
-  ) {
+  function removeKeybinding(key: keyof Settings["keybindings"], index: number) {
     const current = settings()?.keybindings[key];
     if (current && current.length > 1) {
       updateKeybindings(
         key,
-        current.filter((_, i) => i !== index)
+        current.filter((_, i) => i !== index),
       );
     }
   }
 
-  const {
-    recordingKey,
-    startRecording,
-    stopRecording,
-    handleKeyDown,
-  } = useKeybindingRecorder({
+  const { recordingKey, startRecording, stopRecording, handleKeyDown } = useKeybindingRecorder({
     onAddKeybinding: addKeybinding,
   });
 
@@ -67,15 +50,9 @@ export function App() {
       <Show when={settings()}>
         {(currentSettings) => (
           <>
-            <AppearanceSection
-              settings={currentSettings()}
-              onUpdateSetting={updateSetting}
-            />
+            <AppearanceSection settings={currentSettings()} onUpdateSetting={updateSetting} />
 
-            <BehaviorSection
-              settings={currentSettings()}
-              onUpdateSetting={updateSetting}
-            />
+            <BehaviorSection settings={currentSettings()} onUpdateSetting={updateSetting} />
 
             <KeybindingsSection
               settings={currentSettings()}

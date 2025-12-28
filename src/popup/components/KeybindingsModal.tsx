@@ -1,4 +1,4 @@
-import { Show, onMount, onCleanup } from "solid-js";
+import { onCleanup, onMount } from "solid-js";
 import { css } from "../../../styled-system/css";
 import { keybindingToString } from "../../core/keybindings/keybinding-matcher.ts";
 import type { Settings } from "../../core/settings/settings-types.ts";

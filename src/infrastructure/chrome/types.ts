@@ -19,9 +19,7 @@ export interface ChromeEvent<T extends (...args: never[]) => void> {
 // =============================================================================
 
 export interface ChromeStorageArea<T = unknown> {
-  get<K extends string>(
-    key: K
-  ): Promise<{ [P in K]: T | undefined }>;
+  get<K extends string>(key: K): Promise<{ [P in K]: T | undefined }>;
   set(items: Record<string, T>): Promise<void>;
 }
 
@@ -135,8 +133,8 @@ export interface ChromeRuntimeAPI {
     (
       message: unknown,
       sender: MessageSender,
-      sendResponse: (response: unknown) => void
-    ) => boolean | void
+      sendResponse: (response: unknown) => void,
+    ) => boolean | undefined
   >;
 }
 

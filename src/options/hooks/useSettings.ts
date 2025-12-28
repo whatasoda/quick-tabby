@@ -1,9 +1,5 @@
-import { createSignal, createResource } from "solid-js";
-import type {
-  Settings,
-  KeybindingList,
-  CommandName,
-} from "../../core/settings/settings-types";
+import { createResource, createSignal } from "solid-js";
+import type { CommandName, KeybindingList, Settings } from "../../core/settings/settings-types";
 import { loadSettings, saveSettings } from "../../shared/settings";
 
 export function useSettings() {
@@ -15,10 +11,7 @@ export function useSettings() {
     setTimeout(() => setSaved(false), 1500);
   }
 
-  async function updateSetting<K extends keyof Settings>(
-    key: K,
-    value: Settings[K]
-  ) {
+  async function updateSetting<K extends keyof Settings>(key: K, value: Settings[K]) {
     const current = settings();
     if (!current) return;
 
@@ -28,10 +21,7 @@ export function useSettings() {
     showSaved();
   }
 
-  async function updateKeybindings(
-    key: keyof Settings["keybindings"],
-    bindings: KeybindingList
-  ) {
+  async function updateKeybindings(key: keyof Settings["keybindings"], bindings: KeybindingList) {
     const current = settings();
     if (!current) return;
 
@@ -47,7 +37,7 @@ export function useSettings() {
   async function updateCommandSetting(
     command: CommandName,
     key: keyof Settings["commandSettings"][CommandName],
-    value: boolean
+    value: boolean,
   ) {
     const current = settings();
     if (!current) return;

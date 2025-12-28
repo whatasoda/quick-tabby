@@ -1,12 +1,11 @@
-export type { MRUState, MRUConfig } from "./mru-state.ts";
-export { EMPTY_MRU_STATE, DEFAULT_MRU_CONFIG } from "./mru-state.ts";
-
 export {
   addTabToMRU,
-  removeTabFromMRU,
-  removeWindowFromMRU,
   getMRUList,
   getPreviousTabId,
-  isTabInMRU,
   getTabPosition,
+  isTabInMRU,
+  removeTabFromMRU,
+  removeWindowFromMRU,
 } from "./mru-operations.ts";
+export type { MRUConfig, MRUState } from "./mru-state.ts";
+export { DEFAULT_MRU_CONFIG, EMPTY_MRU_STATE } from "./mru-state.ts";

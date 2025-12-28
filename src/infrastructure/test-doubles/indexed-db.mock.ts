@@ -4,7 +4,7 @@
  * Mock implementations of ThumbnailStore for unit testing.
  */
 
-import type { ThumbnailStore, StoredThumbnail } from "../indexed-db/types.ts";
+import type { StoredThumbnail, ThumbnailStore } from "../indexed-db/types.ts";
 
 /**
  * Create a mock thumbnail store for testing
@@ -60,9 +60,7 @@ export function createMockThumbnailStore(): ThumbnailStore & {
       if (thumbnails.size <= maxCount) return;
 
       // Sort by capturedAt and keep newest
-      const sorted = [...thumbnails.entries()].sort(
-        (a, b) => b[1].capturedAt - a[1].capturedAt
-      );
+      const sorted = [...thumbnails.entries()].sort((a, b) => b[1].capturedAt - a[1].capturedAt);
 
       thumbnails.clear();
       for (const [tabId, thumbnail] of sorted.slice(0, maxCount)) {

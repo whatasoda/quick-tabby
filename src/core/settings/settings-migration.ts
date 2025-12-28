@@ -4,14 +4,14 @@
  * Pure functions for migrating legacy settings formats to current format.
  */
 
-import type {
-  Settings,
-  LegacySettings,
-  LegacyKeybindings,
-  KeybindingsConfig,
-  Keybinding,
-} from "./settings-types.ts";
 import { DEFAULT_SETTINGS } from "./settings-defaults.ts";
+import type {
+  Keybinding,
+  KeybindingsConfig,
+  LegacyKeybindings,
+  LegacySettings,
+  Settings,
+} from "./settings-types.ts";
 
 /**
  * Result of settings migration
@@ -44,9 +44,7 @@ export function migrateSettings(stored: unknown): MigrationResult {
   }
 
   // Migration 2: Convert single keybindings to arrays
-  const { keybindings, migrated: keybindingsMigrated } = migrateKeybindings(
-    legacy.keybindings
-  );
+  const { keybindings, migrated: keybindingsMigrated } = migrateKeybindings(legacy.keybindings);
   if (keybindingsMigrated) {
     needsPersist = true;
   }
@@ -92,9 +90,7 @@ function migrateDefaultMode(legacy: LegacySettings): {
 /**
  * Migrate single keybindings to array format
  */
-function migrateKeybindings(
-  keybindings: LegacyKeybindings | Settings["keybindings"] | undefined
-): {
+function migrateKeybindings(keybindings: LegacyKeybindings | Settings["keybindings"] | undefined): {
   keybindings: KeybindingsConfig;
   migrated: boolean;
 } {

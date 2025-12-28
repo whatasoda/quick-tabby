@@ -7,9 +7,9 @@
 
 import type { ChromeTabsAPI } from "../infrastructure/chrome/types.ts";
 import type {
-  ThumbnailStore,
   StoredThumbnail,
   ThumbnailConfig,
+  ThumbnailStore,
 } from "../infrastructure/indexed-db/types.ts";
 
 const DEFAULT_THUMBNAIL_CONFIG: ThumbnailConfig = {
@@ -32,11 +32,7 @@ export interface ThumbnailCacheService {
   /**
    * Capture and store a thumbnail for a tab
    */
-  captureAndStore(
-    tabId: number,
-    windowId: number,
-    config?: ThumbnailConfig
-  ): Promise<void>;
+  captureAndStore(tabId: number, windowId: number, config?: ThumbnailConfig): Promise<void>;
 
   /**
    * Get a thumbnail URL for a tab
@@ -69,7 +65,7 @@ export interface ThumbnailCacheDependencies {
  * @returns Thumbnail cache service instance
  */
 export function createThumbnailCacheService(
-  deps: ThumbnailCacheDependencies
+  deps: ThumbnailCacheDependencies,
 ): ThumbnailCacheService {
   return {
     async initialize(): Promise<void> {
@@ -79,12 +75,11 @@ export function createThumbnailCacheService(
     async captureAndStore(
       tabId: number,
       windowId: number,
-      config?: ThumbnailConfig
+      config?: ThumbnailConfig,
     ): Promise<void> {
       if (!deps.thumbnailStore.isInitialized()) return;
 
-      const { size, captureQuality, resizeQuality } =
-        config ?? DEFAULT_THUMBNAIL_CONFIG;
+      const { size, captureQuality, resizeQuality } = config ?? DEFAULT_THUMBNAIL_CONFIG;
 
       try {
         const dataUrl = await deps.tabs.captureVisibleTab(windowId, {
@@ -134,11 +129,7 @@ export function createThumbnailCacheService(
 /**
  * Resize an image to specified dimensions
  */
-async function resizeImage(
-  dataUrl: string,
-  size: number,
-  quality: number
-): Promise<string> {
+async function resizeImage(dataUrl: string, size: number, quality: number): Promise<string> {
   const response = await fetch(dataUrl);
   const blob = await response.blob();
   const bitmap = await createImageBitmap(blob);

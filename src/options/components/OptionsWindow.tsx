@@ -1,11 +1,4 @@
-import {
-  createEffect,
-  createMemo,
-  onCleanup,
-  Show,
-  type JSX,
-  type Resource,
-} from "solid-js";
+import { createEffect, createMemo, type JSX, onCleanup, type Resource, Show } from "solid-js";
 import { css } from "../../../styled-system/css";
 import type { Settings } from "../../core/settings/settings-types";
 import { createThemeControl } from "../../shared/theme";
@@ -42,10 +35,7 @@ export function OptionsWindow(props: OptionsWindowProps) {
   });
 
   return (
-    <Show
-      when={props.settings()}
-      fallback={<div class={styles.loading}>Loading...</div>}
-    >
+    <Show when={props.settings()} fallback={<div class={styles.loading}>Loading...</div>}>
       <div class={styles.container}>{props.children}</div>
     </Show>
   );

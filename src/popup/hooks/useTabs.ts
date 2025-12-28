@@ -20,10 +20,7 @@ export function useTabs({
           }
         : null;
     },
-    async (params) =>
-      params !== null
-        ? await getMRUTabs(params.windowOnly, params.windowId)
-        : []
+    async (params) => (params !== null ? await getMRUTabs(params.windowOnly, params.windowId) : []),
   );
   return { tabs, refetchTabs };
 }

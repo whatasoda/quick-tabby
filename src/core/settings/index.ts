@@ -1,28 +1,26 @@
+export {
+  DEFAULT_SETTINGS,
+  getMaxPopupWidth,
+  getPreviewWidth,
+  getTabListWidth,
+  POPUP_LAYOUT,
+  POPUP_SIZES,
+  THUMBNAIL_QUALITIES,
+} from "./settings-defaults.ts";
+export type { MigrationResult } from "./settings-migration.ts";
+export { migrateSettings } from "./settings-migration.ts";
 export type {
-  PopupSize,
-  ThumbnailQuality,
-  ThemePreference,
+  CommandName,
+  CommandSettings,
   DefaultMode,
   Keybinding,
   KeybindingList,
   KeybindingsConfig,
-  CommandName,
-  CommandSettings,
-  ThumbnailConfig,
-  Settings,
   LegacyKeybindings,
   LegacySettings,
+  PopupSize,
+  Settings,
+  ThemePreference,
+  ThumbnailConfig,
+  ThumbnailQuality,
 } from "./settings-types.ts";
-
-export {
-  DEFAULT_SETTINGS,
-  THUMBNAIL_QUALITIES,
-  POPUP_SIZES,
-  POPUP_LAYOUT,
-  getTabListWidth,
-  getPreviewWidth,
-  getMaxPopupWidth,
-} from "./settings-defaults.ts";
-
-export type { MigrationResult } from "./settings-migration.ts";
-export { migrateSettings } from "./settings-migration.ts";

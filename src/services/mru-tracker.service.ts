@@ -5,24 +5,23 @@
  * Uses dependency injection for testability.
  */
 
+import {
+  addTabToMRU,
+  DEFAULT_MRU_CONFIG,
+  EMPTY_MRU_STATE,
+  getMRUList,
+  getPreviousTabId,
+  removeTabFromMRU,
+  removeWindowFromMRU,
+} from "../core/mru/index.ts";
+import type { MRUConfig, MRUState } from "../core/mru/mru-state.ts";
 import type {
   ChromeStorageAPI,
   ChromeTabsAPI,
   ChromeWindowsAPI,
-  TabInfo,
   TabActiveInfo,
 } from "../infrastructure/chrome/types.ts";
 import type { ThumbnailCacheService } from "./thumbnail-cache.service.ts";
-import type { MRUState, MRUConfig } from "../core/mru/mru-state.ts";
-import {
-  EMPTY_MRU_STATE,
-  DEFAULT_MRU_CONFIG,
-  addTabToMRU,
-  removeTabFromMRU,
-  removeWindowFromMRU,
-  getMRUList,
-  getPreviousTabId,
-} from "../core/mru/index.ts";
 
 const STORAGE_KEY = "mruState";
 const THUMBNAIL_CAPTURE_DELAY = 200;
@@ -92,9 +91,7 @@ export interface MRUTrackerDependencies {
  * @param deps - Service dependencies
  * @returns MRU tracker service instance
  */
-export function createMRUTrackerService(
-  deps: MRUTrackerDependencies
-): MRUTrackerService {
+export function createMRUTrackerService(deps: MRUTrackerDependencies): MRUTrackerService {
   const config = deps.config ?? DEFAULT_MRU_CONFIG;
   let state: MRUState = EMPTY_MRU_STATE;
 
@@ -163,10 +160,7 @@ export function createMRUTrackerService(
       deps.windows.onRemoved.addListener(handleWindowRemoved);
     },
 
-    async getMRUTabs(
-      windowOnly: boolean,
-      senderWindowId?: number
-    ): Promise<MRUTabInfo[]> {
+    async getMRUTabs(windowOnly: boolean, senderWindowId?: number): Promise<MRUTabInfo[]> {
       // Get window ID if not provided
       const windowId = senderWindowId ?? (await deps.windows.getCurrent()).id;
 

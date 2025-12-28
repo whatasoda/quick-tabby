@@ -1,11 +1,8 @@
 import { createSignal } from "solid-js";
-import type { Settings, Keybinding } from "../../core/settings/settings-types";
+import type { Keybinding, Settings } from "../../core/settings/settings-types";
 
 interface UseKeybindingRecorderOptions {
-  onAddKeybinding: (
-    key: keyof Settings["keybindings"],
-    binding: Keybinding
-  ) => void;
+  onAddKeybinding: (key: keyof Settings["keybindings"], binding: Keybinding) => void;
 }
 
 export function useKeybindingRecorder(options: UseKeybindingRecorderOptions) {
@@ -20,10 +17,7 @@ export function useKeybindingRecorder(options: UseKeybindingRecorderOptions) {
     setRecordingKey(null);
   }
 
-  function handleKeyDown(
-    e: KeyboardEvent,
-    key: keyof Settings["keybindings"]
-  ) {
+  function handleKeyDown(e: KeyboardEvent, key: keyof Settings["keybindings"]) {
     if (recordingKey() !== key) return;
 
     e.preventDefault();

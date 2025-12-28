@@ -1,9 +1,5 @@
-import type { ThumbnailStore, StoredThumbnail } from "./types.ts";
-import {
-  isIDBOpenDBRequest,
-  isIDBCursorWithValue,
-  isStoredThumbnail,
-} from "./type-guards.ts";
+import { isIDBCursorWithValue, isIDBOpenDBRequest, isStoredThumbnail } from "./type-guards.ts";
+import type { StoredThumbnail, ThumbnailStore } from "./types.ts";
 
 const DB_NAME = "quicktabby-thumbnails";
 const DB_VERSION = 1;
@@ -71,7 +67,7 @@ export function createThumbnailStore(): ThumbnailStore {
     },
 
     async getMany(tabIds: number[]): Promise<Map<number, StoredThumbnail>> {
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve, _reject) => {
         if (!db) {
           resolve(new Map());
           return;

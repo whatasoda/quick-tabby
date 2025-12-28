@@ -1,4 +1,4 @@
-import { For, createEffect } from "solid-js";
+import { createEffect, For } from "solid-js";
 import { css } from "../../../styled-system/css";
 import type { TabInfo } from "../../shared/types.ts";
 import { TabItem } from "./TabItem.tsx";

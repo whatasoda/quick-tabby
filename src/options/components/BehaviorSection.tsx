@@ -1,10 +1,6 @@
 import { For, Show } from "solid-js";
-import type {
-  Settings,
-  ThumbnailQuality,
-  DefaultMode,
-} from "../../core/settings/settings-types";
-import { sectionStyles, formStyles } from "./styles";
+import type { DefaultMode, Settings, ThumbnailQuality } from "../../core/settings/settings-types";
+import { formStyles, sectionStyles } from "./styles";
 
 const THUMBNAIL_OPTIONS: ThumbnailQuality[] = ["standard", "high", "ultra"];
 
@@ -27,17 +23,13 @@ export function BehaviorSection(props: BehaviorSectionProps) {
       <div class={formStyles.settingRow}>
         <div>
           <div class={formStyles.settingLabel}>Preview Mode</div>
-          <div class={formStyles.settingDescription}>
-            Show enlarged thumbnail of selected tab
-          </div>
+          <div class={formStyles.settingDescription}>Show enlarged thumbnail of selected tab</div>
         </div>
         <label class={formStyles.checkboxLabel}>
           <input
             type="checkbox"
             checked={props.settings.previewModeEnabled}
-            onChange={(e) =>
-              props.onUpdateSetting("previewModeEnabled", e.target.checked)
-            }
+            onChange={(e) => props.onUpdateSetting("previewModeEnabled", e.target.checked)}
           />
         </label>
       </div>
@@ -46,9 +38,7 @@ export function BehaviorSection(props: BehaviorSectionProps) {
         <div class={`${formStyles.settingRow} ${formStyles.settingRowSubSetting}`}>
           <div>
             <div class={formStyles.settingLabel}>Thumbnail Quality</div>
-            <div class={formStyles.settingDescription}>
-              Higher quality uses more storage
-            </div>
+            <div class={formStyles.settingDescription}>Higher quality uses more storage</div>
           </div>
           <div class={formStyles.radioGroup}>
             <For each={THUMBNAIL_OPTIONS}>
@@ -58,9 +48,7 @@ export function BehaviorSection(props: BehaviorSectionProps) {
                     type="radio"
                     name="thumbnailQuality"
                     checked={props.settings.thumbnailQuality === quality}
-                    onChange={() =>
-                      props.onUpdateSetting("thumbnailQuality", quality)
-                    }
+                    onChange={() => props.onUpdateSetting("thumbnailQuality", quality)}
                   />
                   {quality.charAt(0).toUpperCase() + quality.slice(1)}
                 </label>
@@ -73,9 +61,7 @@ export function BehaviorSection(props: BehaviorSectionProps) {
       <div class={formStyles.settingRow}>
         <div>
           <div class={formStyles.settingLabel}>Default Mode</div>
-          <div class={formStyles.settingDescription}>
-            Initial mode when opening the popup
-          </div>
+          <div class={formStyles.settingDescription}>Initial mode when opening the popup</div>
         </div>
         <div class={formStyles.radioGroup}>
           <For each={DEFAULT_MODE_OPTIONS}>
@@ -85,9 +71,7 @@ export function BehaviorSection(props: BehaviorSectionProps) {
                   type="radio"
                   name="defaultMode"
                   checked={props.settings.defaultMode === option.value}
-                  onChange={() =>
-                    props.onUpdateSetting("defaultMode", option.value)
-                  }
+                  onChange={() => props.onUpdateSetting("defaultMode", option.value)}
                 />
                 {option.label}
               </label>

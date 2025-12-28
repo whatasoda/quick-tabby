@@ -4,9 +4,9 @@
 
 import { describe, expect, test } from "bun:test";
 import {
+  isIDBCursorWithValue,
   isIDBOpenDBRequest,
   isIDBRequest,
-  isIDBCursorWithValue,
   isStoredThumbnail,
 } from "./type-guards.ts";
 

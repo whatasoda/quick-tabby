@@ -6,17 +6,17 @@
  */
 
 import type {
+  ChromeActionAPI,
   ChromeAPI,
+  ChromeCommandsAPI,
+  ChromeRuntimeAPI,
   ChromeStorageAPI,
   ChromeStorageArea,
   ChromeTabsAPI,
   ChromeWindowsAPI,
-  ChromeRuntimeAPI,
-  ChromeCommandsAPI,
-  ChromeActionAPI,
+  Port,
   TabInfo,
   WindowInfo,
-  Port,
 } from "../chrome/types.ts";
 
 // =============================================================================
@@ -77,7 +77,10 @@ export function createMockTabs(options?: MockTabsOptions): ChromeTabsAPI & {
 } {
   let tabs = options?.tabs ?? [];
   const activatedListeners: ((info: { tabId: number; windowId: number }) => void)[] = [];
-  const removedListeners: ((tabId: number, info: { windowId: number; isWindowClosing: boolean }) => void)[] = [];
+  const removedListeners: ((
+    tabId: number,
+    info: { windowId: number; isWindowClosing: boolean },
+  ) => void)[] = [];
 
   return {
     _tabs: tabs,
@@ -172,7 +175,7 @@ export function createMockWindows(options?: MockWindowsOptions): ChromeWindowsAP
   _setCurrentWindowId: (id: number) => void;
   _triggerRemoved: (windowId: number) => void;
 } {
-  let windows = options?.windows ?? [{ id: 1, focused: true }];
+  const windows = options?.windows ?? [{ id: 1, focused: true }];
   let currentWindowId = 1;
   const removedListeners: ((windowId: number) => void)[] = [];
 
@@ -187,7 +190,9 @@ export function createMockWindows(options?: MockWindowsOptions): ChromeWindowsAP
     },
 
     async getCurrent() {
-      return windows.find((w) => w.id === currentWindowId) ?? { id: currentWindowId, focused: true };
+      return (
+        windows.find((w) => w.id === currentWindowId) ?? { id: currentWindowId, focused: true }
+      );
     },
 
     async update(windowId, updateInfo) {
@@ -227,7 +232,11 @@ export function createMockRuntime(): ChromeRuntimeAPI & {
   const messages: unknown[] = [];
   const ports: Port[] = [];
   const connectListeners: ((port: Port) => void)[] = [];
-  const messageListeners: ((message: unknown, sender: unknown, sendResponse: (r: unknown) => void) => void)[] = [];
+  const messageListeners: ((
+    message: unknown,
+    sender: unknown,
+    sendResponse: (r: unknown) => void,
+  ) => void)[] = [];
 
   return {
     _messages: messages,

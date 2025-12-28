@@ -1,11 +1,8 @@
-import { createEffect, createSignal, type Accessor } from "solid-js";
-import type { DisplayMode } from "../../shared/types";
-import {
-  loadDisplayMode,
-  saveDisplayMode,
-} from "../../infrastructure/chrome/mode-storage";
+import { type Accessor, createEffect, createSignal } from "solid-js";
 import type { Settings } from "../../core/settings";
 import { clearLaunchInfo, getLaunchInfo } from "../../infrastructure/chrome";
+import { loadDisplayMode, saveDisplayMode } from "../../infrastructure/chrome/mode-storage";
+import type { DisplayMode } from "../../shared/types";
 
 interface UseDisplayModeControlOptions {
   settings: Accessor<Settings | undefined>;

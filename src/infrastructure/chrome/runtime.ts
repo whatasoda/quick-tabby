@@ -1,9 +1,4 @@
-import type {
-  ChromeRuntimeAPI,
-  Port,
-  ConnectInfo,
-  MessageSender,
-} from "./types.ts";
+import type { ChromeRuntimeAPI, ConnectInfo, MessageSender, Port } from "./types.ts";
 
 function mapPort(port: chrome.runtime.Port): Port {
   return {
@@ -85,8 +80,8 @@ export function createChromeRuntime(): ChromeRuntimeAPI {
         callback: (
           message: unknown,
           sender: MessageSender,
-          sendResponse: (response: unknown) => void
-        ) => boolean | void
+          sendResponse: (response: unknown) => void,
+        ) => boolean | undefined,
       ) {
         chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           return callback(message, mapSender(sender), sendResponse);
@@ -96,14 +91,12 @@ export function createChromeRuntime(): ChromeRuntimeAPI {
         callback: (
           message: unknown,
           sender: MessageSender,
-          sendResponse: (response: unknown) => void
-        ) => boolean | void
+          sendResponse: (response: unknown) => void,
+        ) => boolean | undefined,
       ) {
-        chrome.runtime.onMessage.removeListener(
-          (message, sender, sendResponse) => {
-            return callback(message, mapSender(sender), sendResponse);
-          }
-        );
+        chrome.runtime.onMessage.removeListener((message, sender, sendResponse) => {
+          return callback(message, mapSender(sender), sendResponse);
+        });
       },
     },
   };

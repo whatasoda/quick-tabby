@@ -4,11 +4,7 @@
  * Settings types are defined in core/settings/settings-types.ts
  */
 
-import type {
-  CommandName,
-  CommandSettings,
-  ThumbnailConfig,
-} from "../core/settings/settings-types.ts";
+import type { CommandName, ThumbnailConfig } from "../core/settings/settings-types.ts";
 
 export interface TabInfo {
   id: number;

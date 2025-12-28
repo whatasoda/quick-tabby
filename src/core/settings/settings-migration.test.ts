@@ -3,8 +3,8 @@
  */
 
 import { describe, expect, test } from "bun:test";
-import { migrateSettings } from "./settings-migration.ts";
 import { DEFAULT_SETTINGS } from "./settings-defaults.ts";
+import { migrateSettings } from "./settings-migration.ts";
 
 describe("migrateSettings", () => {
   describe("null/undefined/non-object input", () => {
@@ -111,10 +111,7 @@ describe("migrateSettings", () => {
 
       const result = migrateSettings(stored);
 
-      expect(result.settings.keybindings.moveDown).toEqual([
-        { key: "j" },
-        { key: "ArrowDown" },
-      ]);
+      expect(result.settings.keybindings.moveDown).toEqual([{ key: "j" }, { key: "ArrowDown" }]);
       expect(result.needsPersist).toBe(false);
     });
 
@@ -131,13 +128,13 @@ describe("migrateSettings", () => {
     test("should merge custom commandSettings with defaults", () => {
       const stored = {
         commandSettings: {
-          "_execute_action": { selectOnClose: false },
+          _execute_action: { selectOnClose: false },
         },
       };
 
       const result = migrateSettings(stored);
 
-      expect(result.settings.commandSettings["_execute_action"].selectOnClose).toBe(false);
+      expect(result.settings.commandSettings._execute_action.selectOnClose).toBe(false);
       expect(result.settings.commandSettings["open-popup-all-windows"].selectOnClose).toBe(true);
     });
   });

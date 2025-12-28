@@ -1,6 +1,6 @@
-import type { MessageType, MessageResponse } from "../../shared/types.ts";
-import type { Settings } from "../../core/settings/settings-types.ts";
 import { DEFAULT_SETTINGS } from "../../core/settings/settings-defaults.ts";
+import type { Settings } from "../../core/settings/settings-types.ts";
+import type { MessageResponse, MessageType } from "../../shared/types.ts";
 import { getMockTabs } from "./tab-data.ts";
 
 const mockStorage: Record<string, unknown> = {
@@ -10,7 +10,7 @@ const mockStorage: Record<string, unknown> = {
 const chromeStorageMock = {
   local: {
     get: async (
-      keys: string | string[] | Record<string, unknown>
+      keys: string | string[] | Record<string, unknown>,
     ): Promise<Record<string, unknown>> => {
       if (typeof keys === "string") {
         return { [keys]: mockStorage[keys] };
@@ -63,7 +63,7 @@ const chromeRuntimeMock = {
     console.log("[Mock] Runtime connect:", options.name);
     return {
       onMessage: {
-        addListener: (callback: (msg: unknown) => void) => {
+        addListener: (_callback: (msg: unknown) => void) => {
           console.log("[Mock] Port onMessage listener added");
         },
       },

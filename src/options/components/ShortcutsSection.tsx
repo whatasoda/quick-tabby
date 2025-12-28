@@ -1,8 +1,8 @@
 import { createResource, For, Show } from "solid-js";
 import { css } from "../../../styled-system/css";
-import type { Settings, CommandName } from "../../core/settings/settings-types";
+import type { CommandName, Settings } from "../../core/settings/settings-types";
 import { getCommands, openShortcutsPage } from "../../infrastructure/chrome/messaging";
-import { sectionStyles, formStyles } from "./styles";
+import { formStyles, sectionStyles } from "./styles";
 
 const styles = {
   shortcutList: css({
@@ -66,11 +66,7 @@ const styles = {
 };
 
 function isValidCommandName(name: string): name is CommandName {
-  return [
-    "_execute_action",
-    "open-popup-all-windows",
-    "open-popup-current-window",
-  ].includes(name);
+  return ["_execute_action", "open-popup-all-windows", "open-popup-current-window"].includes(name);
 }
 
 interface ShortcutsSectionProps {
@@ -78,7 +74,7 @@ interface ShortcutsSectionProps {
   onUpdateCommandSetting: (
     command: CommandName,
     key: keyof Settings["commandSettings"][CommandName],
-    value: boolean
+    value: boolean,
   ) => void;
 }
 
@@ -103,15 +99,14 @@ export function ShortcutsSection(props: ShortcutsSectionProps) {
                     <input
                       type="checkbox"
                       checked={
-                        props.settings.commandSettings[
-                          shortcut.name as CommandName
-                        ]?.selectOnClose ?? true
+                        props.settings.commandSettings[shortcut.name as CommandName]
+                          ?.selectOnClose ?? true
                       }
                       onChange={(e) =>
                         props.onUpdateCommandSetting(
                           shortcut.name as CommandName,
                           "selectOnClose",
-                          e.target.checked
+                          e.target.checked,
                         )
                       }
                     />
@@ -129,8 +124,8 @@ export function ShortcutsSection(props: ShortcutsSectionProps) {
       </button>
 
       <p class={styles.note}>
-        Opens Chrome's extension shortcuts page. "Select on re-press" switches
-        to the selected tab when pressing the shortcut again to close the popup.
+        Opens Chrome's extension shortcuts page. "Select on re-press" switches to the selected tab
+        when pressing the shortcut again to close the popup.
       </p>
     </div>
   );

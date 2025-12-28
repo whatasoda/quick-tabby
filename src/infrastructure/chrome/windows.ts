@@ -1,9 +1,9 @@
 import type {
   ChromeWindowsAPI,
+  TabInfo,
+  WindowGetInfo,
   WindowInfo,
   WindowUpdateInfo,
-  WindowGetInfo,
-  TabInfo,
 } from "./types.ts";
 
 function mapTab(tab: chrome.tabs.Tab): TabInfo {
@@ -33,10 +33,7 @@ export function createChromeWindows(): ChromeWindowsAPI {
       return mapWindow(window);
     },
 
-    async update(
-      windowId: number,
-      updateInfo: WindowUpdateInfo
-    ): Promise<WindowInfo> {
+    async update(windowId: number, updateInfo: WindowUpdateInfo): Promise<WindowInfo> {
       const window = await chrome.windows.update(windowId, updateInfo);
       return mapWindow(window);
     },

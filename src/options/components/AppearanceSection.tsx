@@ -1,10 +1,6 @@
 import { For } from "solid-js";
-import type {
-  Settings,
-  ThemePreference,
-  PopupSize,
-} from "../../core/settings/settings-types";
-import { sectionStyles, formStyles } from "./styles";
+import type { PopupSize, Settings, ThemePreference } from "../../core/settings/settings-types";
+import { formStyles, sectionStyles } from "./styles";
 
 const THEME_OPTIONS: { value: ThemePreference; label: string }[] = [
   { value: "auto", label: "Auto" },
@@ -36,9 +32,7 @@ export function AppearanceSection(props: AppearanceSectionProps) {
                   type="radio"
                   name="themePreference"
                   checked={props.settings.themePreference === option.value}
-                  onChange={() =>
-                    props.onUpdateSetting("themePreference", option.value)
-                  }
+                  onChange={() => props.onUpdateSetting("themePreference", option.value)}
                 />
                 {option.label}
               </label>

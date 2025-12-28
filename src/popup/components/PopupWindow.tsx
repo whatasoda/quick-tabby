@@ -1,21 +1,21 @@
 import {
+  type Accessor,
   createEffect,
   createMemo,
   createSignal,
-  onCleanup,
-  Show,
-  type Accessor,
   type JSX,
+  onCleanup,
   type Resource,
+  Show,
 } from "solid-js";
 import { css } from "../../../styled-system/css";
-import type { Settings } from "../../core/settings/settings-types.ts";
 import {
-  POPUP_SIZES,
+  getMaxPopupWidth,
   getPreviewWidth,
   getTabListWidth,
-  getMaxPopupWidth,
+  POPUP_SIZES,
 } from "../../core/settings/settings-defaults.ts";
+import type { Settings } from "../../core/settings/settings-types.ts";
 import { createThemeControl } from "../../shared/theme.ts";
 
 const styles = {
@@ -30,26 +30,12 @@ function applyPopupSize(settings: Settings) {
   const size = POPUP_SIZES[settings.popupSize];
   const tabListWidth = getTabListWidth();
   const previewWidth = getPreviewWidth();
-  const totalWidth = settings.previewModeEnabled
-    ? getMaxPopupWidth()
-    : tabListWidth;
+  const totalWidth = settings.previewModeEnabled ? getMaxPopupWidth() : tabListWidth;
 
-  document.documentElement.style.setProperty(
-    "--popup-width",
-    `${totalWidth}px`
-  );
-  document.documentElement.style.setProperty(
-    "--popup-height",
-    `${size.height}px`
-  );
-  document.documentElement.style.setProperty(
-    "--preview-width",
-    `${previewWidth}px`
-  );
-  document.documentElement.style.setProperty(
-    "--tab-list-width",
-    `${tabListWidth}px`
-  );
+  document.documentElement.style.setProperty("--popup-width", `${totalWidth}px`);
+  document.documentElement.style.setProperty("--popup-height", `${size.height}px`);
+  document.documentElement.style.setProperty("--preview-width", `${previewWidth}px`);
+  document.documentElement.style.setProperty("--tab-list-width", `${tabListWidth}px`);
 }
 
 interface PopupWindowProps {

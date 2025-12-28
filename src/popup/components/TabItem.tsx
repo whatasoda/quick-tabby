@@ -137,12 +137,7 @@ export function TabItem(props: TabItemProps) {
               </div>
             }
           >
-            <img
-              class={styles.tabThumbnail}
-              src={props.tab.thumbnailUrl}
-              alt=""
-              loading="lazy"
-            />
+            <img class={styles.tabThumbnail} src={props.tab.thumbnailUrl} alt="" loading="lazy" />
           </Show>
         </div>
         <div class={styles.tabUrl}>{props.tab.url}</div>

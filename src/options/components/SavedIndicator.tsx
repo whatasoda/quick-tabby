@@ -23,9 +23,5 @@ interface SavedIndicatorProps {
 }
 
 export function SavedIndicator(props: SavedIndicatorProps) {
-  return (
-    <div class={`${styles.indicator} ${props.visible ? styles.visible : ""}`}>
-      Saved!
-    </div>
-  );
+  return <div class={`${styles.indicator} ${props.visible ? styles.visible : ""}`}>Saved!</div>;
 }

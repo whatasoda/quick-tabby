@@ -1,11 +1,11 @@
 export type { KeyEvent } from "./keybinding-matcher.ts";
 
 export {
-  matchesKeybinding,
-  matchesAnyKeybinding,
-  keybindingToString,
-  keybindingsToString,
-  parseShortcut,
   isValidKeybindingKey,
   keybindingFromEvent,
+  keybindingsToString,
+  keybindingToString,
+  matchesAnyKeybinding,
+  matchesKeybinding,
+  parseShortcut,
 } from "./keybinding-matcher.ts";

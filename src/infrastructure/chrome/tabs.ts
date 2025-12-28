@@ -1,12 +1,11 @@
 import type {
+  CaptureVisibleTabOptions,
   ChromeTabsAPI,
+  TabActiveInfo,
   TabInfo,
   TabQueryInfo,
-  TabUpdateProperties,
-  CaptureVisibleTabOptions,
-  TabActiveInfo,
   TabRemoveInfo,
-  ChromeEvent,
+  TabUpdateProperties,
 } from "./types.ts";
 
 function mapTab(tab: chrome.tabs.Tab): TabInfo {
@@ -35,7 +34,7 @@ export function createChromeTabs(): ChromeTabsAPI {
 
     async update(
       tabId: number,
-      updateProperties: TabUpdateProperties
+      updateProperties: TabUpdateProperties,
     ): Promise<TabInfo | undefined> {
       const tab = await chrome.tabs.update(tabId, updateProperties);
       return tab ? mapTab(tab) : undefined;
@@ -46,10 +45,7 @@ export function createChromeTabs(): ChromeTabsAPI {
       return mapTab(tab);
     },
 
-    async captureVisibleTab(
-      windowId: number,
-      options: CaptureVisibleTabOptions
-    ): Promise<string> {
+    async captureVisibleTab(windowId: number, options: CaptureVisibleTabOptions): Promise<string> {
       return chrome.tabs.captureVisibleTab(windowId, options);
     },
 
@@ -63,14 +59,10 @@ export function createChromeTabs(): ChromeTabsAPI {
     },
 
     onRemoved: {
-      addListener(
-        callback: (tabId: number, removeInfo: TabRemoveInfo) => void
-      ) {
+      addListener(callback: (tabId: number, removeInfo: TabRemoveInfo) => void) {
         chrome.tabs.onRemoved.addListener(callback);
       },
-      removeListener(
-        callback: (tabId: number, removeInfo: TabRemoveInfo) => void
-      ) {
+      removeListener(callback: (tabId: number, removeInfo: TabRemoveInfo) => void) {
         chrome.tabs.onRemoved.removeListener(callback);
       },
     },

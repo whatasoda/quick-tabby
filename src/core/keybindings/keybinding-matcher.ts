@@ -26,10 +26,7 @@ export interface KeyEvent {
  * @param binding - Keybinding to match against
  * @returns True if the event matches the binding
  */
-export function matchesKeybinding(
-  event: KeyEvent | KeyboardEvent,
-  binding: Keybinding
-): boolean {
+export function matchesKeybinding(event: KeyEvent | KeyboardEvent, binding: Keybinding): boolean {
   // For single character keys, use event.code to handle Alt/Option key combinations
   // On Mac, Alt+Q produces "œ" in event.key, but event.code is still "KeyQ"
   let keyMatches: boolean;
@@ -37,8 +34,7 @@ export function matchesKeybinding(
     const expectedCode = `Key${binding.key.toUpperCase()}`;
     keyMatches = event.code === expectedCode;
   } else {
-    keyMatches =
-      event.key === binding.key || event.key.toLowerCase() === binding.key;
+    keyMatches = event.key === binding.key || event.key.toLowerCase() === binding.key;
   }
 
   const ctrlMatches = !!binding.ctrl === event.ctrlKey;
@@ -58,7 +54,7 @@ export function matchesKeybinding(
  */
 export function matchesAnyKeybinding(
   event: KeyEvent | KeyboardEvent,
-  bindings: KeybindingList
+  bindings: KeybindingList,
 ): boolean {
   return bindings.some((binding) => matchesKeybinding(event, binding));
 }

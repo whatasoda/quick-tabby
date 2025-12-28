@@ -5,8 +5,8 @@
  * Migration logic is delegated to core/settings/settings-migration.ts.
  */
 
-import type { Settings } from "../core/settings/settings-types.ts";
 import { migrateSettings } from "../core/settings/settings-migration.ts";
+import type { Settings } from "../core/settings/settings-types.ts";
 
 const SETTINGS_KEY = "quicktabby:settings";
 

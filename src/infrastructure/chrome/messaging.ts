@@ -4,20 +4,13 @@
  * Provides type-safe wrappers around Chrome runtime messaging API.
  */
 
-import type {
-  MessageType,
-  MessageResponse,
-  TabInfo,
-  LaunchInfo,
-} from "../../shared/types.ts";
 import type { ThumbnailConfig } from "../../core/settings/settings-types.ts";
+import type { LaunchInfo, MessageResponse, MessageType, TabInfo } from "../../shared/types.ts";
 
 /**
  * Send a message to the background script and return the response
  */
-export async function sendMessage(
-  message: MessageType
-): Promise<MessageResponse | null> {
+export async function sendMessage(message: MessageType): Promise<MessageResponse | null> {
   const response = await chrome.runtime.sendMessage(message);
   return response as MessageResponse | null;
 }
@@ -25,10 +18,7 @@ export async function sendMessage(
 /**
  * Fetch MRU tabs from the background script
  */
-export async function getMRUTabs(
-  windowOnly: boolean,
-  windowId: number
-): Promise<TabInfo[]> {
+export async function getMRUTabs(windowOnly: boolean, windowId: number): Promise<TabInfo[]> {
   const response = await sendMessage({
     type: "GET_MRU_TABS",
     windowOnly,
@@ -50,7 +40,7 @@ export async function switchToTab(tabId: number): Promise<void> {
  */
 export async function captureCurrentTab(
   windowId: number | undefined,
-  thumbnailConfig: ThumbnailConfig
+  thumbnailConfig: ThumbnailConfig,
 ): Promise<void> {
   await sendMessage({
     type: "CAPTURE_CURRENT_TAB",

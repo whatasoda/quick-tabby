@@ -5,7 +5,7 @@
  * These functions are side-effect free and return new state objects.
  */
 
-import type { MRUState, MRUConfig } from "./mru-state.ts";
+import type { MRUConfig, MRUState } from "./mru-state.ts";
 import { DEFAULT_MRU_CONFIG } from "./mru-state.ts";
 
 /**
@@ -21,22 +21,16 @@ export function addTabToMRU(
   state: MRUState,
   tabId: number,
   windowId: number,
-  config: MRUConfig = DEFAULT_MRU_CONFIG
+  config: MRUConfig = DEFAULT_MRU_CONFIG,
 ): MRUState {
   const { maxSize } = config;
 
   // Add to global list: remove existing entry, add to front, trim to max size
-  const newGlobal = [
-    tabId,
-    ...state.global.filter((id) => id !== tabId),
-  ].slice(0, maxSize);
+  const newGlobal = [tabId, ...state.global.filter((id) => id !== tabId)].slice(0, maxSize);
 
   // Add to window-specific list
   const windowMRU = state.byWindow[windowId] ?? [];
-  const newWindowMRU = [
-    tabId,
-    ...windowMRU.filter((id) => id !== tabId),
-  ].slice(0, maxSize);
+  const newWindowMRU = [tabId, ...windowMRU.filter((id) => id !== tabId)].slice(0, maxSize);
 
   return {
     global: newGlobal,
@@ -76,10 +70,7 @@ export function removeTabFromMRU(state: MRUState, tabId: number): MRUState {
  * @param windowId - Window ID to remove
  * @returns New MRU state with the window removed
  */
-export function removeWindowFromMRU(
-  state: MRUState,
-  windowId: number
-): MRUState {
+export function removeWindowFromMRU(state: MRUState, windowId: number): MRUState {
   const { [windowId]: _removed, ...rest } = state.byWindow;
   return {
     global: state.global,
@@ -98,7 +89,7 @@ export function removeWindowFromMRU(
 export function getMRUList(
   state: MRUState,
   windowOnly: boolean,
-  windowId?: number
+  windowId?: number,
 ): readonly number[] {
   if (windowOnly && windowId !== undefined) {
     return state.byWindow[windowId] ?? [];
@@ -117,7 +108,7 @@ export function getMRUList(
 export function getPreviousTabId(
   state: MRUState,
   windowOnly: boolean,
-  windowId?: number
+  windowId?: number,
 ): number | null {
   const list = getMRUList(state, windowOnly, windowId);
   return list[1] ?? null;
@@ -147,7 +138,7 @@ export function getTabPosition(
   state: MRUState,
   tabId: number,
   windowOnly: boolean,
-  windowId?: number
+  windowId?: number,
 ): number {
   const list = getMRUList(state, windowOnly, windowId);
   return list.indexOf(tabId);
