@@ -1,10 +1,8 @@
-export type { SettingsService, SettingsServiceDependencies } from "./settings.service.ts";
-export {
-  createSettingsService,
-  getEffectiveTheme,
-  applyTheme,
-  setupThemeListener,
+export type {
+  SettingsService,
+  SettingsServiceDependencies,
 } from "./settings.service.ts";
+export { createSettingsService } from "./settings.service.ts";
 
 export type {
   MRUTabInfo,

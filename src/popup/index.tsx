@@ -25,9 +25,8 @@ import {
   getMaxPopupWidth,
   THUMBNAIL_QUALITIES,
   matchesAnyKeybinding,
-  applyTheme,
-  setupThemeListener,
 } from "../shared/settings.ts";
+import { createThemeControl } from "../shared/theme.ts";
 
 const styles = {
   popupContainer: css({
@@ -248,6 +247,7 @@ export function App() {
         ? fetchMRUTabs(params.windowOnly, params.windowId)
         : Promise.resolve([])
   );
+  const themeControl = createMemo(createThemeControl);
 
   // Get selected tab for preview display
   const selectedTab = createMemo(() => {
@@ -271,7 +271,10 @@ export function App() {
     const { keybindings } = currentSettings;
 
     // Also allow arrow keys as built-in navigation
-    if (matchesAnyKeybinding(e, keybindings.moveDown) || e.key === "ArrowDown") {
+    if (
+      matchesAnyKeybinding(e, keybindings.moveDown) ||
+      e.key === "ArrowDown"
+    ) {
       e.preventDefault();
       setSelectedIndex((i) => Math.min(i + 1, tabList.length - 1));
       return;
@@ -316,11 +319,13 @@ export function App() {
     chrome.runtime.openOptionsPage();
   }
 
-  let cleanupThemeListener: (() => void) | undefined;
   let port: chrome.runtime.Port | undefined;
 
   // Handle close popup message from background
-  function handlePortMessage(message: { type: string; selectFocused?: boolean }) {
+  function handlePortMessage(message: {
+    type: string;
+    selectFocused?: boolean;
+  }) {
     if (message.type === "CLOSE_POPUP") {
       if (message.selectFocused) {
         const tabList = tabs();
@@ -378,11 +383,7 @@ export function App() {
     setWindowOnly(initialWindowOnly);
     setSettings(loadedSettings);
     applyPopupSize(loadedSettings);
-    applyTheme(loadedSettings.themePreference);
-    cleanupThemeListener = setupThemeListener(
-      loadedSettings.themePreference,
-      () => applyTheme(loadedSettings.themePreference)
-    );
+    themeControl().applyTheme(loadedSettings.themePreference);
 
     if (currentWindow.id !== undefined) {
       setCurrentWindowId(currentWindow.id);
@@ -405,7 +406,7 @@ export function App() {
   onCleanup(() => {
     document.removeEventListener("keydown", handleKeyDown);
     port?.disconnect();
-    cleanupThemeListener?.();
+    themeControl().cleanup();
   });
 
   const isPreviewEnabled = () => settings()?.previewModeEnabled ?? false;
@@ -521,4 +522,3 @@ export function App() {
     </div>
   );
 }
-

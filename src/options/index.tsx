@@ -1,4 +1,13 @@
-import { createSignal, createResource, createEffect, For, onMount, onCleanup, Show } from "solid-js";
+import {
+  createSignal,
+  createResource,
+  createEffect,
+  For,
+  onMount,
+  onCleanup,
+  Show,
+  createMemo,
+} from "solid-js";
 import "./index.css";
 import { css } from "../../styled-system/css";
 import type {
@@ -16,9 +25,8 @@ import {
   saveSettings,
   DEFAULT_SETTINGS,
   keybindingToString,
-  applyTheme,
-  setupThemeListener,
 } from "../shared/settings.ts";
+import { createThemeControl } from "../shared/theme.ts";
 
 const styles = {
   container: css({
@@ -248,32 +256,22 @@ export function App() {
   const [settings, setSettings] = createSignal<Settings>(DEFAULT_SETTINGS);
   const [saved, setSaved] = createSignal(false);
   const [recordingKey, setRecordingKey] = createSignal<string | null>(null);
-
-  let cleanupThemeListener: (() => void) | undefined;
+  const themeControl = createMemo(createThemeControl);
 
   onMount(async () => {
     const loaded = await loadSettings();
     setSettings(loaded);
-    applyTheme(loaded.themePreference);
-    cleanupThemeListener = setupThemeListener(
-      loaded.themePreference,
-      () => applyTheme(loaded.themePreference)
-    );
+    themeControl().applyTheme(loaded.themePreference);
   });
 
   onCleanup(() => {
-    cleanupThemeListener?.();
+    themeControl().cleanup();
   });
 
   // Re-apply theme when settings change
   createEffect(() => {
     const currentSettings = settings();
-    applyTheme(currentSettings.themePreference);
-    cleanupThemeListener?.();
-    cleanupThemeListener = setupThemeListener(
-      currentSettings.themePreference,
-      () => applyTheme(currentSettings.themePreference)
-    );
+    themeControl().applyTheme(currentSettings.themePreference);
   });
 
   async function updateSetting<K extends keyof Settings>(
@@ -299,7 +297,10 @@ export function App() {
     showSaved();
   }
 
-  function addKeybinding(key: keyof Settings["keybindings"], binding: Keybinding) {
+  function addKeybinding(
+    key: keyof Settings["keybindings"],
+    binding: Keybinding
+  ) {
     const current = settings().keybindings[key];
     updateKeybindings(key, [...current, binding]);
   }
@@ -307,7 +308,10 @@ export function App() {
   function removeKeybinding(key: keyof Settings["keybindings"], index: number) {
     const current = settings().keybindings[key];
     if (current.length <= 1) return; // Don't allow removing the last keybinding
-    updateKeybindings(key, current.filter((_, i) => i !== index));
+    updateKeybindings(
+      key,
+      current.filter((_, i) => i !== index)
+    );
   }
 
   async function updateCommandSetting(
@@ -328,7 +332,11 @@ export function App() {
   }
 
   function isValidCommandName(name: string): name is CommandName {
-    return ["_execute_action", "open-popup-all-windows", "open-popup-current-window"].includes(name);
+    return [
+      "_execute_action",
+      "open-popup-all-windows",
+      "open-popup-current-window",
+    ].includes(name);
   }
 
   function showSaved() {
@@ -369,7 +377,11 @@ export function App() {
     <div class={styles.container}>
       <h1 class={styles.h1}>QuickTabby Settings</h1>
 
-      <div class={`${styles.savedIndicator} ${saved() ? styles.savedIndicatorVisible : ""}`}>Saved!</div>
+      <div
+        class={`${styles.savedIndicator} ${saved() ? styles.savedIndicatorVisible : ""}`}
+      >
+        Saved!
+      </div>
 
       <div class={styles.section}>
         <h2 class={styles.sectionTitle}>Appearance</h2>
@@ -378,18 +390,24 @@ export function App() {
             <div class={styles.settingLabel}>Theme</div>
           </div>
           <div class={styles.radioGroup}>
-            <For each={[
-              { value: "auto", label: "Auto" },
-              { value: "light", label: "Light" },
-              { value: "dark", label: "Dark" },
-            ] as { value: ThemePreference; label: string }[]}>
+            <For
+              each={
+                [
+                  { value: "auto", label: "Auto" },
+                  { value: "light", label: "Light" },
+                  { value: "dark", label: "Dark" },
+                ] as { value: ThemePreference; label: string }[]
+              }
+            >
               {(option) => (
                 <label class={styles.radioOption}>
                   <input
                     type="radio"
                     name="themePreference"
                     checked={settings().themePreference === option.value}
-                    onChange={() => updateSetting("themePreference", option.value)}
+                    onChange={() =>
+                      updateSetting("themePreference", option.value)
+                    }
                   />
                   {option.label}
                 </label>
@@ -454,7 +472,9 @@ export function App() {
                       type="radio"
                       name="thumbnailQuality"
                       checked={settings().thumbnailQuality === quality}
-                      onChange={() => updateSetting("thumbnailQuality", quality)}
+                      onChange={() =>
+                        updateSetting("thumbnailQuality", quality)
+                      }
                     />
                     {quality.charAt(0).toUpperCase() + quality.slice(1)}
                   </label>
@@ -471,11 +491,15 @@ export function App() {
             </div>
           </div>
           <div class={styles.radioGroup}>
-            <For each={[
-              { value: "lastUsed", label: "Last Used" },
-              { value: "all", label: "All Windows" },
-              { value: "currentWindow", label: "Current Window" },
-            ] as { value: DefaultMode; label: string }[]}>
+            <For
+              each={
+                [
+                  { value: "lastUsed", label: "Last Used" },
+                  { value: "all", label: "All Windows" },
+                  { value: "currentWindow", label: "Current Window" },
+                ] as { value: DefaultMode; label: string }[]
+              }
+            >
               {(option) => (
                 <label class={styles.radioOption}>
                   <input
@@ -559,7 +583,9 @@ export function App() {
             {(shortcut) => (
               <div class={styles.shortcutItem}>
                 <div class={styles.shortcutHeader}>
-                  <span class={styles.shortcutName}>{shortcut.description}</span>
+                  <span class={styles.shortcutName}>
+                    {shortcut.description}
+                  </span>
                   <span class={styles.shortcutKey}>{shortcut.shortcut}</span>
                 </div>
                 <Show when={isValidCommandName(shortcut.name)}>
@@ -567,8 +593,18 @@ export function App() {
                     <label class={styles.checkboxLabel}>
                       <input
                         type="checkbox"
-                        checked={settings().commandSettings[shortcut.name as CommandName]?.selectOnClose ?? true}
-                        onChange={(e) => updateCommandSetting(shortcut.name as CommandName, "selectOnClose", e.target.checked)}
+                        checked={
+                          settings().commandSettings[
+                            shortcut.name as CommandName
+                          ]?.selectOnClose ?? true
+                        }
+                        onChange={(e) =>
+                          updateCommandSetting(
+                            shortcut.name as CommandName,
+                            "selectOnClose",
+                            e.target.checked
+                          )
+                        }
                       />
                       <span>Select on re-press</span>
                     </label>
@@ -583,10 +619,10 @@ export function App() {
         </button>
         <p class={styles.note}>
           Opens Chrome's extension shortcuts page. "Select on re-press" switches
-          to the selected tab when pressing the shortcut again to close the popup.
+          to the selected tab when pressing the shortcut again to close the
+          popup.
         </p>
       </div>
     </div>
   );
 }
-

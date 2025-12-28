@@ -6,7 +6,7 @@
  */
 
 import type { ChromeStorageAPI } from "../infrastructure/chrome/types.ts";
-import type { Settings, ThemePreference } from "../core/settings/settings-types.ts";
+import type { Settings } from "../core/settings/settings-types.ts";
 import { migrateSettings } from "../core/settings/settings-migration.ts";
 
 const SETTINGS_KEY = "quicktabby:settings";
@@ -59,54 +59,4 @@ export function createSettingsService(
       await deps.storage.local.set({ [SETTINGS_KEY]: settings });
     },
   };
-}
-
-// =============================================================================
-// Theme Utilities (pure functions, can be used without service)
-// =============================================================================
-
-/**
- * Get effective theme based on preference and system settings
- *
- * @param preference - User's theme preference
- * @returns Resolved theme ("light" or "dark")
- */
-export function getEffectiveTheme(preference: ThemePreference): "light" | "dark" {
-  if (preference === "auto") {
-    return window.matchMedia("(prefers-color-scheme: dark)").matches
-      ? "dark"
-      : "light";
-  }
-  return preference;
-}
-
-/**
- * Apply theme to document
- *
- * @param preference - User's theme preference
- */
-export function applyTheme(preference: ThemePreference): void {
-  const theme = getEffectiveTheme(preference);
-  document.documentElement.setAttribute("data-theme", theme);
-}
-
-/**
- * Set up system theme change listener
- *
- * @param preference - User's theme preference
- * @param onThemeChange - Callback when system theme changes
- * @returns Cleanup function to remove listener
- */
-export function setupThemeListener(
-  preference: ThemePreference,
-  onThemeChange: () => void
-): () => void {
-  if (preference !== "auto") {
-    return () => {};
-  }
-
-  const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-  const handler = () => onThemeChange();
-  mediaQuery.addEventListener("change", handler);
-  return () => mediaQuery.removeEventListener("change", handler);
 }

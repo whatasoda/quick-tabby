@@ -1,4 +1,4 @@
-import type { Settings, Keybinding, KeybindingList, PopupSize, ThemePreference, DefaultMode, CommandName } from "./types.ts";
+import type { Settings, Keybinding, KeybindingList } from "./types.ts";
 
 const SETTINGS_KEY = "quicktabby:settings";
 
@@ -16,7 +16,7 @@ export const DEFAULT_SETTINGS: Settings = {
     toggleMode: [{ key: "Tab" }],
   },
   commandSettings: {
-    "_execute_action": { selectOnClose: true },
+    _execute_action: { selectOnClose: true },
     "open-popup-all-windows": { selectOnClose: true },
     "open-popup-current-window": { selectOnClose: true },
   },
@@ -62,9 +62,17 @@ export async function loadSettings(): Promise<Settings> {
   }
 
   // Migration: convert single keybindings to arrays
-  let migratedKeybindings: Settings["keybindings"] = { ...DEFAULT_SETTINGS.keybindings };
+  let migratedKeybindings: Settings["keybindings"] = {
+    ...DEFAULT_SETTINGS.keybindings,
+  };
   if (stored.keybindings) {
-    const keys = ["moveDown", "moveUp", "confirm", "cancel", "toggleMode"] as const;
+    const keys = [
+      "moveDown",
+      "moveUp",
+      "confirm",
+      "cancel",
+      "toggleMode",
+    ] as const;
     for (const key of keys) {
       const binding = stored.keybindings[key];
       if (binding) {
@@ -107,7 +115,8 @@ export function matchesKeybinding(
     const expectedCode = `Key${binding.key.toUpperCase()}`;
     keyMatches = event.code === expectedCode;
   } else {
-    keyMatches = event.key === binding.key || event.key.toLowerCase() === binding.key;
+    keyMatches =
+      event.key === binding.key || event.key.toLowerCase() === binding.key;
   }
 
   const ctrlMatches = !!binding.ctrl === event.ctrlKey;
@@ -179,38 +188,10 @@ export function getMaxPopupWidth(): number {
   return MAX_POPUP_WIDTH;
 }
 
-export function getEffectiveTheme(preference: ThemePreference): "light" | "dark" {
-  if (preference === "auto") {
-    return window.matchMedia("(prefers-color-scheme: dark)").matches
-      ? "dark"
-      : "light";
-  }
-  return preference;
-}
-
-export function applyTheme(preference: ThemePreference): void {
-  const theme = getEffectiveTheme(preference);
-  document.documentElement.setAttribute("data-theme", theme);
-}
-
-export function setupThemeListener(
-  preference: ThemePreference,
-  onThemeChange: () => void
-): () => void {
-  if (preference !== "auto") {
-    return () => {};
-  }
-
-  const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-  const handler = () => onThemeChange();
-  mediaQuery.addEventListener("change", handler);
-  return () => mediaQuery.removeEventListener("change", handler);
-}
-
 // Parse Chrome shortcut string (e.g., "Alt+Shift+Q") into Keybinding
 export function parseShortcut(shortcut: string): Keybinding {
   const parts = shortcut.split("+");
-  const key = parts[parts.length - 1];
+  const key = parts[parts.length - 1] ?? "";
   return {
     key: key.length === 1 ? key.toLowerCase() : key,
     ctrl: parts.includes("Ctrl"),
