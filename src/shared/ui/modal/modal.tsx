@@ -1,9 +1,5 @@
-import { onCleanup, onMount, splitProps, type JSX } from "solid-js";
-import {
-  overlayRecipe,
-  modalContentRecipe,
-  type ModalContentVariants,
-} from "./modal.recipe";
+import { type JSX, onCleanup, onMount, splitProps } from "solid-js";
+import { type ModalContentVariants, modalContentRecipe, overlayRecipe } from "./modal.recipe";
 
 export type ModalProps = ModalContentVariants & {
   onClose: () => void;

@@ -1,9 +1,5 @@
 import { For, splitProps } from "solid-js";
-import {
-  radioGroupRecipe,
-  radioOptionRecipe,
-  type RadioGroupVariants,
-} from "./form.recipe";
+import { type RadioGroupVariants, radioGroupRecipe, radioOptionRecipe } from "./form.recipe";
 
 export interface RadioOption<T extends string> {
   value: T;
@@ -18,12 +14,7 @@ export type RadioGroupProps<T extends string> = RadioGroupVariants & {
 };
 
 export function RadioGroup<T extends string>(props: RadioGroupProps<T>) {
-  const [local, variants] = splitProps(props, [
-    "name",
-    "options",
-    "value",
-    "onChange",
-  ]);
+  const [local, variants] = splitProps(props, ["name", "options", "value", "onChange"]);
 
   return (
     <div class={radioGroupRecipe(variants)}>

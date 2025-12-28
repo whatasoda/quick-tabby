@@ -1,10 +1,10 @@
 import type { JSX } from "solid-js";
 import { Show, splitProps } from "solid-js";
 import {
-  formFieldRecipe,
-  labelRecipe,
   descriptionRecipe,
   type FormFieldVariants,
+  formFieldRecipe,
+  labelRecipe,
 } from "./form.recipe";
 
 export type FormFieldProps = FormFieldVariants & {
@@ -14,11 +14,7 @@ export type FormFieldProps = FormFieldVariants & {
 };
 
 export function FormField(props: FormFieldProps) {
-  const [local, variants] = splitProps(props, [
-    "label",
-    "description",
-    "children",
-  ]);
+  const [local, variants] = splitProps(props, ["label", "description", "children"]);
 
   return (
     <div class={formFieldRecipe(variants)}>

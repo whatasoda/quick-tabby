@@ -1,6 +1,6 @@
 import type { JSX } from "solid-js";
 import { splitProps } from "solid-js";
-import { buttonRecipe, type ButtonVariants } from "./button.recipe";
+import { type ButtonVariants, buttonRecipe } from "./button.recipe";
 
 export type ButtonProps = ButtonVariants & {
   children: JSX.Element;
