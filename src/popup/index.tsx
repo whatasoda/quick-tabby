@@ -20,8 +20,8 @@ import {
   getTabListWidth,
   getMaxPopupWidth,
   THUMBNAIL_QUALITIES,
-  matchesAnyKeybinding,
 } from "../shared/settings.ts";
+import { matchesAnyKeybinding } from "../core/keybindings/keybinding-matcher.ts";
 import { createThemeControl } from "../shared/theme.ts";
 
 const styles = {

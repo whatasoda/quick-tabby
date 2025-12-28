@@ -20,12 +20,8 @@ import type {
   KeybindingList,
   CommandName,
 } from "../core/settings/settings-types.ts";
-import {
-  loadSettings,
-  saveSettings,
-  DEFAULT_SETTINGS,
-  keybindingToString,
-} from "../shared/settings.ts";
+import { loadSettings, saveSettings, DEFAULT_SETTINGS } from "../shared/settings.ts";
+import { keybindingToString } from "../core/keybindings/keybinding-matcher.ts";
 import { createThemeControl } from "../shared/theme.ts";
 
 const styles = {
