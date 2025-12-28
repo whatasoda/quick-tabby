@@ -7,11 +7,11 @@ import {
   type FormFieldVariants,
 } from "./form.recipe";
 
-export interface FormFieldProps extends FormFieldVariants {
+export type FormFieldProps = FormFieldVariants & {
   label: string;
   description?: string;
   children: JSX.Element;
-}
+};
 
 export function FormField(props: FormFieldProps) {
   const [local, variants] = splitProps(props, [

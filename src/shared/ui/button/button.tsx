@@ -2,14 +2,14 @@ import type { JSX } from "solid-js";
 import { splitProps } from "solid-js";
 import { buttonRecipe, type ButtonVariants } from "./button.recipe";
 
-export interface ButtonProps extends ButtonVariants {
+export type ButtonProps = ButtonVariants & {
   children: JSX.Element;
   onClick?: () => void;
   title?: string;
   disabled?: boolean;
   type?: "button" | "submit" | "reset";
   class?: string;
-}
+};
 
 export function Button(props: ButtonProps) {
   const [local, variants, rest] = splitProps(

@@ -5,12 +5,12 @@ import {
   type ModalContentVariants,
 } from "./modal.recipe";
 
-export interface ModalProps extends ModalContentVariants {
+export type ModalProps = ModalContentVariants & {
   onClose: () => void;
   children: JSX.Element;
   closeOnEscape?: boolean;
   closeOnOverlayClick?: boolean;
-}
+};
 
 export function Modal(props: ModalProps) {
   const [local, variants] = splitProps(props, [

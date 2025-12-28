@@ -10,12 +10,12 @@ export interface RadioOption<T extends string> {
   label: string;
 }
 
-export interface RadioGroupProps<T extends string> extends RadioGroupVariants {
+export type RadioGroupProps<T extends string> = RadioGroupVariants & {
   name: string;
   options: RadioOption<T>[];
   value: T;
   onChange: (value: T) => void;
-}
+};
 
 export function RadioGroup<T extends string>(props: RadioGroupProps<T>) {
   const [local, variants] = splitProps(props, [
