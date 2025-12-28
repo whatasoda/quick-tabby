@@ -51,6 +51,42 @@ const thumbnailCleanup = createThumbnailCleanupService({
 });
 
 // =============================================================================
+// Icon Theme Handling
+// =============================================================================
+
+function updateIcon(isDark: boolean) {
+  const theme = isDark ? "dark" : "light";
+  chrome.action.setIcon({
+    path: {
+      16: `icons/icon-${theme}-16.png`,
+      32: `icons/icon-${theme}-32.png`,
+      48: `icons/icon-${theme}-48.png`,
+      128: `icons/icon-${theme}-128.png`,
+    },
+  });
+}
+
+// Create offscreen document to detect color scheme changes
+// (Service workers don't have access to matchMedia)
+async function setupColorSchemeDetection() {
+  const offscreenUrl = "src/background/offscreen.html";
+
+  // Check if offscreen document already exists
+  const existingContexts = await chrome.runtime.getContexts({
+    contextTypes: [chrome.runtime.ContextType.OFFSCREEN_DOCUMENT],
+    documentUrls: [chrome.runtime.getURL(offscreenUrl)],
+  });
+
+  if (existingContexts.length === 0) {
+    await chrome.offscreen.createDocument({
+      url: offscreenUrl,
+      reasons: [chrome.offscreen.Reason.MATCH_MEDIA],
+      justification: "Detect system color scheme for icon theming",
+    });
+  }
+}
+
+// =============================================================================
 // Initialization
 // =============================================================================
 
@@ -59,6 +95,7 @@ const thumbnailCleanup = createThumbnailCleanupService({
   await mruTracker.initialize();
   commandHandler.initialize();
   thumbnailCleanup.initialize();
+  await setupColorSchemeDetection();
   console.log("QuickTabby background service worker initialized");
 })();
 
@@ -130,6 +167,11 @@ async function handleMessage(message: MessageType): Promise<MessageResponse> {
     case "POPUP_CLOSING":
     case "CLOSE_POPUP": {
       // These are handled via port connection, not message passing
+      return { type: "SUCCESS" };
+    }
+
+    case "COLOR_SCHEME_CHANGED": {
+      updateIcon(message.isDark);
       return { type: "SUCCESS" };
     }
 

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none">
+  <!-- Q circle -->
+  <circle cx="58" cy="68" r="48" stroke="#6366f1" stroke-width="14" fill="none"/>
+
+  <!-- Q tail -->
+  <path d="M80 96 Q100 112 108 108 Q116 104 120 110" stroke="#6366f1" stroke-width="14" stroke-linecap="round" fill="none"/>
+
+  <!-- Left ear -->
+  <path d="M20 38 L36 8 L52 20" stroke="#6366f1" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+
+  <!-- Right ear -->
+  <path d="M64 20 L80 8 L96 38" stroke="#6366f1" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+</svg>
