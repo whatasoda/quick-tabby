@@ -1,0 +1,17 @@
+{
+  "version": "0.2",
+  "language": "en",
+  "words": [
+    "bunx",
+    "devx",
+    "Hatada",
+    "neverthrow",
+    "prebuild",
+    "quicktabby",
+    "Shota",
+    "toplevel",
+    "whatasoda",
+  ],
+  "ignoreRegExpList": [],
+  "ignorePaths": ["node_modules", "dist"],
+}

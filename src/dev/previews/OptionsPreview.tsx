@@ -1,13 +1,10 @@
-import { createSignal, onMount, onCleanup, Show } from "solid-js";
+import { createSignal, onMount, onCleanup, Show, createMemo } from "solid-js";
 import { css } from "../../../styled-system/css";
-import type { Settings, ThemePreference } from "../../shared/types.ts";
-import {
-  DEFAULT_SETTINGS,
-  applyTheme,
-  setupThemeListener,
-} from "../../shared/settings.ts";
+import type { Settings, ThemePreference } from "../../core/settings/settings-types.ts";
+import { DEFAULT_SETTINGS } from "../../core/settings/settings-defaults.ts";
 import { updateMockSettings } from "../mocks/chrome-api.ts";
 import { App as OptionsApp } from "../../options/index.tsx";
+import { createThemeControl } from "../../shared/theme.ts";
 
 const styles = {
   container: css({
@@ -66,19 +63,15 @@ export function OptionsPreview() {
   const [settings, setSettings] = createSignal<Settings>(DEFAULT_SETTINGS);
   const [mounted, setMounted] = createSignal(false);
 
-  let cleanupThemeListener: (() => void) | undefined;
+  const themeControl = createMemo(createThemeControl);
 
   onMount(() => {
-    applyTheme(settings().themePreference);
-    cleanupThemeListener = setupThemeListener(
-      settings().themePreference,
-      () => applyTheme(settings().themePreference)
-    );
+    themeControl().applyTheme(settings().themePreference);
     setMounted(true);
   });
 
   onCleanup(() => {
-    cleanupThemeListener?.();
+    themeControl().cleanup();
   });
 
   function updateSettings(partial: Partial<Settings>) {
@@ -86,12 +79,7 @@ export function OptionsPreview() {
     const newSettings = { ...settings(), ...partial };
     setSettings(newSettings);
     updateMockSettings(newSettings);
-    applyTheme(newSettings.themePreference);
-    cleanupThemeListener?.();
-    cleanupThemeListener = setupThemeListener(
-      newSettings.themePreference,
-      () => applyTheme(newSettings.themePreference)
-    );
+    themeControl().applyTheme(newSettings.themePreference);
     setTimeout(() => setMounted(true), 0);
   }
 
@@ -106,7 +94,9 @@ export function OptionsPreview() {
             class={styles.select}
             value={settings().themePreference}
             onChange={(e) =>
-              updateSettings({ themePreference: e.target.value as ThemePreference })
+              updateSettings({
+                themePreference: e.target.value as ThemePreference,
+              })
             }
           >
             <option value="auto">Auto</option>

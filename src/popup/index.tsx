@@ -1,42 +1,28 @@
-import {
-  createSignal,
-  createResource,
-  createMemo,
-  onMount,
-  onCleanup,
-  Show,
-} from "solid-js";
+import { createSignal, createResource, createMemo, Show } from "solid-js";
 import "./index.css";
 import { css } from "../../styled-system/css";
-import type {
-  TabInfo,
-  MessageType,
-  MessageResponse,
-  Settings,
-} from "../shared/types.ts";
-import { TabList } from "./components/TabList.tsx";
-import { KeybindingsModal } from "./components/KeybindingsModal.tsx";
-import { FiHelpCircle, FiSettings } from "solid-icons/fi";
+import { TabList } from "./components/TabList";
+import { KeybindingsModal } from "./components/KeybindingsModal";
+import { PreviewPanel } from "./components/PreviewPanel";
+import { Footer } from "./components/Footer";
+import { PopupWindow } from "./components/PopupWindow";
+import { usePopupKeyboard } from "./hooks/usePopupKeyboard";
+import { usePopupPort } from "./hooks/usePopupPort";
+import { loadSettings } from "../shared/settings";
 import {
-  loadSettings,
-  POPUP_SIZES,
-  getPreviewWidth,
-  getTabListWidth,
-  getMaxPopupWidth,
-  THUMBNAIL_QUALITIES,
-  matchesAnyKeybinding,
-  applyTheme,
-  setupThemeListener,
-} from "../shared/settings.ts";
+  switchToTab,
+  openOptionsPage,
+  getWindowInstance,
+} from "../infrastructure/chrome/messaging";
+import { useCaptureScreenshot } from "./hooks/useCaptureScreenShot";
+import { useDisplayModeControl } from "./hooks/useDisplayModeControl";
+import { useTabs } from "./hooks/useTabs";
 
 const styles = {
   popupContainer: css({
     display: "flex",
-    flexDirection: "column",
     flex: 1,
     minHeight: 0,
-  }),
-  popupContainerPreviewEnabled: css({
     flexDirection: "row",
   }),
   mainContent: css({
@@ -46,208 +32,24 @@ const styles = {
     display: "flex",
     flexDirection: "column",
   }),
-  previewPanel: css({
-    width: "var(--preview-width, 180px)",
-    maxHeight: "var(--popup-height)",
-    background: "surfaceAlt",
-    padding: "md",
-    flexShrink: 0,
-    borderRight: "1px solid token(colors.border)",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    overflow: "hidden",
-  }),
-  previewThumbnail: css({
-    width: "100%",
-    maxWidth: "100%",
-    height: "auto",
-    maxHeight: "calc(var(--popup-height) - 80px)",
-    objectFit: "contain",
-    borderRadius: "lg",
-    background: "background",
-    boxShadow: "sm",
-    filter: "blur(0.5px)",
-  }),
-  previewPlaceholder: css({
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    aspectRatio: "14 / 9",
-    background:
-      "linear-gradient(135deg, token(colors.surface) 0%, token(colors.surfaceHover) 100%)",
-    borderRadius: "lg",
-  }),
-  previewFavicon: css({
-    width: "32px",
-    height: "32px",
-    opacity: 0.5,
-  }),
-  previewNoThumbnail: css({
-    marginTop: "sm",
-    fontSize: "sm",
-    color: "text.muted",
-  }),
-  previewInfo: css({
-    marginTop: "sm",
-    height: "56px",
-    flexShrink: 0,
-  }),
-  previewTitle: css({
-    fontWeight: 500,
-    fontSize: "12px",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    display: "-webkit-box",
-    WebkitLineClamp: 2,
-    WebkitBoxOrient: "vertical",
-  }),
-  previewUrl: css({
-    fontSize: "sm",
-    color: "text.secondary",
-    whiteSpace: "nowrap",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    marginTop: "2px",
-  }),
-  loading: css({
-    padding: "xl",
-    textAlign: "center",
-    color: "text.secondary",
-  }),
-  empty: css({
-    padding: "xl",
-    textAlign: "center",
-    color: "text.secondary",
-  }),
-  footer: css({
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    borderTop: "1px solid token(colors.border)",
-    background: "surfaceAlt",
-    marginTop: "auto",
-  }),
-  footerLeft: css({
-    display: "flex",
-    alignItems: "center",
-  }),
-  footerRight: css({
-    display: "flex",
-    alignItems: "center",
-    gap: "xs",
-  }),
-  modeIndicator: css({
-    fontSize: "sm",
-    color: "text.secondary",
-    cursor: "pointer",
-    padding: "8px 12px",
-    borderRadius: "md",
-    transition: "all 0.15s",
-    userSelect: "none",
-    _hover: {
-      background: "surfaceHover",
-      color: "text.primary",
-    },
-  }),
-  iconButton: css({
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    width: "32px",
-    height: "32px",
-    padding: "8px",
-    border: "none",
-    background: "transparent",
-    borderRadius: "md",
-    cursor: "pointer",
-    color: "text.secondary",
-    transition: "all 0.15s",
-    _hover: {
-      background: "surfaceHover",
-      color: "text.primary",
-    },
-  }),
 };
 
-async function fetchMRUTabs(
-  windowOnly: boolean,
-  windowId: number
-): Promise<TabInfo[]> {
-  const message: MessageType = { type: "GET_MRU_TABS", windowOnly, windowId };
-  const response = (await chrome.runtime.sendMessage(message)) as
-    | MessageResponse
-    | null
-    | undefined;
-  if (response?.type === "MRU_TABS") {
-    return response.tabs;
-  }
-  return [];
-}
-
-async function switchToTab(tabId: number): Promise<void> {
-  const message: MessageType = { type: "SWITCH_TO_TAB", tabId };
-  await chrome.runtime.sendMessage(message);
-  window.close();
-}
-
-const MODE_STORAGE_KEY = "windowOnlyMode";
-
-async function loadMode(): Promise<boolean> {
-  const result = await chrome.storage.local.get(MODE_STORAGE_KEY);
-  return result[MODE_STORAGE_KEY] ?? false;
-}
-
-async function saveMode(windowOnly: boolean): Promise<void> {
-  await chrome.storage.local.set({ [MODE_STORAGE_KEY]: windowOnly });
-}
-
-function applyPopupSize(settings: Settings) {
-  const size = POPUP_SIZES[settings.popupSize];
-  const tabListWidth = getTabListWidth();
-  const previewWidth = getPreviewWidth();
-
-  const totalWidth = settings.previewModeEnabled
-    ? getMaxPopupWidth()
-    : tabListWidth;
-
-  document.documentElement.style.setProperty(
-    "--popup-width",
-    `${totalWidth}px`
-  );
-  document.documentElement.style.setProperty(
-    "--popup-height",
-    `${size.height}px`
-  );
-  document.documentElement.style.setProperty(
-    "--preview-width",
-    `${previewWidth}px`
-  );
-  document.documentElement.style.setProperty(
-    "--tab-list-width",
-    `${tabListWidth}px`
-  );
-}
-
 export function App() {
-  const [windowOnly, setWindowOnly] = createSignal(false);
   const [selectedIndex, setSelectedIndex] = createSignal(1);
-  const [settings, setSettings] = createSignal<Settings | null>(null);
-  const [showKeybindingsModal, setShowKeybindingsModal] = createSignal(false);
-  const [currentWindowId, setCurrentWindowId] = createSignal<number | null>(
-    null
-  );
-  const [tabs, { refetch }] = createResource(
-    () => {
-      const wid = currentWindowId();
-      return wid !== null ? { windowOnly: windowOnly(), windowId: wid } : null;
+  const [shouldShowKeybindingsModal, setShouldShowKeybindingsModal] =
+    createSignal(false);
+
+  const [settings] = createResource(loadSettings);
+  const [windowInstance] = createResource(getWindowInstance);
+
+  const { displayMode, toggleMode } = useDisplayModeControl({
+    settings: settings,
+    onToggleMode: () => {
+      setSelectedIndex(1);
     },
-    (params) =>
-      params !== null
-        ? fetchMRUTabs(params.windowOnly, params.windowId)
-        : Promise.resolve([])
-  );
+  });
+
+  const { tabs, refetchTabs } = useTabs({ windowInstance, displayMode });
 
   // Get selected tab for preview display
   const selectedTab = createMemo(() => {
@@ -256,269 +58,90 @@ export function App() {
     return tabList?.[index] ?? null;
   });
 
-  function toggleMode() {
-    const newMode = !windowOnly();
-    setWindowOnly(newMode);
-    setSelectedIndex(1);
-    saveMode(newMode);
-  }
-
-  function handleKeyDown(e: KeyboardEvent) {
-    const tabList = tabs();
-    const currentSettings = settings();
-    if (!currentSettings || !tabList || tabList.length === 0) return;
-
-    const { keybindings } = currentSettings;
-
-    // Also allow arrow keys as built-in navigation
-    if (matchesAnyKeybinding(e, keybindings.moveDown) || e.key === "ArrowDown") {
-      e.preventDefault();
-      setSelectedIndex((i) => Math.min(i + 1, tabList.length - 1));
-      return;
-    }
-
-    if (matchesAnyKeybinding(e, keybindings.moveUp) || e.key === "ArrowUp") {
-      e.preventDefault();
-      setSelectedIndex((i) => Math.max(i - 1, 0));
-      return;
-    }
-
-    if (matchesAnyKeybinding(e, keybindings.confirm)) {
-      e.preventDefault();
-      const tab = tabList[selectedIndex()];
-      if (tab) {
-        switchToTab(tab.id);
-      }
-      return;
-    }
-
-    if (matchesAnyKeybinding(e, keybindings.cancel)) {
-      e.preventDefault();
-      window.close();
-      return;
-    }
-
-    if (matchesAnyKeybinding(e, keybindings.toggleMode)) {
-      e.preventDefault();
-      toggleMode();
-      return;
-    }
-  }
-
   function handleSelect(index: number) {
     const tabList = tabs();
-    if (tabList && tabList[index]) {
-      switchToTab(tabList[index].id);
+    const tab = tabList?.[index];
+    if (tab) {
+      switchToTab(tab.id);
     }
   }
 
-  function openSettings() {
-    chrome.runtime.openOptionsPage();
+  function handleOpenSettings() {
+    openOptionsPage();
   }
 
-  let cleanupThemeListener: (() => void) | undefined;
-  let port: chrome.runtime.Port | undefined;
+  // Keyboard handling via hook
+  usePopupKeyboard({
+    settings: settings,
+    onMoveDown: () => {
+      const tabList = tabs();
+      if (tabList) {
+        setSelectedIndex((i) => Math.min(i + 1, tabList.length - 1));
+      }
+    },
+    onMoveUp: () => {
+      setSelectedIndex((i) => Math.max(i - 1, 0));
+    },
+    onConfirm: () => {
+      handleSelect(selectedIndex());
+    },
+    onCancel: () => {
+      window.close();
+    },
+    onToggleMode: () => {
+      toggleMode();
+    },
+  });
 
-  // Handle close popup message from background
-  function handlePortMessage(message: { type: string; selectFocused?: boolean }) {
-    if (message.type === "CLOSE_POPUP") {
-      if (message.selectFocused) {
-        const tabList = tabs();
-        const tab = tabList?.[selectedIndex()];
-        if (tab) {
-          switchToTab(tab.id);
-          return;
-        }
+  // Port communication via hook
+  usePopupPort({
+    onClosePopup: (selectFocused) => {
+      if (selectFocused) {
+        handleSelect(selectedIndex());
       }
       window.close();
-    }
-  }
-
-  onMount(async () => {
-    // Connect to background to track popup state
-    port = chrome.runtime.connect({ name: "popup" });
-    port.onMessage.addListener(handlePortMessage);
-
-    const [currentWindow, loadedSettings] = await Promise.all([
-      chrome.windows.getCurrent(),
-      loadSettings(),
-    ]);
-
-    // Check for launch info (from mode-fixed shortcuts)
-    const launchInfoResponse = (await chrome.runtime.sendMessage({
-      type: "GET_LAUNCH_INFO",
-    })) as MessageResponse | null | undefined;
-
-    let initialWindowOnly = false;
-
-    if (
-      launchInfoResponse?.type === "LAUNCH_INFO" &&
-      launchInfoResponse.info.mode !== null
-    ) {
-      // Use the override mode from shortcut
-      initialWindowOnly = launchInfoResponse.info.mode === "currentWindow";
-      // Clear the info after use
-      await chrome.runtime.sendMessage({ type: "CLEAR_LAUNCH_INFO" });
-    } else {
-      // Opened via _execute_action (direct popup open)
-      // Determine initial mode based on defaultMode setting
-      switch (loadedSettings.defaultMode) {
-        case "all":
-          initialWindowOnly = false;
-          break;
-        case "currentWindow":
-          initialWindowOnly = true;
-          break;
-        case "lastUsed":
-          initialWindowOnly = await loadMode();
-          break;
-      }
-    }
-
-    setWindowOnly(initialWindowOnly);
-    setSettings(loadedSettings);
-    applyPopupSize(loadedSettings);
-    applyTheme(loadedSettings.themePreference);
-    cleanupThemeListener = setupThemeListener(
-      loadedSettings.themePreference,
-      () => applyTheme(loadedSettings.themePreference)
-    );
-
-    if (currentWindow.id !== undefined) {
-      setCurrentWindowId(currentWindow.id);
-    }
-    document.addEventListener("keydown", handleKeyDown);
-
-    // Capture current tab and refresh to get updated thumbnail
-    const thumbnailConfig =
-      THUMBNAIL_QUALITIES[loadedSettings.thumbnailQuality];
-    const captureMessage: MessageType = {
-      type: "CAPTURE_CURRENT_TAB",
-      windowId: currentWindow.id,
-      thumbnailConfig,
-    };
-    chrome.runtime.sendMessage(captureMessage).then(() => {
-      refetch();
-    });
+    },
   });
 
-  onCleanup(() => {
-    document.removeEventListener("keydown", handleKeyDown);
-    port?.disconnect();
-    cleanupThemeListener?.();
-  });
-
-  const isPreviewEnabled = () => settings()?.previewModeEnabled ?? false;
+  useCaptureScreenshot({ windowInstance, settings, refetchTabs });
 
   return (
-    <div
-      class={`${styles.popupContainer} ${isPreviewEnabled() ? styles.popupContainerPreviewEnabled : ""}`}
-    >
-      <Show when={isPreviewEnabled()}>
-        <div class={styles.previewPanel}>
-          <Show
-            when={selectedTab()}
-            fallback={
-              <div class={styles.previewPlaceholder}>
-                <div class={styles.previewNoThumbnail}>
-                  Select a tab to preview
-                </div>
-              </div>
-            }
-          >
-            {(tab) => (
-              <>
-                <Show
-                  when={tab().thumbnailUrl}
-                  fallback={
-                    <div class={styles.previewPlaceholder}>
-                      <img
-                        class={styles.previewFavicon}
-                        src={tab().favIconUrl || ""}
-                        alt=""
-                      />
-                      <div class={styles.previewNoThumbnail}>
-                        No preview available
-                      </div>
-                    </div>
-                  }
-                >
-                  <img
-                    class={styles.previewThumbnail}
-                    src={tab().thumbnailUrl}
-                    alt={tab().title}
-                  />
-                </Show>
-                <div class={styles.previewInfo}>
-                  <div class={styles.previewTitle}>{tab().title}</div>
-                  <div class={styles.previewUrl}>{tab().url}</div>
-                </div>
-              </>
-            )}
-          </Show>
-        </div>
-      </Show>
-
-      <div class={styles.mainContent}>
-        <Show when={tabs.loading}>
-          <div class={styles.loading}>Loading...</div>
+    <PopupWindow settings={settings}>
+      <div class={styles.popupContainer}>
+        <Show when={settings()?.previewModeEnabled ?? false}>
+          <PreviewPanel selectedTab={selectedTab()} />
         </Show>
 
-        <Show when={!tabs.loading && tabs()}>
-          {(tabList) => (
-            <Show
-              when={tabList().length > 0}
-              fallback={<div class={styles.empty}>No recent tabs</div>}
-            >
+        <Show when={displayMode()}>
+          {(displayMode) => (
+            <div class={styles.mainContent}>
               <TabList
-                tabs={tabList()}
+                tabs={tabs() ?? []}
                 selectedIndex={selectedIndex()}
                 onSelect={handleSelect}
-                showTabIndex={windowOnly()}
+                showTabIndex={displayMode() === "currentWindow"}
               />
-            </Show>
+
+              <Footer
+                windowOnly={displayMode() === "currentWindow"}
+                onToggleMode={toggleMode}
+                onOpenKeybindings={() => setShouldShowKeybindingsModal(true)}
+                onOpenSettings={handleOpenSettings}
+              />
+            </div>
           )}
         </Show>
 
-        <div class={styles.footer}>
-          <div class={styles.footerLeft}>
-            <span
-              class={styles.modeIndicator}
-              onClick={toggleMode}
-              title="Click to toggle mode"
-            >
-              {windowOnly() ? "Current Window" : "All Windows"}
-            </span>
-          </div>
-          <div class={styles.footerRight}>
-            <button
-              class={styles.iconButton}
-              onClick={() => setShowKeybindingsModal(true)}
-              title="キーボードショートカット"
-            >
-              <FiHelpCircle size={16} />
-            </button>
-            <button
-              class={styles.iconButton}
-              onClick={openSettings}
-              title="設定"
-            >
-              <FiSettings size={16} />
-            </button>
-          </div>
-        </div>
+        <Show when={shouldShowKeybindingsModal() && settings()}>
+          {(currentSettings) => (
+            <KeybindingsModal
+              settings={currentSettings()}
+              onClose={() => setShouldShowKeybindingsModal(false)}
+              onOpenSettings={handleOpenSettings}
+            />
+          )}
+        </Show>
       </div>
-
-      <Show when={showKeybindingsModal() && settings()}>
-        {(currentSettings) => (
-          <KeybindingsModal
-            settings={currentSettings()}
-            onClose={() => setShowKeybindingsModal(false)}
-            onOpenSettings={openSettings}
-          />
-        )}
-      </Show>
-    </div>
+    </PopupWindow>
   );
 }
-

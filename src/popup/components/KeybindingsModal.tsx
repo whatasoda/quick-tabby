@@ -1,7 +1,7 @@
 import { Show, onMount, onCleanup } from "solid-js";
 import { css } from "../../../styled-system/css";
-import { keybindingToString } from "../../shared/settings.ts";
-import type { Settings } from "../../shared/types.ts";
+import { keybindingToString } from "../../core/keybindings/keybinding-matcher.ts";
+import type { Settings } from "../../core/settings/settings-types.ts";
 
 interface KeybindingsModalProps {
   settings: Settings;
@@ -118,7 +118,7 @@ export function KeybindingsModal(props: KeybindingsModalProps) {
   const keybindings = () => {
     return Object.entries(props.settings.keybindings) as [
       keyof typeof props.settings.keybindings,
-      typeof props.settings.keybindings.moveDown
+      typeof props.settings.keybindings.moveDown,
     ][];
   };
 

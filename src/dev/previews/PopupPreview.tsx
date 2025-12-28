@@ -1,13 +1,13 @@
 import { createSignal, onMount, Show } from "solid-js";
 import { css } from "../../../styled-system/css";
-import type { Settings, PopupSize } from "../../shared/types.ts";
+import type { Settings, PopupSize } from "../../core/settings/settings-types.ts";
 import {
   DEFAULT_SETTINGS,
   POPUP_SIZES,
   getPreviewWidth,
   getTabListWidth,
   getMaxPopupWidth,
-} from "../../shared/settings.ts";
+} from "../../core/settings/settings-defaults.ts";
 import { updateMockSettings } from "../mocks/chrome-api.ts";
 import { App as PopupApp } from "../../popup/index.tsx";
 
