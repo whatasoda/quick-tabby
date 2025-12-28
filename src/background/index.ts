@@ -128,16 +128,13 @@ chromeAPI.runtime.onMessage.addListener(
       });
 
     return true;
-  }
+  },
 );
 
 async function handleMessage(message: MessageType): Promise<MessageResponse> {
   switch (message.type) {
     case "GET_MRU_TABS": {
-      const tabs = await mruTracker.getMRUTabs(
-        message.windowOnly ?? false,
-        message.windowId
-      );
+      const tabs = await mruTracker.getMRUTabs(message.windowOnly ?? false, message.windowId);
       return { type: "MRU_TABS", tabs };
     }
 
@@ -152,11 +149,7 @@ async function handleMessage(message: MessageType): Promise<MessageResponse> {
         windowId: message.windowId,
       });
       if (tab?.id && tab.windowId) {
-        await thumbnailCache.captureAndStore(
-          tab.id,
-          tab.windowId,
-          message.thumbnailConfig
-        );
+        await thumbnailCache.captureAndStore(tab.id, tab.windowId, message.thumbnailConfig);
       }
       return { type: "SUCCESS" };
     }
