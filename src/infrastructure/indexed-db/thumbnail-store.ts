@@ -186,5 +186,43 @@ export function createThumbnailStore(): ThumbnailStore {
         countRequest.onerror = () => resolve();
       });
     },
+
+    async deleteExpired(maxAge: number): Promise<number> {
+      return new Promise((resolve) => {
+        if (!db) {
+          resolve(0);
+          return;
+        }
+
+        const expirationTime = Date.now() - maxAge;
+        const tx = db.transaction(STORE_NAME, "readwrite");
+        const store = tx.objectStore(STORE_NAME);
+        const index = store.index("capturedAt");
+
+        // Open cursor with upper bound (exclusive) on capturedAt
+        const range = IDBKeyRange.upperBound(expirationTime, true);
+        const cursorRequest = index.openCursor(range);
+        let deleted = 0;
+
+        cursorRequest.onsuccess = (event) => {
+          const target = event.target;
+          if (!target || !("result" in target)) {
+            resolve(deleted);
+            return;
+          }
+
+          const cursor = (target as IDBRequest<IDBCursorWithValue | null>).result;
+          if (isIDBCursorWithValue(cursor)) {
+            cursor.delete();
+            deleted++;
+            cursor.continue();
+          } else {
+            resolve(deleted);
+          }
+        };
+
+        cursorRequest.onerror = () => resolve(deleted);
+      });
+    },
   };
 }
