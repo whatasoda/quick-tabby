@@ -1,0 +1,10 @@
+{
+  "extName": {
+    "message": "QuickTabby",
+    "description": "Extension name"
+  },
+  "extDescription": {
+    "message": "Fast tab switching sorted by recently used. Navigate tabs with keyboard shortcuts.",
+    "description": "Extension description"
+  }
+}

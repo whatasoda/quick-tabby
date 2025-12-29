@@ -3,6 +3,7 @@
   "name": "QuickTabby",
   "version": "0.1.0",
   "description": "Fast tab switching sorted by recently used. Navigate tabs with keyboard shortcuts.",
+  "default_locale": "en",
   "icons": {
     "16": "icons/icon-16.png",
     "32": "icons/icon-32.png",
