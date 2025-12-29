@@ -15,12 +15,14 @@ import {
   removeWindowFromMRU,
 } from "../core/mru/index.ts";
 import type { MRUConfig, MRUState } from "../core/mru/mru-state.ts";
+import { matchesAnyPattern } from "../core/url-pattern/index.ts";
 import type {
   ChromeStorageAPI,
   ChromeTabsAPI,
   ChromeWindowsAPI,
   TabActiveInfo,
 } from "../infrastructure/chrome/types.ts";
+import type { SettingsService } from "./settings.service.ts";
 import type { ThumbnailCacheService } from "./thumbnail-cache.service.ts";
 
 const STORAGE_KEY = "mruState";
@@ -82,6 +84,7 @@ export interface MRUTrackerDependencies {
   tabs: ChromeTabsAPI;
   windows: ChromeWindowsAPI;
   thumbnailCache: ThumbnailCacheService;
+  settingsService: SettingsService;
   config?: MRUConfig;
 }
 
@@ -113,8 +116,23 @@ export function createMRUTrackerService(deps: MRUTrackerDependencies): MRUTracke
     saveState();
 
     // Capture thumbnail with delay to ensure page is rendered
+    // Check URL against exclusion patterns before capturing
     setTimeout(() => {
-      deps.thumbnailCache.captureAndStore(tabId, windowId);
+      void (async () => {
+        try {
+          const tab = await deps.tabs.get(tabId);
+          if (!tab.url) return;
+
+          const settings = await deps.settingsService.load();
+          if (matchesAnyPattern(tab.url, settings.screenshotExclusionPatterns)) {
+            return; // Skip capture for excluded URLs
+          }
+
+          await deps.thumbnailCache.captureAndStore(tabId, windowId);
+        } catch {
+          // Tab may no longer exist or other error
+        }
+      })();
     }, THUMBNAIL_CAPTURE_DELAY);
   }
 

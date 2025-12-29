@@ -3,12 +3,15 @@
  */
 
 import { beforeEach, describe, expect, test } from "vitest";
+import { DEFAULT_SETTINGS } from "../core/settings/settings-defaults.ts";
+import type { Settings } from "../core/settings/settings-types.ts";
 import {
   createMockStorage,
   createMockTabs,
   createMockWindows,
 } from "../infrastructure/test-doubles/chrome-api.mock.ts";
 import { createMRUTrackerService, type MRUTrackerDependencies } from "./mru-tracker.service.ts";
+import type { SettingsService } from "./settings.service.ts";
 import type { ThumbnailCacheService } from "./thumbnail-cache.service.ts";
 
 function createMockThumbnailCacheService(): ThumbnailCacheService {
@@ -25,11 +28,21 @@ function createMockThumbnailCacheService(): ThumbnailCacheService {
   };
 }
 
+function createMockSettingsService(): SettingsService {
+  return {
+    async load(): Promise<Settings> {
+      return DEFAULT_SETTINGS;
+    },
+    async save() {},
+  };
+}
+
 describe("MRUTrackerService", () => {
   let mockStorage: ReturnType<typeof createMockStorage>;
   let mockTabs: ReturnType<typeof createMockTabs>;
   let mockWindows: ReturnType<typeof createMockWindows>;
   let mockThumbnailCache: ThumbnailCacheService;
+  let mockSettingsService: SettingsService;
   let deps: MRUTrackerDependencies;
 
   beforeEach(() => {
@@ -90,12 +103,14 @@ describe("MRUTrackerService", () => {
     });
     mockWindows._setCurrentWindowId(100);
     mockThumbnailCache = createMockThumbnailCacheService();
+    mockSettingsService = createMockSettingsService();
 
     deps = {
       storage: mockStorage,
       tabs: mockTabs,
       windows: mockWindows,
       thumbnailCache: mockThumbnailCache,
+      settingsService: mockSettingsService,
     };
   });
 

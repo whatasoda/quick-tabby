@@ -4,6 +4,7 @@
  * Entry point for the background script using the new service architecture.
  */
 
+import { matchesAnyPattern } from "../core/url-pattern/index.ts";
 import { createChromeAPI } from "../infrastructure/chrome/index.ts";
 import { createThumbnailStore } from "../infrastructure/indexed-db/index.ts";
 import {
@@ -36,6 +37,7 @@ const mruTracker = createMRUTrackerService({
   tabs: chromeAPI.tabs,
   windows: chromeAPI.windows,
   thumbnailCache,
+  settingsService,
 });
 
 const commandHandler = createCommandHandlerService({
@@ -148,8 +150,12 @@ async function handleMessage(message: MessageType): Promise<MessageResponse> {
         active: true,
         windowId: message.windowId,
       });
-      if (tab?.id && tab.windowId) {
-        await thumbnailCache.captureAndStore(tab.id, tab.windowId, message.thumbnailConfig);
+      if (tab?.id && tab.windowId && tab.url) {
+        // Check URL against exclusion patterns
+        const settings = await settingsService.load();
+        if (!matchesAnyPattern(tab.url, settings.screenshotExclusionPatterns)) {
+          await thumbnailCache.captureAndStore(tab.id, tab.windowId, message.thumbnailConfig);
+        }
       }
       return { type: "SUCCESS" };
     }
