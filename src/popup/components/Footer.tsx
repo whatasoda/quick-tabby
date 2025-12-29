@@ -1,5 +1,7 @@
 import { FiHelpCircle, FiSettings } from "solid-icons/fi";
 import { css } from "../../../styled-system/css";
+import { t } from "../../shared/i18n/index.ts";
+import { MSG } from "../../shared/i18n/message-keys.ts";
 import { Button } from "../../shared/ui";
 
 const styles = {
@@ -49,9 +51,9 @@ export function Footer(props: FooterProps) {
         <span
           class={styles.modeIndicator}
           onClick={props.onToggleMode}
-          title="Click to toggle mode"
+          title={t(MSG.POPUP_TOGGLE_MODE_HINT)}
         >
-          {props.windowOnly ? "Current Window" : "All Windows"}
+          {props.windowOnly ? t(MSG.POPUP_CURRENT_WINDOW) : t(MSG.POPUP_ALL_WINDOWS)}
         </span>
       </div>
       <div class={styles.footerRight}>
@@ -59,11 +61,16 @@ export function Footer(props: FooterProps) {
           variant="ghost"
           size="icon"
           onClick={props.onOpenKeybindings}
-          title="キーボードショートカット"
+          title={t(MSG.POPUP_KEYBOARD_SHORTCUTS)}
         >
           <FiHelpCircle size={16} />
         </Button>
-        <Button variant="ghost" size="icon" onClick={props.onOpenSettings} title="設定">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={props.onOpenSettings}
+          title={t(MSG.POPUP_SETTINGS)}
+        >
           <FiSettings size={16} />
         </Button>
       </div>

@@ -3,6 +3,8 @@ import { css } from "../../../styled-system/css";
 import { DEFAULT_EXCLUSION_PATTERNS } from "../../core/settings/settings-defaults";
 import type { Settings } from "../../core/settings/settings-types";
 import { getPatternError } from "../../core/url-pattern";
+import { t } from "../../shared/i18n/index.ts";
+import { MSG } from "../../shared/i18n/message-keys.ts";
 import { Button, Section } from "../../shared/ui";
 
 const styles = {
@@ -116,7 +118,7 @@ function PatternList(props: PatternListProps) {
     }
 
     if (props.patterns.includes(pattern)) {
-      setError("This pattern already exists");
+      setError(t(MSG.OPTIONS_PATTERN_EXISTS));
       return;
     }
 
@@ -148,7 +150,7 @@ function PatternList(props: PatternListProps) {
       <div class={styles.header}>
         <span class={styles.title}>{props.title}</span>
         <Button variant="ghost" size="sm" onClick={handleResetDefaults}>
-          Reset
+          {t(MSG.COMMON_RESET)}
         </Button>
       </div>
 
@@ -156,7 +158,7 @@ function PatternList(props: PatternListProps) {
 
       <Show
         when={props.patterns.length > 0}
-        fallback={<div class={styles.emptyList}>No patterns configured</div>}
+        fallback={<div class={styles.emptyList}>{t(MSG.OPTIONS_NO_PATTERNS)}</div>}
       >
         <div class={styles.patternList}>
           <For each={props.patterns}>
@@ -167,7 +169,7 @@ function PatternList(props: PatternListProps) {
                   type="button"
                   class={styles.removeButton}
                   onClick={() => handleRemove(index())}
-                  title="Remove pattern"
+                  title={t(MSG.OPTIONS_REMOVE_PATTERN)}
                 >
                   ×
                 </button>
@@ -187,10 +189,10 @@ function PatternList(props: PatternListProps) {
             setError(null);
           }}
           onKeyDown={handleKeyDown}
-          placeholder="e.g., *://*.bank.com/*"
+          placeholder={t(MSG.OPTIONS_PATTERN_PLACEHOLDER)}
         />
         <Button variant="outline" size="sm" onClick={handleAdd}>
-          Add
+          {t(MSG.COMMON_ADD)}
         </Button>
       </div>
 
@@ -208,10 +210,10 @@ interface PrivacySectionProps {
 
 export function PrivacySection(props: PrivacySectionProps) {
   return (
-    <Section title="Privacy">
+    <Section title={t(MSG.OPTIONS_PRIVACY)}>
       <PatternList
-        title="Skip Screenshot"
-        description="URLs matching these patterns will not have screenshots captured. Use patterns like *://*.bank.com/* or chrome://*"
+        title={t(MSG.OPTIONS_SKIP_SCREENSHOT)}
+        description={t(MSG.OPTIONS_SKIP_SCREENSHOT_DESC)}
         patterns={props.settings.screenshotSkipPatterns}
         settingKey="screenshotSkipPatterns"
         defaultPatterns={DEFAULT_EXCLUSION_PATTERNS}
@@ -219,8 +221,8 @@ export function PrivacySection(props: PrivacySectionProps) {
       />
 
       <PatternList
-        title="Blur Screenshot"
-        description="URLs matching these patterns will have blurred screenshots. Useful for sensitive content you still want to preview."
+        title={t(MSG.OPTIONS_BLUR_SCREENSHOT)}
+        description={t(MSG.OPTIONS_BLUR_SCREENSHOT_DESC)}
         patterns={props.settings.screenshotBlurPatterns}
         settingKey="screenshotBlurPatterns"
         defaultPatterns={[]}

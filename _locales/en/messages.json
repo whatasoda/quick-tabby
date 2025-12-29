@@ -1,0 +1,258 @@
+{
+  "extName": {
+    "message": "QuickTabby",
+    "description": "Extension name"
+  },
+  "extDescription": {
+    "message": "Fast tab switching sorted by recently used. Navigate tabs with keyboard shortcuts.",
+    "description": "Extension description"
+  },
+  "common_loading": {
+    "message": "Loading...",
+    "description": "Loading state text"
+  },
+  "common_saved": {
+    "message": "Saved!",
+    "description": "Save confirmation text"
+  },
+  "common_add": {
+    "message": "Add",
+    "description": "Add button text"
+  },
+  "common_reset": {
+    "message": "Reset",
+    "description": "Reset button text"
+  },
+  "common_untitled": {
+    "message": "Untitled",
+    "description": "Fallback title for untitled tabs"
+  },
+  "popup_currentWindow": {
+    "message": "Current Window",
+    "description": "Mode indicator for current window"
+  },
+  "popup_allWindows": {
+    "message": "All Windows",
+    "description": "Mode indicator for all windows"
+  },
+  "popup_toggleModeHint": {
+    "message": "Click to toggle mode",
+    "description": "Tooltip for mode toggle"
+  },
+  "popup_keyboardShortcuts": {
+    "message": "Keyboard Shortcuts",
+    "description": "Keyboard shortcuts modal title"
+  },
+  "popup_settings": {
+    "message": "Settings",
+    "description": "Settings button tooltip"
+  },
+  "popup_openSettings": {
+    "message": "Open Settings",
+    "description": "Open settings button text"
+  },
+  "popup_selectToPreview": {
+    "message": "Select a tab to preview",
+    "description": "Prompt to select a tab for preview"
+  },
+  "popup_noPreview": {
+    "message": "No preview available",
+    "description": "Message when no preview is available"
+  },
+  "keybinding_moveDown": {
+    "message": "Move Down",
+    "description": "Keybinding label for moving down"
+  },
+  "keybinding_moveUp": {
+    "message": "Move Up",
+    "description": "Keybinding label for moving up"
+  },
+  "keybinding_confirm": {
+    "message": "Confirm Selection",
+    "description": "Keybinding label for confirming selection"
+  },
+  "keybinding_cancel": {
+    "message": "Cancel",
+    "description": "Keybinding label for canceling"
+  },
+  "keybinding_toggleMode": {
+    "message": "Toggle Mode",
+    "description": "Keybinding label for toggling mode"
+  },
+  "keybinding_pressKey": {
+    "message": "Press key...",
+    "description": "Prompt when recording a keybinding"
+  },
+  "keybinding_removeKeybinding": {
+    "message": "Remove keybinding",
+    "description": "Tooltip for remove keybinding button"
+  },
+  "options_title": {
+    "message": "QuickTabby Settings",
+    "description": "Options page title"
+  },
+  "options_appearance": {
+    "message": "Appearance",
+    "description": "Appearance section title"
+  },
+  "options_theme": {
+    "message": "Theme",
+    "description": "Theme setting label"
+  },
+  "options_themeAuto": {
+    "message": "Auto",
+    "description": "Auto theme option"
+  },
+  "options_themeLight": {
+    "message": "Light",
+    "description": "Light theme option"
+  },
+  "options_themeDark": {
+    "message": "Dark",
+    "description": "Dark theme option"
+  },
+  "options_popupSize": {
+    "message": "Popup Size",
+    "description": "Popup size setting label"
+  },
+  "options_sizeSmall": {
+    "message": "Small",
+    "description": "Small size option"
+  },
+  "options_sizeMedium": {
+    "message": "Medium",
+    "description": "Medium size option"
+  },
+  "options_sizeLarge": {
+    "message": "Large",
+    "description": "Large size option"
+  },
+  "options_behavior": {
+    "message": "Behavior",
+    "description": "Behavior section title"
+  },
+  "options_previewMode": {
+    "message": "Preview Mode",
+    "description": "Preview mode setting label"
+  },
+  "options_previewModeDesc": {
+    "message": "Show enlarged thumbnail of selected tab",
+    "description": "Preview mode setting description"
+  },
+  "options_thumbnailQuality": {
+    "message": "Thumbnail Quality",
+    "description": "Thumbnail quality setting label"
+  },
+  "options_thumbnailQualityDesc": {
+    "message": "Higher quality uses more storage",
+    "description": "Thumbnail quality setting description"
+  },
+  "options_qualityStandard": {
+    "message": "Standard",
+    "description": "Standard quality option"
+  },
+  "options_qualityHigh": {
+    "message": "High",
+    "description": "High quality option"
+  },
+  "options_qualityUltra": {
+    "message": "Ultra",
+    "description": "Ultra quality option"
+  },
+  "options_blurThumbnails": {
+    "message": "Blur Thumbnails",
+    "description": "Blur thumbnails setting label"
+  },
+  "options_blurThumbnailsDesc": {
+    "message": "Obscure content for privacy (applied to new captures)",
+    "description": "Blur thumbnails setting description"
+  },
+  "options_defaultMode": {
+    "message": "Default Mode",
+    "description": "Default mode setting label"
+  },
+  "options_defaultModeDesc": {
+    "message": "Initial mode when opening the popup",
+    "description": "Default mode setting description"
+  },
+  "options_modeLastUsed": {
+    "message": "Last Used",
+    "description": "Last used mode option"
+  },
+  "options_modeAll": {
+    "message": "All Windows",
+    "description": "All windows mode option"
+  },
+  "options_modeCurrent": {
+    "message": "Current Window",
+    "description": "Current window mode option"
+  },
+  "options_popupKeybindings": {
+    "message": "Popup Keybindings",
+    "description": "Popup keybindings section title"
+  },
+  "options_globalShortcuts": {
+    "message": "Global Shortcuts",
+    "description": "Global shortcuts section title"
+  },
+  "options_selectOnRepress": {
+    "message": "Select on re-press",
+    "description": "Select on re-press setting label"
+  },
+  "options_changeShortcuts": {
+    "message": "Change Shortcuts",
+    "description": "Change shortcuts button text"
+  },
+  "options_shortcutsNote": {
+    "message": "Opens Chrome's extension shortcuts page. \"Select on re-press\" switches to the selected tab when pressing the shortcut again to close the popup.",
+    "description": "Note about shortcuts configuration"
+  },
+  "options_privacy": {
+    "message": "Privacy",
+    "description": "Privacy section title"
+  },
+  "options_skipScreenshot": {
+    "message": "Skip Screenshot",
+    "description": "Skip screenshot setting label"
+  },
+  "options_skipScreenshotDesc": {
+    "message": "URLs matching these patterns will not have screenshots captured. Use patterns like *://*.bank.com/* or chrome://*",
+    "description": "Skip screenshot setting description"
+  },
+  "options_blurScreenshot": {
+    "message": "Blur Screenshot",
+    "description": "Blur screenshot setting label"
+  },
+  "options_blurScreenshotDesc": {
+    "message": "URLs matching these patterns will have blurred screenshots. Useful for sensitive content you still want to preview.",
+    "description": "Blur screenshot setting description"
+  },
+  "options_noPatterns": {
+    "message": "No patterns configured",
+    "description": "Message when no patterns are configured"
+  },
+  "options_removePattern": {
+    "message": "Remove pattern",
+    "description": "Remove pattern button tooltip"
+  },
+  "options_patternExists": {
+    "message": "This pattern already exists",
+    "description": "Error message when pattern already exists"
+  },
+  "options_patternPlaceholder": {
+    "message": "e.g., *://*.bank.com/*",
+    "description": "Placeholder for pattern input"
+  },
+  "manifest_commandExecuteAction": {
+    "message": "Open QuickTabby popup",
+    "description": "Description for main popup command"
+  },
+  "manifest_commandAllWindows": {
+    "message": "Open popup (All Windows mode)",
+    "description": "Description for all windows command"
+  },
+  "manifest_commandCurrentWindow": {
+    "message": "Open popup (Current Window mode)",
+    "description": "Description for current window command"
+  }
+}

@@ -2,6 +2,8 @@ import { Show } from "solid-js";
 import "./index.css";
 import { css } from "../../styled-system/css";
 import type { Keybinding, Settings } from "../core/settings/settings-types";
+import { t } from "../shared/i18n/index.ts";
+import { MSG } from "../shared/i18n/message-keys.ts";
 import { AppearanceSection } from "./components/AppearanceSection";
 import { BehaviorSection } from "./components/BehaviorSection";
 import { KeybindingsSection } from "./components/KeybindingsSection";
@@ -45,7 +47,7 @@ export function App() {
 
   return (
     <OptionsWindow settings={settings}>
-      <h1 class={styles.h1}>QuickTabby Settings</h1>
+      <h1 class={styles.h1}>{t(MSG.OPTIONS_TITLE)}</h1>
       <SavedIndicator visible={saved()} />
 
       <Show when={settings()}>

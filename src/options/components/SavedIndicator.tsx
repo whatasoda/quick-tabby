@@ -1,4 +1,6 @@
 import { css } from "../../../styled-system/css";
+import { t } from "../../shared/i18n/index.ts";
+import { MSG } from "../../shared/i18n/message-keys.ts";
 
 const styles = {
   indicator: css({
@@ -23,5 +25,9 @@ interface SavedIndicatorProps {
 }
 
 export function SavedIndicator(props: SavedIndicatorProps) {
-  return <div class={`${styles.indicator} ${props.visible ? styles.visible : ""}`}>Saved!</div>;
+  return (
+    <div class={`${styles.indicator} ${props.visible ? styles.visible : ""}`}>
+      {t(MSG.COMMON_SAVED)}
+    </div>
+  );
 }

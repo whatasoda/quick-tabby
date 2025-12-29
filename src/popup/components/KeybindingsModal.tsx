@@ -1,6 +1,8 @@
 import { css } from "../../../styled-system/css";
 import { keybindingToString } from "../../core/keybindings/keybinding-matcher.ts";
 import type { Settings } from "../../core/settings/settings-types.ts";
+import { t } from "../../shared/i18n/index.ts";
+import { MSG } from "../../shared/i18n/message-keys.ts";
 import { Button, Modal } from "../../shared/ui";
 
 interface KeybindingsModalProps {
@@ -57,13 +59,16 @@ const styles = {
   }),
 };
 
-const KEYBINDING_LABELS: Record<string, string> = {
-  moveDown: "下に移動",
-  moveUp: "上に移動",
-  confirm: "選択",
-  cancel: "キャンセル",
-  toggleMode: "モード切替",
-};
+function getKeybindingLabel(key: string): string {
+  const labels: Record<string, string> = {
+    moveDown: t(MSG.KEYBINDING_MOVE_DOWN),
+    moveUp: t(MSG.KEYBINDING_MOVE_UP),
+    confirm: t(MSG.KEYBINDING_CONFIRM),
+    cancel: t(MSG.KEYBINDING_CANCEL),
+    toggleMode: t(MSG.KEYBINDING_TOGGLE_MODE),
+  };
+  return labels[key] || key;
+}
 
 export function KeybindingsModal(props: KeybindingsModalProps) {
   const keybindings = () => {
@@ -75,11 +80,11 @@ export function KeybindingsModal(props: KeybindingsModalProps) {
 
   return (
     <Modal onClose={props.onClose} size="sm">
-      <div class={styles.title}>キーボードショートカット</div>
+      <div class={styles.title}>{t(MSG.POPUP_KEYBOARD_SHORTCUTS)}</div>
       <div class={styles.table}>
         {keybindings().map(([key, bindings]) => (
           <div class={styles.row}>
-            <span class={styles.label}>{KEYBINDING_LABELS[key]}</span>
+            <span class={styles.label}>{getKeybindingLabel(key)}</span>
             <div class={styles.kbdGroup}>
               {bindings.map((binding) => (
                 <span class={styles.kbd}>{keybindingToString(binding)}</span>
@@ -90,7 +95,7 @@ export function KeybindingsModal(props: KeybindingsModalProps) {
       </div>
       <div class={styles.footer}>
         <Button variant="link" onClick={props.onOpenSettings}>
-          設定を開く
+          {t(MSG.POPUP_OPEN_SETTINGS)}
         </Button>
       </div>
     </Modal>

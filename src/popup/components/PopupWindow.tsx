@@ -16,6 +16,8 @@ import {
   POPUP_SIZES,
 } from "../../core/settings/settings-defaults.ts";
 import type { Settings } from "../../core/settings/settings-types.ts";
+import { t } from "../../shared/i18n/index.ts";
+import { MSG } from "../../shared/i18n/message-keys.ts";
 import { createThemeControl } from "../../shared/theme.ts";
 
 const styles = {
@@ -69,7 +71,7 @@ export function PopupWindow(props: PopupWindowProps) {
       when={props.settings()}
       fallback={
         <Show when={showFallback()}>
-          <div class={styles.loading}>Loading...</div>
+          <div class={styles.loading}>{t(MSG.COMMON_LOADING)}</div>
         </Show>
       }
     >

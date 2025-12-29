@@ -1,5 +1,7 @@
 import { Show } from "solid-js";
 import { css } from "../../../styled-system/css";
+import { t } from "../../shared/i18n/index.ts";
+import { MSG } from "../../shared/i18n/message-keys.ts";
 import type { TabInfo } from "../../shared/types.ts";
 
 // Styles co-located with component (PandaCSS best practice)
@@ -81,7 +83,7 @@ export function PreviewPanel(props: PreviewPanelProps) {
         when={props.selectedTab}
         fallback={
           <div class={styles.placeholder}>
-            <div class={styles.noThumbnail}>Select a tab to preview</div>
+            <div class={styles.noThumbnail}>{t(MSG.POPUP_SELECT_TO_PREVIEW)}</div>
           </div>
         }
       >
@@ -92,7 +94,7 @@ export function PreviewPanel(props: PreviewPanelProps) {
               fallback={
                 <div class={styles.placeholder}>
                   <img class={styles.favicon} src={tab().favIconUrl || ""} alt="" />
-                  <div class={styles.noThumbnail}>No preview available</div>
+                  <div class={styles.noThumbnail}>{t(MSG.POPUP_NO_PREVIEW)}</div>
                 </div>
               }
             >
