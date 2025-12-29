@@ -16,6 +16,7 @@ export const formFieldRecipe = cva({
       none: {},
       sub: {
         paddingLeft: "xl",
+        paddingRight: "xl",
         background: "surfaceAlt",
       },
     },
