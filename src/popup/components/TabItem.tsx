@@ -14,9 +14,12 @@ const styles = {
     position: "relative",
     display: "flex",
     flexDirection: "column",
+    height: "97px",
+    boxSizing: "border-box",
     padding: "8px 12px",
     cursor: "pointer",
     borderBottom: "1px solid token(colors.borderLight)",
+    overflow: "hidden",
     transition: "background 0.1s",
     _hover: {
       background: "surface",
@@ -43,7 +46,7 @@ const styles = {
     fontWeight: 500,
     color: "text.secondary",
     background: "borderLight",
-    padding: "2px 6px",
+    padding: "2px 14px 2px 6px",
     borderTopLeftRadius: "md",
   }),
   tabFavicon: css({
