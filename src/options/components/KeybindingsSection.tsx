@@ -84,7 +84,11 @@ export function KeybindingsSection(props: KeybindingsSectionProps) {
                   class={`${styles.keybindingChip} ${styles.keybindingChipRecording}`}
                   onKeyDown={(e) => props.onKeyDown(e, key)}
                   onBlur={() => props.onStopRecording()}
-                  ref={(el) => el?.focus()}
+                  ref={(el) => {
+                    if (el) {
+                      queueMicrotask(() => el.focus());
+                    }
+                  }}
                   tabindex={0}
                 >
                   {t(MSG.KEYBINDING_PRESS_KEY)}

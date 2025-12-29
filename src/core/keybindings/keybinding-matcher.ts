@@ -30,7 +30,10 @@ export function matchesKeybinding(event: KeyEvent | KeyboardEvent, binding: Keyb
   // For single character keys, use event.code to handle Alt/Option key combinations
   // On Mac, Alt+Q produces "œ" in event.key, but event.code is still "KeyQ"
   let keyMatches: boolean;
-  if (binding.key.length === 1) {
+  if (binding.key === " " || binding.key === "Space") {
+    // Space key has code "Space", not "Key ", so handle it specially
+    keyMatches = event.code === "Space" || event.key === " ";
+  } else if (binding.key.length === 1) {
     const expectedCode = `Key${binding.key.toUpperCase()}`;
     keyMatches = event.code === expectedCode;
   } else {

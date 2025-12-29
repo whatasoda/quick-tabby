@@ -117,6 +117,27 @@ describe("matchesKeybinding", () => {
 
     expect(matchesKeybinding(event, binding)).toBe(true);
   });
+
+  test("should match space key with binding.key as space character", () => {
+    const event = createKeyEvent({ key: " ", code: "Space" });
+    const binding = { key: " " };
+
+    expect(matchesKeybinding(event, binding)).toBe(true);
+  });
+
+  test("should match space key with binding.key as 'Space'", () => {
+    const event = createKeyEvent({ key: " ", code: "Space" });
+    const binding = { key: "Space" };
+
+    expect(matchesKeybinding(event, binding)).toBe(true);
+  });
+
+  test("should match space key with modifiers", () => {
+    const event = createKeyEvent({ key: " ", code: "Space", ctrlKey: true });
+    const binding = { key: " ", ctrl: true };
+
+    expect(matchesKeybinding(event, binding)).toBe(true);
+  });
 });
 
 describe("matchesAnyKeybinding", () => {
