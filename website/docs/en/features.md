@@ -19,10 +19,16 @@ Navigate through tabs without touching your mouse:
 
 ### Multi-Window Support
 
-Switch between tabs across all browser windows, or focus on just the current window:
+Switch between tabs across all browser windows, or focus on just the current window. Each popup command (`Alt+Q` and `Alt+Shift+P`) can be configured with its own mode setting in Options.
 
-- **Alt+Shift+A** - All windows mode
-- **Alt+Shift+C** - Current window mode
+### Tab Navigation
+
+Quickly switch between adjacent tabs without opening the popup:
+
+- **Alt+Shift+H** - Switch to the left tab
+- **Alt+Shift+L** - Switch to the right tab
+
+Navigation loops at the edges, so pressing left on the first tab switches to the last tab.
 
 ### Tab Thumbnails
 

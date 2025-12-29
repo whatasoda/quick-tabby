@@ -4,11 +4,12 @@
 
 | Shortcut | Action |
 |----------|--------|
-| `Alt+Q` | Open popup (default mode) |
-| `Alt+Shift+A` | Open popup (All Windows mode) |
-| `Alt+Shift+C` | Open popup (Current Window mode) |
+| `Alt+Q` | Open popup |
+| `Alt+Shift+P` | Open popup (secondary) |
 
-## Navigation
+Each popup command has its own mode setting (All Windows or Current Window) that can be configured in Options.
+
+## Popup Navigation
 
 | Shortcut | Action |
 |----------|--------|
@@ -24,6 +25,13 @@
 | Start typing | Filter tabs by title or URL |
 | `Backspace` | Clear search character by character |
 | `Esc` | Clear search (if search is active) |
+
+## Tab Navigation
+
+| Shortcut | Action |
+|----------|--------|
+| `Alt+Shift+H` | Switch to left tab (loops at edges) |
+| `Alt+Shift+L` | Switch to right tab (loops at edges) |
 
 ## Customization
 
