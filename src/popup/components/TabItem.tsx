@@ -14,9 +14,12 @@ const styles = {
     position: "relative",
     display: "flex",
     flexDirection: "column",
+    height: "97px",
+    boxSizing: "border-box",
     padding: "8px 12px",
     cursor: "pointer",
     borderBottom: "1px solid token(colors.borderLight)",
+    overflow: "hidden",
     transition: "background 0.1s",
     _hover: {
       background: "surface",

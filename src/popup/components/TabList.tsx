@@ -11,7 +11,7 @@ interface TabListProps {
   showTabIndex?: boolean;
 }
 
-const TAB_ITEM_HEIGHT = 90;
+const TAB_ITEM_HEIGHT = 98;
 
 const styles = {
   tabListContainer: css({
