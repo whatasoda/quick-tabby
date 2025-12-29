@@ -12,6 +12,9 @@ import type {
   ThumbnailStore,
 } from "../infrastructure/indexed-db/types.ts";
 
+/** Blur radius for privacy blur feature */
+const BLUR_RADIUS = 12;
+
 const DEFAULT_THUMBNAIL_CONFIG: ThumbnailConfig = {
   size: 200,
   captureQuality: 70,
@@ -79,7 +82,7 @@ export function createThumbnailCacheService(
     ): Promise<void> {
       if (!deps.thumbnailStore.isInitialized()) return;
 
-      const { size, captureQuality, resizeQuality } = config ?? DEFAULT_THUMBNAIL_CONFIG;
+      const { size, captureQuality, resizeQuality, blur } = config ?? DEFAULT_THUMBNAIL_CONFIG;
 
       try {
         const dataUrl = await deps.tabs.captureVisibleTab(windowId, {
@@ -87,7 +90,7 @@ export function createThumbnailCacheService(
           quality: captureQuality,
         });
 
-        const resized = await resizeImage(dataUrl, size, resizeQuality);
+        const resized = await resizeImage(dataUrl, size, resizeQuality, blur);
 
         const thumbnail: StoredThumbnail = {
           tabId,
@@ -127,9 +130,14 @@ export function createThumbnailCacheService(
 // =============================================================================
 
 /**
- * Resize an image to specified dimensions
+ * Resize an image to specified dimensions and optionally apply blur
  */
-async function resizeImage(dataUrl: string, size: number, quality: number): Promise<string> {
+async function resizeImage(
+  dataUrl: string,
+  size: number,
+  quality: number,
+  blur?: boolean,
+): Promise<string> {
   const response = await fetch(dataUrl);
   const blob = await response.blob();
   const bitmap = await createImageBitmap(blob);
@@ -141,6 +149,11 @@ async function resizeImage(dataUrl: string, size: number, quality: number): Prom
   const canvas = new OffscreenCanvas(width, height);
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("Could not get canvas context");
+
+  // Apply blur filter before drawing if enabled
+  if (blur) {
+    ctx.filter = `blur(${BLUR_RADIUS}px)`;
+  }
 
   ctx.drawImage(bitmap, 0, 0, width, height);
   bitmap.close();

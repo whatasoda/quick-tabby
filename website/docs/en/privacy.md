@@ -1,6 +1,6 @@
 # Privacy Policy
 
-*Last updated: December 2024*
+*Last updated: January 2025*
 
 ## Overview
 
@@ -23,6 +23,18 @@ QuickTabby stores the following data locally on your device:
 This data is stored using:
 - `chrome.storage.local` for tab order data and settings
 - IndexedDB for tab thumbnails
+
+### Important Notice About Screenshots
+
+**Warning**: Tab screenshots may contain sensitive information visible on your screen at the time of capture. This can include:
+- Personal or confidential information
+- Passwords or credentials
+- Private communications
+- Financial information
+
+**QuickTabby does not protect this data** from other users of your device or browser. Anyone with access to your computer may be able to view stored screenshots.
+
+For complete terms regarding data responsibility, please see our [Terms of Service](/en/terms).
 
 ### User Settings
 - Display preferences
@@ -56,9 +68,22 @@ To delete all QuickTabby data:
 
 This will remove all locally stored data including tab history and thumbnails.
 
+## Your Responsibilities
+
+While QuickTabby stores all data locally and does not transmit it externally, you are responsible for:
+- Securing your device from unauthorized access
+- Managing who has access to your browser profile
+- Understanding that locally stored data is accessible to anyone with device access
+
+See our [Terms of Service](/en/terms) for complete details.
+
 ## Changes to This Policy
 
 We may update this privacy policy from time to time. Any changes will be posted on this page with an updated revision date.
+
+## Related Documents
+
+- [Terms of Service](/en/terms)
 
 ## Contact
 

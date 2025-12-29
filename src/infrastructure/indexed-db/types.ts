@@ -12,6 +12,7 @@ export interface ThumbnailConfig {
   size: number;
   captureQuality: number;
   resizeQuality: number;
+  blur?: boolean;
 }
 
 export interface ThumbnailStore {

@@ -25,7 +25,6 @@ const styles = {
     borderRadius: "lg",
     background: "background",
     boxShadow: "sm",
-    filter: "blur(0.5px)",
   }),
   placeholder: css({
     display: "flex",

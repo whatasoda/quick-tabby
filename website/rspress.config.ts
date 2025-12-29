@@ -34,7 +34,7 @@ export default defineConfig({
     ],
     footer: {
       message:
-        '<a href="/en/privacy">Privacy Policy</a> | <a href="/ja/privacy">プライバシーポリシー</a>',
+        '<a href="/en/privacy">Privacy</a> | <a href="/en/terms">Terms</a> | <a href="/ja/privacy">プライバシー</a> | <a href="/ja/terms">利用規約</a>',
     },
     locales: [
       {

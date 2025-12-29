@@ -42,6 +42,17 @@ export function BehaviorSection(props: BehaviorSectionProps) {
             onChange={(value) => props.onUpdateSetting("thumbnailQuality", value)}
           />
         </FormField>
+
+        <FormField
+          label="Blur Thumbnails"
+          description="Obscure content for privacy (applied to new captures)"
+          indent="sub"
+        >
+          <Checkbox
+            checked={props.settings.thumbnailBlurEnabled}
+            onChange={(checked) => props.onUpdateSetting("thumbnailBlurEnabled", checked)}
+          />
+        </FormField>
       </Show>
 
       <FormField label="Default Mode" description="Initial mode when opening the popup">

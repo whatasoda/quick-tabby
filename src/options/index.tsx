@@ -6,6 +6,7 @@ import { AppearanceSection } from "./components/AppearanceSection";
 import { BehaviorSection } from "./components/BehaviorSection";
 import { KeybindingsSection } from "./components/KeybindingsSection";
 import { OptionsWindow } from "./components/OptionsWindow";
+import { PrivacySection } from "./components/PrivacySection";
 import { SavedIndicator } from "./components/SavedIndicator";
 import { ShortcutsSection } from "./components/ShortcutsSection";
 import { useKeybindingRecorder } from "./hooks/useKeybindingRecorder";
@@ -67,6 +68,8 @@ export function App() {
               settings={currentSettings()}
               onUpdateCommandSetting={updateCommandSetting}
             />
+
+            <PrivacySection settings={currentSettings()} onUpdateSetting={updateSetting} />
           </>
         )}
       </Show>

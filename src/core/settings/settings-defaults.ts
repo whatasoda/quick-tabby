@@ -5,6 +5,16 @@
 import type { Settings, ThumbnailConfig, ThumbnailTTL } from "./settings-types.ts";
 
 /**
+ * Default URL patterns to exclude from screenshot capture
+ */
+export const DEFAULT_EXCLUSION_PATTERNS = [
+  "chrome://*",
+  "chrome-extension://*",
+  "edge://*",
+  "about:*",
+] as const;
+
+/**
  * Default application settings
  */
 export const DEFAULT_SETTINGS: Settings = {
@@ -12,6 +22,7 @@ export const DEFAULT_SETTINGS: Settings = {
   previewModeEnabled: false,
   thumbnailQuality: "standard",
   thumbnailTTL: "24h",
+  thumbnailBlurEnabled: false,
   defaultMode: "lastUsed",
   themePreference: "auto",
   keybindings: {
@@ -26,15 +37,17 @@ export const DEFAULT_SETTINGS: Settings = {
     "open-popup-all-windows": { selectOnClose: true },
     "open-popup-current-window": { selectOnClose: true },
   },
+  screenshotSkipPatterns: [...DEFAULT_EXCLUSION_PATTERNS],
+  screenshotBlurPatterns: [],
 };
 
 /**
  * Thumbnail quality presets
  */
 export const THUMBNAIL_QUALITIES = {
-  standard: { size: 200, captureQuality: 70, resizeQuality: 0.8 },
-  high: { size: 400, captureQuality: 85, resizeQuality: 0.9 },
-  ultra: { size: 800, captureQuality: 95, resizeQuality: 0.95 },
+  standard: { size: 400, captureQuality: 70, resizeQuality: 0.8 },
+  high: { size: 800, captureQuality: 85, resizeQuality: 0.9 },
+  ultra: { size: 1240, captureQuality: 95, resizeQuality: 0.95 },
 } as const satisfies Record<string, ThumbnailConfig>;
 
 /**
