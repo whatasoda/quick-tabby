@@ -63,3 +63,5 @@ QuickTabby はタブのスクリーンショット（サムネイル）をお客
 ## 関連文書
 
 - [プライバシーポリシー](/ja/privacy)
+- [ライセンス](/ja/license)
+- [サードパーティライセンス](/ja/third-party-licenses)

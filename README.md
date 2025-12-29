@@ -12,7 +12,7 @@ Fast tab switching for Chrome, sorted by recently used.
 
 ## Install
 
-Coming soon to Chrome Web Store.
+[Install from Chrome Web Store](https://chromewebstore.google.com/detail/quick-tabby/gpljmkkeodeoedpcdabdmcnlaljpdhni)
 
 ## Development
 
