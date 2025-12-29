@@ -2,6 +2,8 @@ import { type Accessor, For, Show } from "solid-js";
 import { css } from "../../../styled-system/css";
 import { keybindingToString } from "../../core/keybindings/keybinding-matcher";
 import type { Settings } from "../../core/settings/settings-types";
+import { t } from "../../shared/i18n/index.ts";
+import { MSG } from "../../shared/i18n/message-keys.ts";
 import { Button, FormField, Section } from "../../shared/ui";
 
 const styles = {
@@ -27,13 +29,15 @@ const styles = {
   }),
 };
 
-const KEYBINDING_LABELS: [keyof Settings["keybindings"], string][] = [
-  ["moveDown", "Move Down"],
-  ["moveUp", "Move Up"],
-  ["confirm", "Confirm Selection"],
-  ["cancel", "Cancel"],
-  ["toggleMode", "Toggle Mode"],
-];
+function getKeybindingLabels(): [keyof Settings["keybindings"], string][] {
+  return [
+    ["moveDown", t(MSG.KEYBINDING_MOVE_DOWN)],
+    ["moveUp", t(MSG.KEYBINDING_MOVE_UP)],
+    ["confirm", t(MSG.KEYBINDING_CONFIRM)],
+    ["cancel", t(MSG.KEYBINDING_CANCEL)],
+    ["toggleMode", t(MSG.KEYBINDING_TOGGLE_MODE)],
+  ];
+}
 
 interface KeybindingsSectionProps {
   settings: Settings;
@@ -46,8 +50,8 @@ interface KeybindingsSectionProps {
 
 export function KeybindingsSection(props: KeybindingsSectionProps) {
   return (
-    <Section title="Popup Keybindings">
-      <For each={KEYBINDING_LABELS}>
+    <Section title={t(MSG.OPTIONS_POPUP_KEYBINDINGS)}>
+      <For each={getKeybindingLabels()}>
         {([key, label]) => (
           <FormField label={label}>
             <div class={styles.keybindingChipGroup}>
@@ -60,7 +64,7 @@ export function KeybindingsSection(props: KeybindingsSectionProps) {
                         variant="ghost"
                         size="iconSm"
                         onClick={() => props.onRemoveKeybinding(key, index())}
-                        title="Remove keybinding"
+                        title={t(MSG.KEYBINDING_REMOVE)}
                       >
                         ×
                       </Button>
@@ -72,7 +76,7 @@ export function KeybindingsSection(props: KeybindingsSectionProps) {
                 when={props.recordingKey() === key}
                 fallback={
                   <Button variant="outline" size="sm" onClick={() => props.onStartRecording(key)}>
-                    + Add
+                    + {t(MSG.COMMON_ADD)}
                   </Button>
                 }
               >
@@ -83,7 +87,7 @@ export function KeybindingsSection(props: KeybindingsSectionProps) {
                   ref={(el) => el?.focus()}
                   tabindex={0}
                 >
-                  Press key...
+                  {t(MSG.KEYBINDING_PRESS_KEY)}
                 </div>
               </Show>
             </div>

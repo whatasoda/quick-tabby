@@ -1,6 +1,8 @@
 import { createResource, For, Show } from "solid-js";
 import { css } from "../../../styled-system/css";
 import type { CommandName, Settings } from "../../core/settings/settings-types";
+import { t } from "../../shared/i18n/index.ts";
+import { MSG } from "../../shared/i18n/message-keys.ts";
 import { getCommands, openShortcutsPage } from "../../infrastructure/chrome/messaging";
 import { Button, Checkbox, Section } from "../../shared/ui";
 
@@ -67,7 +69,7 @@ export function ShortcutsSection(props: ShortcutsSectionProps) {
   const [shortcuts] = createResource(getCommands);
 
   return (
-    <Section title="Global Shortcuts">
+    <Section title={t(MSG.OPTIONS_GLOBAL_SHORTCUTS)}>
       <div class={styles.shortcutList}>
         <For each={shortcuts()}>
           {(shortcut) => (
@@ -91,7 +93,7 @@ export function ShortcutsSection(props: ShortcutsSectionProps) {
                       )
                     }
                   >
-                    Select on re-press
+                    {t(MSG.OPTIONS_SELECT_ON_REPRESS)}
                   </Checkbox>
                 </div>
               </Show>
@@ -101,13 +103,10 @@ export function ShortcutsSection(props: ShortcutsSectionProps) {
       </div>
 
       <Button variant="primary" size="lg" onClick={openShortcutsPage}>
-        Change Shortcuts
+        {t(MSG.OPTIONS_CHANGE_SHORTCUTS)}
       </Button>
 
-      <p class={styles.note}>
-        Opens Chrome's extension shortcuts page. "Select on re-press" switches to the selected tab
-        when pressing the shortcut again to close the popup.
-      </p>
+      <p class={styles.note}>{t(MSG.OPTIONS_SHORTCUTS_NOTE)}</p>
     </Section>
   );
 }

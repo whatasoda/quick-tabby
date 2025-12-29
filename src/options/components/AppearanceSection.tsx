@@ -1,17 +1,23 @@
 import type { PopupSize, Settings, ThemePreference } from "../../core/settings/settings-types";
+import { t } from "../../shared/i18n/index.ts";
+import { MSG } from "../../shared/i18n/message-keys.ts";
 import { FormField, RadioGroup, type RadioOption, Section } from "../../shared/ui";
 
-const THEME_OPTIONS: RadioOption<ThemePreference>[] = [
-  { value: "auto", label: "Auto" },
-  { value: "light", label: "Light" },
-  { value: "dark", label: "Dark" },
-];
+function getThemeOptions(): RadioOption<ThemePreference>[] {
+  return [
+    { value: "auto", label: t(MSG.OPTIONS_THEME_AUTO) },
+    { value: "light", label: t(MSG.OPTIONS_THEME_LIGHT) },
+    { value: "dark", label: t(MSG.OPTIONS_THEME_DARK) },
+  ];
+}
 
-const SIZE_OPTIONS: RadioOption<PopupSize>[] = [
-  { value: "small", label: "Small" },
-  { value: "medium", label: "Medium" },
-  { value: "large", label: "Large" },
-];
+function getSizeOptions(): RadioOption<PopupSize>[] {
+  return [
+    { value: "small", label: t(MSG.OPTIONS_SIZE_SMALL) },
+    { value: "medium", label: t(MSG.OPTIONS_SIZE_MEDIUM) },
+    { value: "large", label: t(MSG.OPTIONS_SIZE_LARGE) },
+  ];
+}
 
 interface AppearanceSectionProps {
   settings: Settings;
@@ -20,20 +26,20 @@ interface AppearanceSectionProps {
 
 export function AppearanceSection(props: AppearanceSectionProps) {
   return (
-    <Section title="Appearance">
-      <FormField label="Theme">
+    <Section title={t(MSG.OPTIONS_APPEARANCE)}>
+      <FormField label={t(MSG.OPTIONS_THEME)}>
         <RadioGroup
           name="themePreference"
-          options={THEME_OPTIONS}
+          options={getThemeOptions()}
           value={props.settings.themePreference}
           onChange={(value) => props.onUpdateSetting("themePreference", value)}
         />
       </FormField>
 
-      <FormField label="Popup Size">
+      <FormField label={t(MSG.OPTIONS_POPUP_SIZE)}>
         <RadioGroup
           name="popupSize"
-          options={SIZE_OPTIONS}
+          options={getSizeOptions()}
           value={props.settings.popupSize}
           onChange={(value) => props.onUpdateSetting("popupSize", value)}
         />

@@ -1,18 +1,24 @@
 import { Show } from "solid-js";
 import type { DefaultMode, Settings, ThumbnailQuality } from "../../core/settings/settings-types";
+import { t } from "../../shared/i18n/index.ts";
+import { MSG } from "../../shared/i18n/message-keys.ts";
 import { Checkbox, FormField, RadioGroup, type RadioOption, Section } from "../../shared/ui";
 
-const THUMBNAIL_OPTIONS: RadioOption<ThumbnailQuality>[] = [
-  { value: "standard", label: "Standard" },
-  { value: "high", label: "High" },
-  { value: "ultra", label: "Ultra" },
-];
+function getThumbnailOptions(): RadioOption<ThumbnailQuality>[] {
+  return [
+    { value: "standard", label: t(MSG.OPTIONS_QUALITY_STANDARD) },
+    { value: "high", label: t(MSG.OPTIONS_QUALITY_HIGH) },
+    { value: "ultra", label: t(MSG.OPTIONS_QUALITY_ULTRA) },
+  ];
+}
 
-const DEFAULT_MODE_OPTIONS: RadioOption<DefaultMode>[] = [
-  { value: "lastUsed", label: "Last Used" },
-  { value: "all", label: "All Windows" },
-  { value: "currentWindow", label: "Current Window" },
-];
+function getDefaultModeOptions(): RadioOption<DefaultMode>[] {
+  return [
+    { value: "lastUsed", label: t(MSG.OPTIONS_MODE_LAST_USED) },
+    { value: "all", label: t(MSG.OPTIONS_MODE_ALL) },
+    { value: "currentWindow", label: t(MSG.OPTIONS_MODE_CURRENT) },
+  ];
+}
 
 interface BehaviorSectionProps {
   settings: Settings;
@@ -21,8 +27,8 @@ interface BehaviorSectionProps {
 
 export function BehaviorSection(props: BehaviorSectionProps) {
   return (
-    <Section title="Behavior">
-      <FormField label="Preview Mode" description="Show enlarged thumbnail of selected tab">
+    <Section title={t(MSG.OPTIONS_BEHAVIOR)}>
+      <FormField label={t(MSG.OPTIONS_PREVIEW_MODE)} description={t(MSG.OPTIONS_PREVIEW_MODE_DESC)}>
         <Checkbox
           checked={props.settings.previewModeEnabled}
           onChange={(checked) => props.onUpdateSetting("previewModeEnabled", checked)}
@@ -31,21 +37,21 @@ export function BehaviorSection(props: BehaviorSectionProps) {
 
       <Show when={props.settings.previewModeEnabled}>
         <FormField
-          label="Thumbnail Quality"
-          description="Higher quality uses more storage"
+          label={t(MSG.OPTIONS_THUMBNAIL_QUALITY)}
+          description={t(MSG.OPTIONS_THUMBNAIL_QUALITY_DESC)}
           indent="sub"
         >
           <RadioGroup
             name="thumbnailQuality"
-            options={THUMBNAIL_OPTIONS}
+            options={getThumbnailOptions()}
             value={props.settings.thumbnailQuality}
             onChange={(value) => props.onUpdateSetting("thumbnailQuality", value)}
           />
         </FormField>
 
         <FormField
-          label="Blur Thumbnails"
-          description="Obscure content for privacy (applied to new captures)"
+          label={t(MSG.OPTIONS_BLUR_THUMBNAILS)}
+          description={t(MSG.OPTIONS_BLUR_THUMBNAILS_DESC)}
           indent="sub"
         >
           <Checkbox
@@ -55,10 +61,10 @@ export function BehaviorSection(props: BehaviorSectionProps) {
         </FormField>
       </Show>
 
-      <FormField label="Default Mode" description="Initial mode when opening the popup">
+      <FormField label={t(MSG.OPTIONS_DEFAULT_MODE)} description={t(MSG.OPTIONS_DEFAULT_MODE_DESC)}>
         <RadioGroup
           name="defaultMode"
-          options={DEFAULT_MODE_OPTIONS}
+          options={getDefaultModeOptions()}
           value={props.settings.defaultMode}
           onChange={(value) => props.onUpdateSetting("defaultMode", value)}
         />
