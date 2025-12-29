@@ -3,7 +3,7 @@ import { css } from "../../../styled-system/css";
 import type { CommandName, Settings } from "../../core/settings/settings-types";
 import { getCommands, openShortcutsPage } from "../../infrastructure/chrome/messaging";
 import { t } from "../../shared/i18n/index.ts";
-import { MSG } from "../../shared/i18n/message-keys.ts";
+import { type MessageKey, MSG } from "../../shared/i18n/message-keys.ts";
 import { Button, Checkbox, RadioGroup, Section } from "../../shared/ui";
 
 /**
@@ -15,6 +15,16 @@ const COMMAND_ORDER = [
   "move-tab-left",
   "move-tab-right",
 ];
+
+/**
+ * Mapping from command names to i18n message keys for descriptions.
+ */
+const COMMAND_DESCRIPTION_KEYS: Record<string, MessageKey> = {
+  _execute_action: MSG.MANIFEST_COMMAND_EXECUTE_ACTION,
+  "open-popup": MSG.MANIFEST_COMMAND_OPEN_POPUP,
+  "move-tab-left": MSG.MANIFEST_COMMAND_MOVE_TAB_LEFT,
+  "move-tab-right": MSG.MANIFEST_COMMAND_MOVE_TAB_RIGHT,
+};
 
 const styles = {
   shortcutList: css({
@@ -102,7 +112,9 @@ export function ShortcutsSection(props: ShortcutsSectionProps) {
           {(shortcut) => (
             <div class={styles.shortcutItem}>
               <div class={styles.shortcutHeader}>
-                <span class={styles.shortcutName}>{shortcut.description}</span>
+                <span class={styles.shortcutName}>
+                  {t(COMMAND_DESCRIPTION_KEYS[shortcut.name])}
+                </span>
                 <span class={styles.shortcutKey}>{shortcut.shortcut}</span>
               </div>
               <Show when={isPopupCommand(shortcut.name ?? "")}>
