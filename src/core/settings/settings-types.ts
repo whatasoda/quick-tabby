@@ -76,28 +76,3 @@ export interface Settings {
   screenshotBlurPatterns: string[];
 }
 
-// =============================================================================
-// Legacy Settings (for migration)
-// =============================================================================
-
-/**
- * Legacy keybindings format (single keybinding per action)
- * Used in settings versions before array-based keybindings
- */
-export interface LegacyKeybindings {
-  moveDown?: Keybinding;
-  moveUp?: Keybinding;
-  confirm?: Keybinding;
-  cancel?: Keybinding;
-  toggleMode?: Keybinding;
-}
-
-/**
- * Legacy settings format for migration purposes
- */
-export interface LegacySettings extends Partial<Omit<Settings, "keybindings">> {
-  /** Legacy field: replaced by defaultMode */
-  enableModeToggle?: boolean;
-  /** May be legacy or current format */
-  keybindings?: LegacyKeybindings | Settings["keybindings"];
-}
