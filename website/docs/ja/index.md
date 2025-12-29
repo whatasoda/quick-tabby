@@ -6,14 +6,11 @@ hero:
   tagline: 最近使った順に並んだタブをキーボードで素早く切り替え
   actions:
     - theme: brand
-      text: はじめる
+      text: 機能を見る
       link: /ja/features
     - theme: alt
-      text: Chrome Web Store からインストール
+      text: インストール
       link: https://chrome.google.com/webstore
-    - theme: alt
-      text: プライバシーポリシー
-      link: /ja/privacy
 features:
   - title: 最近使った順
     details: タブが自動的に最近使った順に並び、素早く切り替え
