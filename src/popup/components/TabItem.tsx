@@ -1,5 +1,7 @@
 import { Show } from "solid-js";
 import { css } from "../../../styled-system/css";
+import { t } from "../../shared/i18n/index.ts";
+import { MSG } from "../../shared/i18n/message-keys.ts";
 import type { TabInfo } from "../../shared/types.ts";
 
 interface TabItemProps {
@@ -121,7 +123,7 @@ export function TabItem(props: TabItemProps) {
             (e.target as HTMLImageElement).style.display = "none";
           }}
         />
-        <div class={styles.tabTitle}>{props.tab.title || "Untitled"}</div>
+        <div class={styles.tabTitle}>{props.tab.title || t(MSG.COMMON_UNTITLED)}</div>
       </div>
       <div class={styles.tabItemBody}>
         <div class={styles.tabThumbnailContainer}>
