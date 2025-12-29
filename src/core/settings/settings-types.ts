@@ -72,7 +72,8 @@ export interface Settings {
   themePreference: ThemePreference;
   keybindings: KeybindingsConfig;
   commandSettings: Record<CommandName, CommandSettings>;
-  screenshotExclusionPatterns: string[];
+  screenshotSkipPatterns: string[];
+  screenshotBlurPatterns: string[];
 }
 
 // =============================================================================

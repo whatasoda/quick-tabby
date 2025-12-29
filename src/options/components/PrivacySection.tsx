@@ -3,32 +3,30 @@ import { css } from "../../../styled-system/css";
 import { DEFAULT_EXCLUSION_PATTERNS } from "../../core/settings/settings-defaults";
 import type { Settings } from "../../core/settings/settings-types";
 import { getPatternError } from "../../core/url-pattern";
-import { Button, FormField, Section } from "../../shared/ui";
+import { Button, Section } from "../../shared/ui";
 
 const styles = {
-  patternInput: css({
-    display: "flex",
-    gap: "8px",
-    marginBottom: "8px",
-  }),
-  input: css({
-    flex: 1,
-    padding: "8px 12px",
-    borderRadius: "md",
-    border: "1px solid",
-    borderColor: "border.subtle",
-    backgroundColor: "bg.canvas",
-    color: "fg.default",
-    fontSize: "sm",
-    _focus: {
-      outline: "none",
-      borderColor: "border.active",
+  subsection: css({
+    marginBottom: "24px",
+    _last: {
+      marginBottom: "0",
     },
   }),
-  error: css({
-    color: "fg.error",
-    fontSize: "xs",
+  header: css({
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: "8px",
+  }),
+  title: css({
+    fontSize: "lg",
+    color: "text.primary",
+    fontWeight: "medium",
+  }),
+  description: css({
+    fontSize: "12px",
+    color: "text.secondary",
+    marginBottom: "12px",
   }),
   patternList: css({
     display: "flex",
@@ -60,18 +58,50 @@ const styles = {
       color: "fg.error",
     },
   }),
-  actions: css({
+  addForm: css({
     display: "flex",
     gap: "8px",
   }),
+  input: css({
+    flex: 1,
+    padding: "8px 12px",
+    borderRadius: "md",
+    border: "1px solid",
+    borderColor: "border.subtle",
+    backgroundColor: "bg.canvas",
+    color: "fg.default",
+    fontSize: "sm",
+    _focus: {
+      outline: "none",
+      borderColor: "border.active",
+    },
+  }),
+  error: css({
+    color: "fg.error",
+    fontSize: "xs",
+    marginTop: "8px",
+  }),
+  emptyList: css({
+    padding: "12px",
+    textAlign: "center",
+    color: "text.secondary",
+    fontSize: "sm",
+    backgroundColor: "bg.muted",
+    borderRadius: "md",
+    marginBottom: "12px",
+  }),
 };
 
-interface PrivacySectionProps {
-  settings: Settings;
+interface PatternListProps {
+  title: string;
+  description: string;
+  patterns: string[];
+  settingKey: "screenshotSkipPatterns" | "screenshotBlurPatterns";
+  defaultPatterns: readonly string[];
   onUpdateSetting: <K extends keyof Settings>(key: K, value: Settings[K]) => void;
 }
 
-export function PrivacySection(props: PrivacySectionProps) {
+function PatternList(props: PatternListProps) {
   const [newPattern, setNewPattern] = createSignal("");
   const [error, setError] = createSignal<string | null>(null);
 
@@ -85,29 +115,25 @@ export function PrivacySection(props: PrivacySectionProps) {
       return;
     }
 
-    // Check for duplicates
-    if (props.settings.screenshotExclusionPatterns.includes(pattern)) {
+    if (props.patterns.includes(pattern)) {
       setError("This pattern already exists");
       return;
     }
 
-    props.onUpdateSetting("screenshotExclusionPatterns", [
-      ...props.settings.screenshotExclusionPatterns,
-      pattern,
-    ]);
+    props.onUpdateSetting(props.settingKey, [...props.patterns, pattern]);
     setNewPattern("");
     setError(null);
   }
 
   function handleRemove(index: number) {
     props.onUpdateSetting(
-      "screenshotExclusionPatterns",
-      props.settings.screenshotExclusionPatterns.filter((_, i) => i !== index),
+      props.settingKey,
+      props.patterns.filter((_, i) => i !== index),
     );
   }
 
   function handleResetDefaults() {
-    props.onUpdateSetting("screenshotExclusionPatterns", [...DEFAULT_EXCLUSION_PATTERNS]);
+    props.onUpdateSetting(props.settingKey, [...props.defaultPatterns]);
   }
 
   function handleKeyDown(e: KeyboardEvent) {
@@ -118,34 +144,22 @@ export function PrivacySection(props: PrivacySectionProps) {
   }
 
   return (
-    <Section title="Privacy">
-      <FormField
-        label="Screenshot Exclusion Patterns"
-        description="URLs matching these patterns will not have screenshots captured. Use patterns like *://*.bank.com/* or chrome://*"
+    <div class={styles.subsection}>
+      <div class={styles.header}>
+        <span class={styles.title}>{props.title}</span>
+        <Button variant="ghost" size="sm" onClick={handleResetDefaults}>
+          Reset
+        </Button>
+      </div>
+
+      <p class={styles.description}>{props.description}</p>
+
+      <Show
+        when={props.patterns.length > 0}
+        fallback={<div class={styles.emptyList}>No patterns configured</div>}
       >
-        <div class={styles.patternInput}>
-          <input
-            type="text"
-            class={styles.input}
-            value={newPattern()}
-            onInput={(e) => {
-              setNewPattern(e.currentTarget.value);
-              setError(null);
-            }}
-            onKeyDown={handleKeyDown}
-            placeholder="e.g., *://*.bank.com/*"
-          />
-          <Button variant="outline" size="sm" onClick={handleAdd}>
-            Add
-          </Button>
-        </div>
-
-        <Show when={error()}>
-          <div class={styles.error}>{error()}</div>
-        </Show>
-
         <div class={styles.patternList}>
-          <For each={props.settings.screenshotExclusionPatterns}>
+          <For each={props.patterns}>
             {(pattern, index) => (
               <div class={styles.patternItem}>
                 <code class={styles.patternCode}>{pattern}</code>
@@ -155,19 +169,63 @@ export function PrivacySection(props: PrivacySectionProps) {
                   onClick={() => handleRemove(index())}
                   title="Remove pattern"
                 >
-                  x
+                  ×
                 </button>
               </div>
             )}
           </For>
         </div>
+      </Show>
 
-        <div class={styles.actions}>
-          <Button variant="ghost" size="sm" onClick={handleResetDefaults}>
-            Reset to Defaults
-          </Button>
-        </div>
-      </FormField>
+      <div class={styles.addForm}>
+        <input
+          type="text"
+          class={styles.input}
+          value={newPattern()}
+          onInput={(e) => {
+            setNewPattern(e.currentTarget.value);
+            setError(null);
+          }}
+          onKeyDown={handleKeyDown}
+          placeholder="e.g., *://*.bank.com/*"
+        />
+        <Button variant="outline" size="sm" onClick={handleAdd}>
+          Add
+        </Button>
+      </div>
+
+      <Show when={error()}>
+        <div class={styles.error}>{error()}</div>
+      </Show>
+    </div>
+  );
+}
+
+interface PrivacySectionProps {
+  settings: Settings;
+  onUpdateSetting: <K extends keyof Settings>(key: K, value: Settings[K]) => void;
+}
+
+export function PrivacySection(props: PrivacySectionProps) {
+  return (
+    <Section title="Privacy">
+      <PatternList
+        title="Skip Screenshot"
+        description="URLs matching these patterns will not have screenshots captured. Use patterns like *://*.bank.com/* or chrome://*"
+        patterns={props.settings.screenshotSkipPatterns}
+        settingKey="screenshotSkipPatterns"
+        defaultPatterns={DEFAULT_EXCLUSION_PATTERNS}
+        onUpdateSetting={props.onUpdateSetting}
+      />
+
+      <PatternList
+        title="Blur Screenshot"
+        description="URLs matching these patterns will have blurred screenshots. Useful for sensitive content you still want to preview."
+        patterns={props.settings.screenshotBlurPatterns}
+        settingKey="screenshotBlurPatterns"
+        defaultPatterns={[]}
+        onUpdateSetting={props.onUpdateSetting}
+      />
     </Section>
   );
 }

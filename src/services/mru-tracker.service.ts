@@ -125,14 +125,20 @@ export function createMRUTrackerService(deps: MRUTrackerDependencies): MRUTracke
           if (!tab.url) return;
 
           const settings = await deps.settingsService.load();
-          if (matchesAnyPattern(tab.url, settings.screenshotExclusionPatterns)) {
+
+          // Check if URL should be skipped
+          if (matchesAnyPattern(tab.url, settings.screenshotSkipPatterns)) {
             return; // Skip capture for excluded URLs
           }
 
+          // Check if URL should be blurred
+          const shouldBlur = matchesAnyPattern(tab.url, settings.screenshotBlurPatterns);
+
           // Build thumbnail config with blur setting
+          // Apply blur if globally enabled OR if URL matches blur patterns
           const thumbnailConfig = {
             ...THUMBNAIL_QUALITIES[settings.thumbnailQuality],
-            blur: settings.thumbnailBlurEnabled,
+            blur: settings.thumbnailBlurEnabled || shouldBlur,
           };
 
           await deps.thumbnailCache.captureAndStore(tabId, windowId, thumbnailConfig);

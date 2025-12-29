@@ -41,7 +41,8 @@ export const DEFAULT_SETTINGS: Settings = {
     "open-popup-all-windows": { selectOnClose: true },
     "open-popup-current-window": { selectOnClose: true },
   },
-  screenshotExclusionPatterns: [...DEFAULT_EXCLUSION_PATTERNS],
+  screenshotSkipPatterns: [...DEFAULT_EXCLUSION_PATTERNS],
+  screenshotBlurPatterns: [],
 };
 
 /**

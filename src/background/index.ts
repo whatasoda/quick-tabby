@@ -151,11 +151,20 @@ async function handleMessage(message: MessageType): Promise<MessageResponse> {
         windowId: message.windowId,
       });
       if (tab?.id && tab.windowId && tab.url) {
-        // Check URL against exclusion patterns
         const settings = await settingsService.load();
-        if (!matchesAnyPattern(tab.url, settings.screenshotExclusionPatterns)) {
-          await thumbnailCache.captureAndStore(tab.id, tab.windowId, message.thumbnailConfig);
+
+        // Check if URL should be skipped
+        if (matchesAnyPattern(tab.url, settings.screenshotSkipPatterns)) {
+          return { type: "SUCCESS" };
         }
+
+        // Check if URL should be blurred
+        const shouldBlur = matchesAnyPattern(tab.url, settings.screenshotBlurPatterns);
+        const config = shouldBlur && message.thumbnailConfig
+          ? { ...message.thumbnailConfig, blur: true }
+          : message.thumbnailConfig;
+
+        await thumbnailCache.captureAndStore(tab.id, tab.windowId, config);
       }
       return { type: "SUCCESS" };
     }
