@@ -16,6 +16,7 @@ QuickTabby is a Chrome extension (MV3) for managing tabs with MRU (Most Recently
 ```bash
 bun install          # Install dependencies
 bun run dev          # Start development server
+bun run dev:preview  # Start dev preview (port 5174)
 bun run build        # Build for production
 bun run test         # Run tests
 bun run test:watch   # Run tests in watch mode
@@ -24,6 +25,15 @@ bun run lint         # Lint code
 bun run format       # Format code
 bun run check        # Run all checks (lint + format)
 bun run check:fix    # Fix all auto-fixable issues
+bun run bump         # Bump version
+```
+
+## Website Commands
+
+```bash
+bun run website:dev      # Start website dev server
+bun run website:build    # Build website for production
+bun run website:preview  # Preview website build
 ```
 
 ## Architecture
@@ -40,7 +50,10 @@ src/
 ├── popup/          # Popup UI (Solid.js components)
 ├── options/        # Options page UI
 ├── background/     # Service worker
-└── shared/         # Shared types and utilities
+├── shared/         # Shared types, utilities, and UI components
+│   ├── i18n/       # Internationalization (EN, JA)
+│   └── ui/         # Reusable UI components
+└── dev/            # Development preview environment
 ```
 
 #### Layer Responsibilities
@@ -65,6 +78,15 @@ src/
    - Use services through background connection
    - Presentational and container component separation
 
+5. **shared/** - Shared code across layers
+   - i18n support (English and Japanese)
+   - Reusable UI components with PandaCSS styling
+   - Shared types and utilities
+
+6. **dev/** - Development preview environment
+   - Preview UI components in isolation
+   - Mock data for testing components
+
 ## Development Guidelines
 
 ### Think and Write in English
@@ -87,6 +109,19 @@ For quick validation during development:
 ```bash
 bun run check        # Combined lint + format check
 ```
+
+### Development Preview
+
+Use the development preview environment to develop and test UI components in isolation:
+
+```bash
+bun run dev:preview  # Start preview server at http://localhost:5174
+```
+
+This runs a standalone Vite server (without CRXJS) that allows you to:
+- Preview UI components directly in the browser
+- Test with mock data
+- Iterate quickly without loading the extension
 
 ## Git Workflow
 
@@ -171,7 +206,9 @@ describe("FeatureName", () => {
 ## File Naming Conventions
 
 - Components: `PascalCase.tsx`
-- Hooks: `use-kebab-case.ts` or `useKebabCase.ts`
+- Hooks: `useKebabCase.ts`
 - Services: `kebab-case.service.ts`
 - Types: `kebab-case-types.ts` or in same file
 - Tests: `*.test.ts`
+- PandaCSS recipes: `*.recipe.ts`
+- i18n: `message-keys.ts`
