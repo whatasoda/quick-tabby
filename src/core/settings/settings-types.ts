@@ -38,13 +38,11 @@ export interface KeybindingsConfig {
 // Command Types
 // =============================================================================
 
-export type CommandName =
-  | "_execute_action"
-  | "open-popup-all-windows"
-  | "open-popup-current-window";
+export type CommandName = "_execute_action" | "open-popup" | "move-tab-left" | "move-tab-right";
 
 export interface CommandSettings {
   selectOnClose: boolean;
+  mode?: "all" | "currentWindow";
 }
 
 // =============================================================================
@@ -74,30 +72,4 @@ export interface Settings {
   commandSettings: Record<CommandName, CommandSettings>;
   screenshotSkipPatterns: string[];
   screenshotBlurPatterns: string[];
-}
-
-// =============================================================================
-// Legacy Settings (for migration)
-// =============================================================================
-
-/**
- * Legacy keybindings format (single keybinding per action)
- * Used in settings versions before array-based keybindings
- */
-export interface LegacyKeybindings {
-  moveDown?: Keybinding;
-  moveUp?: Keybinding;
-  confirm?: Keybinding;
-  cancel?: Keybinding;
-  toggleMode?: Keybinding;
-}
-
-/**
- * Legacy settings format for migration purposes
- */
-export interface LegacySettings extends Partial<Omit<Settings, "keybindings">> {
-  /** Legacy field: replaced by defaultMode */
-  enableModeToggle?: boolean;
-  /** May be legacy or current format */
-  keybindings?: LegacyKeybindings | Settings["keybindings"];
 }

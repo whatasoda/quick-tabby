@@ -49,6 +49,28 @@ export function createChromeTabs(): ChromeTabsAPI {
       return chrome.tabs.captureVisibleTab(windowId, options);
     },
 
+    async activateAdjacentTab(direction: "left" | "right"): Promise<TabInfo | undefined> {
+      // Get current active tab
+      const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
+      if (!activeTab?.id || activeTab.index === undefined) return undefined;
+
+      // Get all tabs in current window
+      const tabs = await chrome.tabs.query({ currentWindow: true });
+      const currentIndex = activeTab.index;
+
+      // Calculate target index with loop behavior
+      let targetIndex = direction === "left" ? currentIndex - 1 : currentIndex + 1;
+      if (targetIndex < 0) targetIndex = tabs.length - 1;
+      if (targetIndex >= tabs.length) targetIndex = 0;
+
+      // Find and activate target tab
+      const targetTab = tabs.find((t) => t.index === targetIndex);
+      if (!targetTab?.id) return undefined;
+
+      const updatedTab = await chrome.tabs.update(targetTab.id, { active: true });
+      return updatedTab ? mapTab(updatedTab) : undefined;
+    },
+
     onActivated: {
       addListener(callback: (activeInfo: TabActiveInfo) => void) {
         chrome.tabs.onActivated.addListener(callback);

@@ -1,5 +1,5 @@
 /**
- * Settings Migration Tests
+ * Settings Loading Tests
  */
 
 import { describe, expect, test } from "vitest";
@@ -29,52 +29,9 @@ describe("migrateSettings", () => {
     });
   });
 
-  describe("enableModeToggle migration", () => {
-    test("should migrate enableModeToggle true to defaultMode lastUsed", () => {
-      const stored = { enableModeToggle: true };
-
-      const result = migrateSettings(stored);
-
-      expect(result.settings.defaultMode).toBe("lastUsed");
-      expect(result.needsPersist).toBe(true);
-    });
-
-    test("should migrate enableModeToggle false to defaultMode all", () => {
-      const stored = { enableModeToggle: false };
-
-      const result = migrateSettings(stored);
-
-      expect(result.settings.defaultMode).toBe("all");
-      expect(result.needsPersist).toBe(true);
-    });
-
-    test("should preserve existing defaultMode (no double migration)", () => {
-      const stored = {
-        enableModeToggle: true,
-        defaultMode: "currentWindow" as const,
-      };
-
-      const result = migrateSettings(stored);
-
-      expect(result.settings.defaultMode).toBe("currentWindow");
-      expect(result.needsPersist).toBe(false);
-    });
-  });
-
   describe("needsPersist flag", () => {
-    test("should set needsPersist true when migration occurs", () => {
-      const stored = { enableModeToggle: true };
-
-      const result = migrateSettings(stored);
-
-      expect(result.needsPersist).toBe(true);
-    });
-
-    test("should set needsPersist false when no migration needed", () => {
-      const stored = {
-        defaultMode: "all" as const,
-        keybindings: DEFAULT_SETTINGS.keybindings,
-      };
+    test("should always return needsPersist false (no migration)", () => {
+      const stored = { popupSize: "large" as const };
 
       const result = migrateSettings(stored);
 
@@ -82,65 +39,8 @@ describe("migrateSettings", () => {
     });
   });
 
-  describe("keybindings migration", () => {
-    test("should migrate single keybinding to array format", () => {
-      const stored = {
-        keybindings: {
-          moveDown: { key: "ArrowDown" },
-          moveUp: { key: "ArrowUp" },
-        },
-      };
-
-      const result = migrateSettings(stored);
-
-      expect(result.settings.keybindings.moveDown).toEqual([{ key: "ArrowDown" }]);
-      expect(result.settings.keybindings.moveUp).toEqual([{ key: "ArrowUp" }]);
-      expect(result.needsPersist).toBe(true);
-    });
-
-    test("should preserve already-migrated keybindings array", () => {
-      const stored = {
-        keybindings: {
-          moveDown: [{ key: "j" }, { key: "ArrowDown" }],
-          moveUp: [{ key: "k" }],
-          confirm: [{ key: "Enter" }],
-          cancel: [{ key: "Escape" }],
-          toggleMode: [{ key: "Tab" }],
-        },
-      };
-
-      const result = migrateSettings(stored);
-
-      expect(result.settings.keybindings.moveDown).toEqual([{ key: "j" }, { key: "ArrowDown" }]);
-      expect(result.needsPersist).toBe(false);
-    });
-
-    test("should use default keybindings when not provided", () => {
-      const stored = {};
-
-      const result = migrateSettings(stored);
-
-      expect(result.settings.keybindings).toEqual(DEFAULT_SETTINGS.keybindings);
-    });
-  });
-
-  describe("commandSettings merging", () => {
-    test("should merge custom commandSettings with defaults", () => {
-      const stored = {
-        commandSettings: {
-          _execute_action: { selectOnClose: false },
-        },
-      };
-
-      const result = migrateSettings(stored);
-
-      expect(result.settings.commandSettings._execute_action.selectOnClose).toBe(false);
-      expect(result.settings.commandSettings["open-popup-all-windows"].selectOnClose).toBe(true);
-    });
-  });
-
-  describe("complete settings with defaults", () => {
-    test("should return complete Settings with all defaults filled", () => {
+  describe("settings merging", () => {
+    test("should merge partial settings with defaults", () => {
       const stored = {
         popupSize: "large" as const,
       };
@@ -171,6 +71,43 @@ describe("migrateSettings", () => {
       expect(result.settings.thumbnailQuality).toBe("high");
       expect(result.settings.defaultMode).toBe("currentWindow");
       expect(result.settings.themePreference).toBe("dark");
+    });
+  });
+
+  describe("keybindings merging", () => {
+    test("should merge keybindings with defaults", () => {
+      const stored = {
+        keybindings: {
+          moveDown: [{ key: "ArrowDown" }],
+        },
+      };
+
+      const result = migrateSettings(stored);
+
+      expect(result.settings.keybindings.moveDown).toEqual([{ key: "ArrowDown" }]);
+      expect(result.settings.keybindings.moveUp).toEqual(DEFAULT_SETTINGS.keybindings.moveUp);
+    });
+
+    test("should use default keybindings when not provided", () => {
+      const stored = {};
+
+      const result = migrateSettings(stored);
+
+      expect(result.settings.keybindings).toEqual(DEFAULT_SETTINGS.keybindings);
+    });
+  });
+
+  describe("commandSettings merging", () => {
+    test("should merge custom commandSettings with defaults", () => {
+      const stored = {
+        commandSettings: {
+          _execute_action: { selectOnClose: false },
+        },
+      };
+
+      const result = migrateSettings(stored);
+
+      expect(result.settings.commandSettings._execute_action.selectOnClose).toBe(false);
     });
   });
 });

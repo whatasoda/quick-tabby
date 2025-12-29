@@ -17,8 +17,6 @@ export type {
   Keybinding,
   KeybindingList,
   KeybindingsConfig,
-  LegacyKeybindings,
-  LegacySettings,
   PopupSize,
   Settings,
   ThemePreference,

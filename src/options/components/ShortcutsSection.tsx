@@ -4,7 +4,7 @@ import type { CommandName, Settings } from "../../core/settings/settings-types";
 import { getCommands, openShortcutsPage } from "../../infrastructure/chrome/messaging";
 import { t } from "../../shared/i18n/index.ts";
 import { MSG } from "../../shared/i18n/message-keys.ts";
-import { Button, Checkbox, Section } from "../../shared/ui";
+import { Button, Checkbox, RadioGroup, Section } from "../../shared/ui";
 
 const styles = {
   shortcutList: css({
@@ -41,9 +41,14 @@ const styles = {
   }),
   shortcutSettings: css({
     display: "flex",
+    flexDirection: "column",
+    gap: "sm",
+    paddingLeft: "sm",
+  }),
+  settingRow: css({
+    display: "flex",
     alignItems: "center",
     gap: "md",
-    paddingLeft: "sm",
   }),
   note: css({
     fontSize: "12px",
@@ -52,8 +57,8 @@ const styles = {
   }),
 };
 
-function isValidCommandName(name: string): name is CommandName {
-  return ["_execute_action", "open-popup-all-windows", "open-popup-current-window"].includes(name);
+function isPopupCommand(name: string): boolean {
+  return name === "_execute_action" || name === "open-popup";
 }
 
 interface ShortcutsSectionProps {
@@ -61,12 +66,17 @@ interface ShortcutsSectionProps {
   onUpdateCommandSetting: (
     command: CommandName,
     key: keyof Settings["commandSettings"][CommandName],
-    value: boolean,
+    value: boolean | "all" | "currentWindow",
   ) => void;
 }
 
 export function ShortcutsSection(props: ShortcutsSectionProps) {
   const [shortcuts] = createResource(getCommands);
+
+  const modeOptions = [
+    { value: "all", label: t(MSG.OPTIONS_MODE_ALL) },
+    { value: "currentWindow", label: t(MSG.OPTIONS_MODE_CURRENT) },
+  ];
 
   return (
     <Section title={t(MSG.OPTIONS_GLOBAL_SHORTCUTS)}>
@@ -78,23 +88,42 @@ export function ShortcutsSection(props: ShortcutsSectionProps) {
                 <span class={styles.shortcutName}>{shortcut.description}</span>
                 <span class={styles.shortcutKey}>{shortcut.shortcut}</span>
               </div>
-              <Show when={isValidCommandName(shortcut.name)}>
+              <Show when={isPopupCommand(shortcut.name ?? "")}>
                 <div class={styles.shortcutSettings}>
-                  <Checkbox
-                    checked={
-                      props.settings.commandSettings[shortcut.name as CommandName]?.selectOnClose ??
-                      true
-                    }
-                    onChange={(checked) =>
-                      props.onUpdateCommandSetting(
-                        shortcut.name as CommandName,
-                        "selectOnClose",
-                        checked,
-                      )
-                    }
-                  >
-                    {t(MSG.OPTIONS_SELECT_ON_REPRESS)}
-                  </Checkbox>
+                  <div class={styles.settingRow}>
+                    <Checkbox
+                      checked={
+                        props.settings.commandSettings[shortcut.name as CommandName]
+                          ?.selectOnClose ?? true
+                      }
+                      onChange={(checked) =>
+                        props.onUpdateCommandSetting(
+                          shortcut.name as CommandName,
+                          "selectOnClose",
+                          checked,
+                        )
+                      }
+                    >
+                      {t(MSG.OPTIONS_SELECT_ON_REPRESS)}
+                    </Checkbox>
+                  </div>
+                  <div class={styles.settingRow}>
+                    <span>{t(MSG.OPTIONS_POPUP_MODE)}:</span>
+                    <RadioGroup
+                      name={`mode-${shortcut.name}`}
+                      options={modeOptions}
+                      value={
+                        props.settings.commandSettings[shortcut.name as CommandName]?.mode ?? "all"
+                      }
+                      onChange={(value) =>
+                        props.onUpdateCommandSetting(
+                          shortcut.name as CommandName,
+                          "mode",
+                          value as "all" | "currentWindow",
+                        )
+                      }
+                    />
+                  </div>
                 </div>
               </Show>
             </div>

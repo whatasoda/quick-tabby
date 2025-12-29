@@ -43,6 +43,7 @@ const mruTracker = createMRUTrackerService({
 const commandHandler = createCommandHandlerService({
   action: chromeAPI.action,
   commands: chromeAPI.commands,
+  tabs: chromeAPI.tabs,
   settingsService,
 });
 

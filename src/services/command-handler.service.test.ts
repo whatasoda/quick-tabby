@@ -9,6 +9,7 @@ import type { Port } from "../infrastructure/chrome/types.ts";
 import {
   createMockAction,
   createMockCommands,
+  createMockTabs,
 } from "../infrastructure/test-doubles/chrome-api.mock.ts";
 import {
   type CommandHandlerDependencies,
@@ -66,28 +67,59 @@ function createMockPort(name: string): Port & { _messages: unknown[] } {
 describe("CommandHandlerService", () => {
   let mockAction: ReturnType<typeof createMockAction>;
   let mockCommands: ReturnType<typeof createMockCommands>;
+  let mockTabs: ReturnType<typeof createMockTabs>;
   let mockSettingsService: SettingsService;
   let deps: CommandHandlerDependencies;
 
   beforeEach(() => {
     mockAction = createMockAction();
     mockCommands = createMockCommands();
+    mockTabs = createMockTabs({
+      tabs: [
+        {
+          id: 1,
+          windowId: 1,
+          index: 0,
+          title: "Tab 1",
+          url: "https://example.com/1",
+          active: true,
+        },
+        {
+          id: 2,
+          windowId: 1,
+          index: 1,
+          title: "Tab 2",
+          url: "https://example.com/2",
+          active: false,
+        },
+        {
+          id: 3,
+          windowId: 1,
+          index: 2,
+          title: "Tab 3",
+          url: "https://example.com/3",
+          active: false,
+        },
+      ],
+    });
     mockSettingsService = createMockSettingsService();
     deps = {
       action: mockAction,
       commands: mockCommands,
+      tabs: mockTabs,
       settingsService: mockSettingsService,
     };
   });
 
   describe("initialize", () => {
-    test("should register command listener", () => {
+    test("should register command listener", async () => {
       const service = createCommandHandlerService(deps);
 
       service.initialize();
 
       // Trigger command to verify listener is set up
-      mockCommands._triggerCommand("open-popup-all-windows");
+      mockCommands._triggerCommand("open-popup");
+      await new Promise((resolve) => setTimeout(resolve, 0));
       expect(mockAction._popupOpened).toBe(true);
     });
   });
@@ -102,29 +134,17 @@ describe("CommandHandlerService", () => {
       expect(launchInfo.command).toBeNull();
     });
 
-    test("should set mode to 'all' when open-popup-all-windows command is triggered", async () => {
+    test("should set mode from settings when open-popup command is triggered", async () => {
+      // Default mode for open-popup is "currentWindow"
       const service = createCommandHandlerService(deps);
       service.initialize();
 
-      mockCommands._triggerCommand("open-popup-all-windows");
-      // Wait for async handler
-      await new Promise((resolve) => setTimeout(resolve, 0));
-
-      const launchInfo = service.getLaunchInfo();
-      expect(launchInfo.mode).toBe("all");
-      expect(launchInfo.command).toBe("open-popup-all-windows");
-    });
-
-    test("should set mode to 'currentWindow' when open-popup-current-window command is triggered", async () => {
-      const service = createCommandHandlerService(deps);
-      service.initialize();
-
-      mockCommands._triggerCommand("open-popup-current-window");
+      mockCommands._triggerCommand("open-popup");
       await new Promise((resolve) => setTimeout(resolve, 0));
 
       const launchInfo = service.getLaunchInfo();
       expect(launchInfo.mode).toBe("currentWindow");
-      expect(launchInfo.command).toBe("open-popup-current-window");
+      expect(launchInfo.command).toBe("open-popup");
     });
   });
 
@@ -133,7 +153,7 @@ describe("CommandHandlerService", () => {
       const service = createCommandHandlerService(deps);
       service.initialize();
 
-      mockCommands._triggerCommand("open-popup-all-windows");
+      mockCommands._triggerCommand("open-popup");
       await new Promise((resolve) => setTimeout(resolve, 0));
 
       service.clearLaunchInfo();
@@ -141,6 +161,51 @@ describe("CommandHandlerService", () => {
       const launchInfo = service.getLaunchInfo();
       expect(launchInfo.mode).toBeNull();
       expect(launchInfo.command).toBeNull();
+    });
+  });
+
+  describe("tab navigation", () => {
+    test("should activate right adjacent tab", async () => {
+      const service = createCommandHandlerService(deps);
+      service.initialize();
+
+      mockCommands._triggerCommand("move-tab-right");
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      // Tab 1 (index 0) was active, should now activate Tab 2 (index 1)
+      const tabs = mockTabs._tabs;
+      expect(tabs[0]?.active).toBe(false);
+      expect(tabs[1]?.active).toBe(true);
+    });
+
+    test("should activate left adjacent tab", async () => {
+      // Set Tab 2 as active
+      const tabs = mockTabs._tabs;
+      if (tabs[0]) tabs[0].active = false;
+      if (tabs[1]) tabs[1].active = true;
+
+      const service = createCommandHandlerService(deps);
+      service.initialize();
+
+      mockCommands._triggerCommand("move-tab-left");
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      // Tab 2 (index 1) was active, should now activate Tab 1 (index 0)
+      expect(tabs[0]?.active).toBe(true);
+      expect(tabs[1]?.active).toBe(false);
+    });
+
+    test("should loop to last tab when moving left from first tab", async () => {
+      const service = createCommandHandlerService(deps);
+      service.initialize();
+
+      mockCommands._triggerCommand("move-tab-left");
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      // Tab 1 (index 0) was active, should loop to Tab 3 (index 2)
+      const tabs = mockTabs._tabs;
+      expect(tabs[0]?.active).toBe(false);
+      expect(tabs[2]?.active).toBe(true);
     });
   });
 
@@ -172,7 +237,7 @@ describe("CommandHandlerService", () => {
       const mockPort = createMockPort("popup");
       service.setPopupPort(mockPort);
 
-      mockCommands._triggerCommand("open-popup-all-windows");
+      mockCommands._triggerCommand("open-popup");
       await new Promise((resolve) => setTimeout(resolve, 0));
 
       expect(mockPort._messages.length).toBeGreaterThan(0);

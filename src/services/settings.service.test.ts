@@ -38,35 +38,18 @@ describe("SettingsService", () => {
       expect(result.popupSize).toBe("large");
     });
 
-    test("should migrate and persist legacy settings", async () => {
-      const legacySettings = {
-        enableModeToggle: true,
+    test("should merge partial settings with defaults", async () => {
+      const partialSettings = {
+        popupSize: "small" as const,
       };
-      await mockStorage.local.set({ "quicktabby:settings": legacySettings });
+      await mockStorage.local.set({ "quicktabby:settings": partialSettings });
       const service = createSettingsService(deps);
 
       const result = await service.load();
 
-      expect(result.defaultMode).toBe("lastUsed");
-      // Verify persisted
-      const stored = await mockStorage.local.get("quicktabby:settings");
-      expect(stored["quicktabby:settings"]).toBeDefined();
-    });
-
-    test("should migrate single keybinding to array format", async () => {
-      const legacySettings = {
-        keybindings: {
-          moveDown: { key: "j" },
-          moveUp: { key: "k" },
-        },
-      };
-      await mockStorage.local.set({ "quicktabby:settings": legacySettings });
-      const service = createSettingsService(deps);
-
-      const result = await service.load();
-
-      expect(result.keybindings.moveDown).toEqual([{ key: "j" }]);
-      expect(result.keybindings.moveUp).toEqual([{ key: "k" }]);
+      expect(result.popupSize).toBe("small");
+      expect(result.keybindings).toEqual(DEFAULT_SETTINGS.keybindings);
+      expect(result.commandSettings).toEqual(DEFAULT_SETTINGS.commandSettings);
     });
   });
 

@@ -37,7 +37,7 @@ export function useSettings() {
   async function updateCommandSetting(
     command: CommandName,
     key: keyof Settings["commandSettings"][CommandName],
-    value: boolean,
+    value: boolean | "all" | "currentWindow",
   ) {
     const current = settings();
     if (!current) return;

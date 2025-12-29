@@ -33,9 +33,10 @@ export const DEFAULT_SETTINGS: Settings = {
     toggleMode: [{ key: "Tab" }],
   },
   commandSettings: {
-    _execute_action: { selectOnClose: true },
-    "open-popup-all-windows": { selectOnClose: true },
-    "open-popup-current-window": { selectOnClose: true },
+    _execute_action: { selectOnClose: true, mode: "all" },
+    "open-popup": { selectOnClose: true, mode: "currentWindow" },
+    "move-tab-left": { selectOnClose: false },
+    "move-tab-right": { selectOnClose: false },
   },
   screenshotSkipPatterns: [...DEFAULT_EXCLUSION_PATTERNS],
   screenshotBlurPatterns: [],
