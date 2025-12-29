@@ -32,6 +32,10 @@ export default defineConfig({
         content: "https://github.com/whatasoda/quick-tabby",
       },
     ],
+    footer: {
+      message:
+        '<a href="/en/privacy">Privacy Policy</a> | <a href="/ja/privacy">プライバシーポリシー</a>',
+    },
     locales: [
       {
         lang: "en",
