@@ -9,12 +9,7 @@ import { Button, Checkbox, RadioGroup, Section } from "../../shared/ui";
 /**
  * Fixed display order for commands in the options page.
  */
-const COMMAND_ORDER = [
-  "_execute_action",
-  "open-popup",
-  "move-tab-left",
-  "move-tab-right",
-];
+const COMMAND_ORDER = ["_execute_action", "open-popup", "move-tab-left", "move-tab-right"];
 
 /**
  * Mapping from command names to i18n message keys for descriptions.
@@ -46,6 +41,12 @@ const styles = {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
+    gap: "md",
+  }),
+  shortcutHeaderLeft: css({
+    display: "flex",
+    alignItems: "center",
+    gap: "md",
   }),
   shortcutName: css({
     fontSize: "lg",
@@ -60,15 +61,7 @@ const styles = {
     textAlign: "center",
   }),
   shortcutSettings: css({
-    display: "flex",
-    flexDirection: "column",
-    gap: "sm",
     paddingLeft: "sm",
-  }),
-  settingRow: css({
-    display: "flex",
-    alignItems: "center",
-    gap: "md",
   }),
   note: css({
     fontSize: "12px",
@@ -95,9 +88,7 @@ export function ShortcutsSection(props: ShortcutsSectionProps) {
 
   const sortedShortcuts = () => {
     const list = shortcuts() ?? [];
-    return [...list].sort(
-      (a, b) => COMMAND_ORDER.indexOf(a.name) - COMMAND_ORDER.indexOf(b.name),
-    );
+    return [...list].sort((a, b) => COMMAND_ORDER.indexOf(a.name) - COMMAND_ORDER.indexOf(b.name));
   };
 
   const modeOptions = [
@@ -112,32 +103,11 @@ export function ShortcutsSection(props: ShortcutsSectionProps) {
           {(shortcut) => (
             <div class={styles.shortcutItem}>
               <div class={styles.shortcutHeader}>
-                <span class={styles.shortcutName}>
-                  {t(COMMAND_DESCRIPTION_KEYS[shortcut.name])}
-                </span>
-                <span class={styles.shortcutKey}>{shortcut.shortcut}</span>
-              </div>
-              <Show when={isPopupCommand(shortcut.name ?? "")}>
-                <div class={styles.shortcutSettings}>
-                  <div class={styles.settingRow}>
-                    <Checkbox
-                      checked={
-                        props.settings.commandSettings[shortcut.name as CommandName]
-                          ?.selectOnClose ?? true
-                      }
-                      onChange={(checked) =>
-                        props.onUpdateCommandSetting(
-                          shortcut.name as CommandName,
-                          "selectOnClose",
-                          checked,
-                        )
-                      }
-                    >
-                      {t(MSG.OPTIONS_SELECT_ON_REPRESS)}
-                    </Checkbox>
-                  </div>
-                  <div class={styles.settingRow}>
-                    <span>{t(MSG.OPTIONS_POPUP_MODE)}:</span>
+                <div class={styles.shortcutHeaderLeft}>
+                  <span class={styles.shortcutName}>
+                    {t(COMMAND_DESCRIPTION_KEYS[shortcut.name] ?? shortcut.name)}
+                  </span>
+                  <Show when={isPopupCommand(shortcut.name ?? "")}>
                     <RadioGroup
                       name={`mode-${shortcut.name}`}
                       options={modeOptions}
@@ -152,7 +122,27 @@ export function ShortcutsSection(props: ShortcutsSectionProps) {
                         )
                       }
                     />
-                  </div>
+                  </Show>
+                </div>
+                <span class={styles.shortcutKey}>{shortcut.shortcut}</span>
+              </div>
+              <Show when={isPopupCommand(shortcut.name ?? "")}>
+                <div class={styles.shortcutSettings}>
+                  <Checkbox
+                    checked={
+                      props.settings.commandSettings[shortcut.name as CommandName]?.selectOnClose ??
+                      true
+                    }
+                    onChange={(checked) =>
+                      props.onUpdateCommandSetting(
+                        shortcut.name as CommandName,
+                        "selectOnClose",
+                        checked,
+                      )
+                    }
+                  >
+                    {t(MSG.OPTIONS_SELECT_ON_REPRESS)}
+                  </Checkbox>
                 </div>
               </Show>
             </div>
