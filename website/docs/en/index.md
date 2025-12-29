@@ -11,6 +11,9 @@ hero:
     - theme: alt
       text: Install from Chrome Web Store
       link: https://chrome.google.com/webstore
+    - theme: alt
+      text: Privacy Policy
+      link: /en/privacy
 features:
   - title: Recently Used Order
     details: Tabs are automatically sorted by recent usage for quick switching

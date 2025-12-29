@@ -11,6 +11,9 @@ hero:
     - theme: alt
       text: Chrome Web Store からインストール
       link: https://chrome.google.com/webstore
+    - theme: alt
+      text: プライバシーポリシー
+      link: /ja/privacy
 features:
   - title: 最近使った順
     details: タブが自動的に最近使った順に並び、素早く切り替え
