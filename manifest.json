@@ -40,17 +40,23 @@
       },
       "description": "__MSG_manifest_commandExecuteAction__"
     },
-    "open-popup-all-windows": {
+    "open-popup": {
       "suggested_key": {
-        "default": "Alt+Shift+A"
+        "default": "Alt+Shift+P"
       },
-      "description": "__MSG_manifest_commandAllWindows__"
+      "description": "__MSG_manifest_commandOpenPopup__"
     },
-    "open-popup-current-window": {
+    "move-tab-left": {
       "suggested_key": {
-        "default": "Alt+Shift+C"
+        "default": "Alt+Shift+H"
       },
-      "description": "__MSG_manifest_commandCurrentWindow__"
+      "description": "__MSG_manifest_commandMoveTabLeft__"
+    },
+    "move-tab-right": {
+      "suggested_key": {
+        "default": "Alt+Shift+L"
+      },
+      "description": "__MSG_manifest_commandMoveTabRight__"
     }
   }
 }

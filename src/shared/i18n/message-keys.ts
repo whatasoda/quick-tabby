@@ -74,8 +74,12 @@ export const MSG = {
 
   // Manifest strings (used with __MSG_key__ format)
   MANIFEST_COMMAND_EXECUTE_ACTION: "manifest_commandExecuteAction",
-  MANIFEST_COMMAND_ALL_WINDOWS: "manifest_commandAllWindows",
-  MANIFEST_COMMAND_CURRENT_WINDOW: "manifest_commandCurrentWindow",
+  MANIFEST_COMMAND_OPEN_POPUP: "manifest_commandOpenPopup",
+  MANIFEST_COMMAND_MOVE_TAB_LEFT: "manifest_commandMoveTabLeft",
+  MANIFEST_COMMAND_MOVE_TAB_RIGHT: "manifest_commandMoveTabRight",
+
+  // Popup mode setting
+  OPTIONS_POPUP_MODE: "options_popupMode",
 } as const;
 
 export type MessageKey = (typeof MSG)[keyof typeof MSG];

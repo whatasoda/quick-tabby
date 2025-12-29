@@ -247,12 +247,20 @@
     "message": "Open QuickTabby popup",
     "description": "Description for main popup command"
   },
-  "manifest_commandAllWindows": {
-    "message": "Open popup (All Windows mode)",
-    "description": "Description for all windows command"
+  "manifest_commandOpenPopup": {
+    "message": "Open popup (secondary)",
+    "description": "Description for secondary popup command"
   },
-  "manifest_commandCurrentWindow": {
-    "message": "Open popup (Current Window mode)",
-    "description": "Description for current window command"
+  "manifest_commandMoveTabLeft": {
+    "message": "Switch to left tab",
+    "description": "Description for move tab left command"
+  },
+  "manifest_commandMoveTabRight": {
+    "message": "Switch to right tab",
+    "description": "Description for move tab right command"
+  },
+  "options_popupMode": {
+    "message": "Popup Mode",
+    "description": "Mode setting label for popup commands"
   }
 }
