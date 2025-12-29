@@ -5,6 +5,16 @@
 import type { Settings, ThumbnailConfig, ThumbnailTTL } from "./settings-types.ts";
 
 /**
+ * Default URL patterns to exclude from screenshot capture
+ */
+export const DEFAULT_EXCLUSION_PATTERNS = [
+  "chrome://*",
+  "chrome-extension://*",
+  "edge://*",
+  "about:*",
+] as const;
+
+/**
  * Default application settings
  */
 export const DEFAULT_SETTINGS: Settings = {
@@ -12,6 +22,7 @@ export const DEFAULT_SETTINGS: Settings = {
   previewModeEnabled: false,
   thumbnailQuality: "standard",
   thumbnailTTL: "24h",
+  thumbnailBlurEnabled: false,
   defaultMode: "lastUsed",
   themePreference: "auto",
   keybindings: {
@@ -26,6 +37,7 @@ export const DEFAULT_SETTINGS: Settings = {
     "open-popup-all-windows": { selectOnClose: true },
     "open-popup-current-window": { selectOnClose: true },
   },
+  screenshotExclusionPatterns: [...DEFAULT_EXCLUSION_PATTERNS],
 };
 
 /**

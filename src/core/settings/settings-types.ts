@@ -55,6 +55,7 @@ export interface ThumbnailConfig {
   size: number;
   captureQuality: number;
   resizeQuality: number;
+  blur?: boolean;
 }
 
 // =============================================================================
@@ -66,10 +67,12 @@ export interface Settings {
   previewModeEnabled: boolean;
   thumbnailQuality: ThumbnailQuality;
   thumbnailTTL: ThumbnailTTL;
+  thumbnailBlurEnabled: boolean;
   defaultMode: DefaultMode;
   themePreference: ThemePreference;
   keybindings: KeybindingsConfig;
   commandSettings: Record<CommandName, CommandSettings>;
+  screenshotExclusionPatterns: string[];
 }
 
 // =============================================================================
