@@ -1,6 +1,6 @@
 {
   "name": "quick-tabby",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
   "private": true,
   "scripts": {
@@ -20,7 +20,8 @@
     "check:fix": "biome check --write .",
     "website:dev": "cd website && bun run dev",
     "website:build": "cd website && bun run build",
-    "website:preview": "cd website && bun run preview"
+    "website:preview": "cd website && bun run preview",
+    "bump": "bun run scripts/bump-version.ts"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.10",
