@@ -6,14 +6,11 @@ hero:
   tagline: Navigate tabs sorted by recently used with keyboard shortcuts
   actions:
     - theme: brand
-      text: Get Started
+      text: Learn More
       link: /en/features
     - theme: alt
-      text: Install from Chrome Web Store
+      text: Install
       link: https://chrome.google.com/webstore
-    - theme: alt
-      text: Privacy Policy
-      link: /en/privacy
 features:
   - title: Recently Used Order
     details: Tabs are automatically sorted by recent usage for quick switching
