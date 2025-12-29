@@ -72,6 +72,12 @@ export interface ChromeTabsAPI {
   update(tabId: number, updateProperties: TabUpdateProperties): Promise<TabInfo | undefined>;
   create(createProperties: { url: string }): Promise<TabInfo>;
   captureVisibleTab(windowId: number, options: CaptureVisibleTabOptions): Promise<string>;
+  /**
+   * Activate adjacent tab in the current window
+   * @param direction - 'left' or 'right'
+   * @returns The activated tab or undefined if at boundary
+   */
+  activateAdjacentTab(direction: "left" | "right"): Promise<TabInfo | undefined>;
   onActivated: ChromeEvent<(activeInfo: TabActiveInfo) => void>;
   onRemoved: ChromeEvent<(tabId: number, removeInfo: TabRemoveInfo) => void>;
 }

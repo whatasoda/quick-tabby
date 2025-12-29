@@ -142,6 +142,26 @@ export function createMockTabs(options?: MockTabsOptions): ChromeTabsAPI & {
       return "data:image/jpeg;base64,mock-thumbnail";
     },
 
+    async activateAdjacentTab(direction: "left" | "right") {
+      const activeTab = tabs.find((t) => t.active);
+      if (!activeTab) return undefined;
+
+      const currentIndex = activeTab.index;
+      let targetIndex = direction === "left" ? currentIndex - 1 : currentIndex + 1;
+
+      // Loop behavior
+      if (targetIndex < 0) targetIndex = tabs.length - 1;
+      if (targetIndex >= tabs.length) targetIndex = 0;
+
+      const targetTab = tabs.find((t) => t.index === targetIndex);
+      if (!targetTab) return undefined;
+
+      // Deactivate current, activate target
+      activeTab.active = false;
+      targetTab.active = true;
+      return targetTab;
+    },
+
     onActivated: {
       addListener(callback) {
         activatedListeners.push(callback);
@@ -335,8 +355,9 @@ export function createMockCommands(): ChromeCommandsAPI & {
     async getAll() {
       return [
         { name: "_execute_action", shortcut: "Alt+Q" },
-        { name: "open-popup-all-windows", shortcut: "Alt+Shift+Q" },
-        { name: "open-popup-current-window", shortcut: "Alt+Shift+W" },
+        { name: "open-popup", shortcut: "Alt+Shift+P" },
+        { name: "move-tab-left", shortcut: "Alt+Shift+H" },
+        { name: "move-tab-right", shortcut: "Alt+Shift+L" },
       ];
     },
 
