@@ -3,8 +3,23 @@ import { css } from "../../../styled-system/css";
 import type { CommandName, Settings } from "../../core/settings/settings-types";
 import { getCommands, openShortcutsPage } from "../../infrastructure/chrome/messaging";
 import { t } from "../../shared/i18n/index.ts";
-import { MSG } from "../../shared/i18n/message-keys.ts";
+import { type MessageKey, MSG } from "../../shared/i18n/message-keys.ts";
 import { Button, Checkbox, RadioGroup, Section } from "../../shared/ui";
+
+/**
+ * Fixed display order for commands in the options page.
+ */
+const COMMAND_ORDER = ["_execute_action", "open-popup", "move-tab-left", "move-tab-right"];
+
+/**
+ * Mapping from command names to i18n message keys for descriptions.
+ */
+const COMMAND_DESCRIPTION_KEYS: Record<string, MessageKey> = {
+  _execute_action: MSG.MANIFEST_COMMAND_EXECUTE_ACTION,
+  "open-popup": MSG.MANIFEST_COMMAND_OPEN_POPUP,
+  "move-tab-left": MSG.MANIFEST_COMMAND_MOVE_TAB_LEFT,
+  "move-tab-right": MSG.MANIFEST_COMMAND_MOVE_TAB_RIGHT,
+};
 
 const styles = {
   shortcutList: css({
@@ -26,6 +41,12 @@ const styles = {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
+    gap: "md",
+  }),
+  shortcutHeaderLeft: css({
+    display: "flex",
+    alignItems: "center",
+    gap: "md",
   }),
   shortcutName: css({
     fontSize: "lg",
@@ -40,15 +61,7 @@ const styles = {
     textAlign: "center",
   }),
   shortcutSettings: css({
-    display: "flex",
-    flexDirection: "column",
-    gap: "sm",
     paddingLeft: "sm",
-  }),
-  settingRow: css({
-    display: "flex",
-    alignItems: "center",
-    gap: "md",
   }),
   note: css({
     fontSize: "12px",
@@ -73,6 +86,11 @@ interface ShortcutsSectionProps {
 export function ShortcutsSection(props: ShortcutsSectionProps) {
   const [shortcuts] = createResource(getCommands);
 
+  const sortedShortcuts = () => {
+    const list = shortcuts() ?? [];
+    return [...list].sort((a, b) => COMMAND_ORDER.indexOf(a.name) - COMMAND_ORDER.indexOf(b.name));
+  };
+
   const modeOptions = [
     { value: "all", label: t(MSG.OPTIONS_MODE_ALL) },
     { value: "currentWindow", label: t(MSG.OPTIONS_MODE_CURRENT) },
@@ -81,34 +99,15 @@ export function ShortcutsSection(props: ShortcutsSectionProps) {
   return (
     <Section title={t(MSG.OPTIONS_GLOBAL_SHORTCUTS)}>
       <div class={styles.shortcutList}>
-        <For each={shortcuts()}>
+        <For each={sortedShortcuts()}>
           {(shortcut) => (
             <div class={styles.shortcutItem}>
               <div class={styles.shortcutHeader}>
-                <span class={styles.shortcutName}>{shortcut.description}</span>
-                <span class={styles.shortcutKey}>{shortcut.shortcut}</span>
-              </div>
-              <Show when={isPopupCommand(shortcut.name ?? "")}>
-                <div class={styles.shortcutSettings}>
-                  <div class={styles.settingRow}>
-                    <Checkbox
-                      checked={
-                        props.settings.commandSettings[shortcut.name as CommandName]
-                          ?.selectOnClose ?? true
-                      }
-                      onChange={(checked) =>
-                        props.onUpdateCommandSetting(
-                          shortcut.name as CommandName,
-                          "selectOnClose",
-                          checked,
-                        )
-                      }
-                    >
-                      {t(MSG.OPTIONS_SELECT_ON_REPRESS)}
-                    </Checkbox>
-                  </div>
-                  <div class={styles.settingRow}>
-                    <span>{t(MSG.OPTIONS_POPUP_MODE)}:</span>
+                <div class={styles.shortcutHeaderLeft}>
+                  <span class={styles.shortcutName}>
+                    {t(COMMAND_DESCRIPTION_KEYS[shortcut.name] ?? shortcut.name)}
+                  </span>
+                  <Show when={isPopupCommand(shortcut.name ?? "")}>
                     <RadioGroup
                       name={`mode-${shortcut.name}`}
                       options={modeOptions}
@@ -123,7 +122,27 @@ export function ShortcutsSection(props: ShortcutsSectionProps) {
                         )
                       }
                     />
-                  </div>
+                  </Show>
+                </div>
+                <span class={styles.shortcutKey}>{shortcut.shortcut}</span>
+              </div>
+              <Show when={isPopupCommand(shortcut.name ?? "")}>
+                <div class={styles.shortcutSettings}>
+                  <Checkbox
+                    checked={
+                      props.settings.commandSettings[shortcut.name as CommandName]?.selectOnClose ??
+                      true
+                    }
+                    onChange={(checked) =>
+                      props.onUpdateCommandSetting(
+                        shortcut.name as CommandName,
+                        "selectOnClose",
+                        checked,
+                      )
+                    }
+                  >
+                    {t(MSG.OPTIONS_SELECT_ON_REPRESS)}
+                  </Checkbox>
                 </div>
               </Show>
             </div>
