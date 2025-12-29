@@ -16,7 +16,7 @@ const styles = {
     flexDirection: "column",
     height: "97px",
     boxSizing: "border-box",
-    padding: "8px 12px",
+    padding: "8px 20px 8px 12px",
     cursor: "pointer",
     borderBottom: "1px solid token(colors.borderLight)",
     overflow: "hidden",
@@ -40,7 +40,7 @@ const styles = {
   }),
   tabIndex: css({
     position: "absolute",
-    right: "12px",
+    right: 0,
     bottom: 0,
     fontSize: "10px",
     fontWeight: 500,
