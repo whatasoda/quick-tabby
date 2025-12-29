@@ -91,20 +91,12 @@ export function PreviewPanel(props: PreviewPanelProps) {
               when={tab().thumbnailUrl}
               fallback={
                 <div class={styles.placeholder}>
-                  <img
-                    class={styles.favicon}
-                    src={tab().favIconUrl || ""}
-                    alt=""
-                  />
+                  <img class={styles.favicon} src={tab().favIconUrl || ""} alt="" />
                   <div class={styles.noThumbnail}>No preview available</div>
                 </div>
               }
             >
-              <img
-                class={styles.thumbnail}
-                src={tab().thumbnailUrl}
-                alt={tab().title}
-              />
+              <img class={styles.thumbnail} src={tab().thumbnailUrl} alt={tab().title} />
             </Show>
             <div class={styles.info}>
               <div class={styles.title}>{tab().title}</div>

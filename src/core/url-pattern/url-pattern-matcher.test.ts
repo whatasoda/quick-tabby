@@ -67,7 +67,9 @@ describe("getPatternError", () => {
   });
 
   test("should return error for missing scheme", () => {
-    expect(getPatternError("example.com")).toBe("Pattern must include scheme (e.g., *://, https://, about:)");
+    expect(getPatternError("example.com")).toBe(
+      "Pattern must include scheme (e.g., *://, https://, about:)",
+    );
   });
 
   test("should return error for invalid scheme", () => {

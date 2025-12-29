@@ -10,6 +10,6 @@ export {
   isValidPattern,
   matchesAnyPattern,
   matchesPattern,
-  parsePattern,
   type ParsedPattern,
+  parsePattern,
 } from "./url-pattern-matcher";

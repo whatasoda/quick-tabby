@@ -160,9 +160,10 @@ async function handleMessage(message: MessageType): Promise<MessageResponse> {
 
         // Check if URL should be blurred
         const shouldBlur = matchesAnyPattern(tab.url, settings.screenshotBlurPatterns);
-        const config = shouldBlur && message.thumbnailConfig
-          ? { ...message.thumbnailConfig, blur: true }
-          : message.thumbnailConfig;
+        const config =
+          shouldBlur && message.thumbnailConfig
+            ? { ...message.thumbnailConfig, blur: true }
+            : message.thumbnailConfig;
 
         await thumbnailCache.captureAndStore(tab.id, tab.windowId, config);
       }

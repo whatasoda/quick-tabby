@@ -2,11 +2,7 @@
  * Default settings values
  */
 
-import type {
-  Settings,
-  ThumbnailConfig,
-  ThumbnailTTL,
-} from "./settings-types.ts";
+import type { Settings, ThumbnailConfig, ThumbnailTTL } from "./settings-types.ts";
 
 /**
  * Default URL patterns to exclude from screenshot capture
