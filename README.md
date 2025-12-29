@@ -26,7 +26,7 @@ bun run check      # Lint and format check
 
 ## Documentation
 
-Visit [quicktabby.whatasoda.me](https://quicktabby.whatasoda.me) for full documentation.
+Visit [quick-tabby.whatasoda.me](https://quick-tabby.whatasoda.me) for full documentation.
 
 ## License
 
