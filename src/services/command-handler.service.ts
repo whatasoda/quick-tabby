@@ -6,7 +6,12 @@
  */
 
 import type { CommandName } from "../core/settings/settings-types.ts";
-import type { ChromeActionAPI, ChromeCommandsAPI, Port } from "../infrastructure/chrome/types.ts";
+import type {
+  ChromeActionAPI,
+  ChromeCommandsAPI,
+  ChromeTabsAPI,
+  Port,
+} from "../infrastructure/chrome/types.ts";
 import type { LaunchInfo } from "../shared/types.ts";
 import type { SettingsService } from "./settings.service.ts";
 
@@ -51,6 +56,7 @@ export interface CommandHandlerService {
 export interface CommandHandlerDependencies {
   action: ChromeActionAPI;
   commands: ChromeCommandsAPI;
+  tabs: ChromeTabsAPI;
   settingsService: SettingsService;
 }
 
@@ -101,13 +107,19 @@ export function createCommandHandlerService(
 
   return {
     initialize(): void {
-      deps.commands.onCommand.addListener((command) => {
+      deps.commands.onCommand.addListener(async (command) => {
         switch (command) {
-          case "open-popup-all-windows":
-            handleCommand("open-popup-all-windows", "all");
+          case "open-popup": {
+            const settings = await deps.settingsService.load();
+            const mode = settings.commandSettings["open-popup"]?.mode ?? "all";
+            handleCommand("open-popup", mode);
             break;
-          case "open-popup-current-window":
-            handleCommand("open-popup-current-window", "currentWindow");
+          }
+          case "move-tab-left":
+            await deps.tabs.activateAdjacentTab("left");
+            break;
+          case "move-tab-right":
+            await deps.tabs.activateAdjacentTab("right");
             break;
         }
       });
