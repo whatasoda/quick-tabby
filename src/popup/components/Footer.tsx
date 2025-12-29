@@ -65,7 +65,12 @@ export function Footer(props: FooterProps) {
         >
           <FiHelpCircle size={16} />
         </Button>
-        <Button variant="ghost" size="icon" onClick={props.onOpenSettings} title={t(MSG.POPUP_SETTINGS)}>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={props.onOpenSettings}
+          title={t(MSG.POPUP_SETTINGS)}
+        >
           <FiSettings size={16} />
         </Button>
       </div>

@@ -1,9 +1,9 @@
 import { createResource, For, Show } from "solid-js";
 import { css } from "../../../styled-system/css";
 import type { CommandName, Settings } from "../../core/settings/settings-types";
+import { getCommands, openShortcutsPage } from "../../infrastructure/chrome/messaging";
 import { t } from "../../shared/i18n/index.ts";
 import { MSG } from "../../shared/i18n/message-keys.ts";
-import { getCommands, openShortcutsPage } from "../../infrastructure/chrome/messaging";
 import { Button, Checkbox, Section } from "../../shared/ui";
 
 const styles = {

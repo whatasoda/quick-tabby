@@ -37,7 +37,10 @@ export function OptionsWindow(props: OptionsWindowProps) {
   });
 
   return (
-    <Show when={props.settings()} fallback={<div class={styles.loading}>{t(MSG.COMMON_LOADING)}</div>}>
+    <Show
+      when={props.settings()}
+      fallback={<div class={styles.loading}>{t(MSG.COMMON_LOADING)}</div>}
+    >
       <div class={styles.container}>{props.children}</div>
     </Show>
   );
