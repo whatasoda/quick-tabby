@@ -61,10 +61,6 @@ function isPopupCommand(name: string): boolean {
   return name === "_execute_action" || name === "open-popup";
 }
 
-function isValidCommandName(name: string): name is CommandName {
-  return ["_execute_action", "open-popup", "move-tab-left", "move-tab-right"].includes(name);
-}
-
 interface ShortcutsSectionProps {
   settings: Settings;
   onUpdateCommandSetting: (
