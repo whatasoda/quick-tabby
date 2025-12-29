@@ -15,7 +15,7 @@ hero:
       link: /ja/features
     - theme: alt
       text: インストール
-      link: https://chrome.google.com/webstore
+      link: https://chromewebstore.google.com/detail/quick-tabby/gpljmkkeodeoedpcdabdmcnlaljpdhni
 features:
   - title: 最近使った順
     details: タブが自動的に最近使った順に並び、素早く切り替え

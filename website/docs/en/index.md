@@ -15,7 +15,7 @@ hero:
       link: /en/features
     - theme: alt
       text: Install
-      link: https://chrome.google.com/webstore
+      link: https://chromewebstore.google.com/detail/quick-tabby/gpljmkkeodeoedpcdabdmcnlaljpdhni
 features:
   - title: Recently Used Order
     details: Tabs are automatically sorted by recent usage for quick switching
