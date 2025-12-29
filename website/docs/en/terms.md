@@ -63,3 +63,5 @@ For questions about these terms, please open an issue on our [GitHub repository]
 ## Related Documents
 
 - [Privacy Policy](/en/privacy)
+- [License](/en/license)
+- [Third-Party Licenses](/en/third-party-licenses)
