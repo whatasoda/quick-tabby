@@ -15,6 +15,7 @@ import {
   removeWindowFromMRU,
 } from "../core/mru/index.ts";
 import type { MRUConfig, MRUState } from "../core/mru/mru-state.ts";
+import { THUMBNAIL_QUALITIES } from "../core/settings/index.ts";
 import { matchesAnyPattern } from "../core/url-pattern/index.ts";
 import type {
   ChromeStorageAPI,
@@ -128,7 +129,13 @@ export function createMRUTrackerService(deps: MRUTrackerDependencies): MRUTracke
             return; // Skip capture for excluded URLs
           }
 
-          await deps.thumbnailCache.captureAndStore(tabId, windowId);
+          // Build thumbnail config with blur setting
+          const thumbnailConfig = {
+            ...THUMBNAIL_QUALITIES[settings.thumbnailQuality],
+            blur: settings.thumbnailBlurEnabled,
+          };
+
+          await deps.thumbnailCache.captureAndStore(tabId, windowId, thumbnailConfig);
         } catch {
           // Tab may no longer exist or other error
         }

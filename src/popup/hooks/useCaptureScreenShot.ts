@@ -27,7 +27,10 @@ export function useCaptureScreenshot({
     }
 
     // Capture current tab and refresh to get updated thumbnail
-    const thumbnailConfig = THUMBNAIL_QUALITIES[currentSettings.thumbnailQuality];
+    const thumbnailConfig = {
+      ...THUMBNAIL_QUALITIES[currentSettings.thumbnailQuality],
+      blur: currentSettings.thumbnailBlurEnabled,
+    };
     void captureCurrentTab(currentWindow.id, thumbnailConfig).then(() => {
       refetchTabs();
     });
