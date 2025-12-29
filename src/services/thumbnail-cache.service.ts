@@ -5,7 +5,6 @@
  * Uses dependency injection for testability.
  */
 
-import { stackBlur } from "../core/image/index.ts";
 import type { ChromeTabsAPI } from "../infrastructure/chrome/types.ts";
 import type {
   StoredThumbnail,
@@ -151,15 +150,13 @@ async function resizeImage(
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("Could not get canvas context");
 
+  // Apply blur filter before drawing if enabled
+  if (blur) {
+    ctx.filter = `blur(${BLUR_RADIUS}px)`;
+  }
+
   ctx.drawImage(bitmap, 0, 0, width, height);
   bitmap.close();
-
-  // Apply blur if enabled
-  if (blur) {
-    const imageData = ctx.getImageData(0, 0, width, height);
-    stackBlur(imageData.data, width, height, BLUR_RADIUS);
-    ctx.putImageData(imageData, 0, 0);
-  }
 
   const resizedBlob = await canvas.convertToBlob({
     type: "image/jpeg",
