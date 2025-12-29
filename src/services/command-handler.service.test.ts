@@ -76,9 +76,30 @@ describe("CommandHandlerService", () => {
     mockCommands = createMockCommands();
     mockTabs = createMockTabs({
       tabs: [
-        { id: 1, windowId: 1, index: 0, title: "Tab 1", url: "https://example.com/1", active: true },
-        { id: 2, windowId: 1, index: 1, title: "Tab 2", url: "https://example.com/2", active: false },
-        { id: 3, windowId: 1, index: 2, title: "Tab 3", url: "https://example.com/3", active: false },
+        {
+          id: 1,
+          windowId: 1,
+          index: 0,
+          title: "Tab 1",
+          url: "https://example.com/1",
+          active: true,
+        },
+        {
+          id: 2,
+          windowId: 1,
+          index: 1,
+          title: "Tab 2",
+          url: "https://example.com/2",
+          active: false,
+        },
+        {
+          id: 3,
+          windowId: 1,
+          index: 2,
+          title: "Tab 3",
+          url: "https://example.com/3",
+          active: false,
+        },
       ],
     });
     mockSettingsService = createMockSettingsService();
