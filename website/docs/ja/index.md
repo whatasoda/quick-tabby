@@ -4,6 +4,11 @@ hero:
   name: QuickTabby
   text: 素早いタブ切り替え
   tagline: 最近使った順に並んだタブをキーボードで素早く切り替え
+  image:
+    src:
+      dark: /screenshots/dark-main.png
+      light: /screenshots/light-main.png
+    alt: QuickTabby タブ切り替えインターフェース
   actions:
     - theme: brand
       text: 機能を見る

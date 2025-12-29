@@ -4,6 +4,11 @@ hero:
   name: QuickTabby
   text: Fast Tab Switching
   tagline: Navigate tabs sorted by recently used with keyboard shortcuts
+  image:
+    src:
+      dark: /screenshots/dark-main.png
+      light: /screenshots/light-main.png
+    alt: QuickTabby tab switcher interface
   actions:
     - theme: brand
       text: Learn More
