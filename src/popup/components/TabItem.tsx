@@ -40,7 +40,7 @@ const styles = {
   }),
   tabIndex: css({
     position: "absolute",
-    right: 0,
+    right: "12px",
     bottom: 0,
     fontSize: "10px",
     fontWeight: 500,
