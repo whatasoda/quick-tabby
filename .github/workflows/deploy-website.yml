@@ -1,11 +1,6 @@
 name: Deploy Website
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'website/**'
-      - '.github/workflows/deploy-website.yml'
   release:
     types: [published]
   workflow_dispatch:
@@ -16,7 +11,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: 'pages'
+  group: "pages"
   cancel-in-progress: true
 
 jobs:
