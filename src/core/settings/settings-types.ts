@@ -40,11 +40,13 @@ export interface KeybindingsConfig {
 
 export type CommandName =
   | "_execute_action"
-  | "open-popup-all-windows"
-  | "open-popup-current-window";
+  | "open-popup"
+  | "move-tab-left"
+  | "move-tab-right";
 
 export interface CommandSettings {
   selectOnClose: boolean;
+  mode?: "all" | "currentWindow";
 }
 
 // =============================================================================
