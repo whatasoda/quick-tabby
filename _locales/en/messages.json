@@ -243,13 +243,9 @@
     "message": "e.g., *://*.bank.com/*",
     "description": "Placeholder for pattern input"
   },
-  "manifest_commandExecuteAction": {
-    "message": "Open QuickTabby popup",
-    "description": "Description for main popup command"
-  },
   "manifest_commandOpenPopup": {
-    "message": "Open popup (secondary)",
-    "description": "Description for secondary popup command"
+    "message": "Open QuickTabby popup",
+    "description": "Description for popup command"
   },
   "manifest_commandMoveTabLeft": {
     "message": "Switch to left tab",
