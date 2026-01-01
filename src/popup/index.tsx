@@ -90,6 +90,15 @@ export function App() {
     onToggleMode: () => {
       toggleMode();
     },
+    onExecuteActionRepress: () => {
+      // Check if select-on-repress is enabled for _execute_action
+      const currentSettings = settings();
+      const selectOnClose = currentSettings?.commandSettings._execute_action?.selectOnClose ?? true;
+      if (selectOnClose) {
+        handleSelect(selectedIndex());
+      }
+      window.close();
+    },
   });
 
   // Port communication via hook
