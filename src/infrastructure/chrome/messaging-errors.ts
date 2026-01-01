@@ -12,13 +12,12 @@ export type MessagingErrorCode =
  * Custom error class for messaging failures with typed error codes
  */
 export class MessagingError extends Error {
-  constructor(
-    message: string,
-    public readonly code: MessagingErrorCode,
-    public readonly cause?: unknown,
-  ) {
-    super(message);
+  public readonly code: MessagingErrorCode;
+
+  constructor(message: string, code: MessagingErrorCode, cause?: unknown) {
+    super(message, { cause });
     this.name = "MessagingError";
+    this.code = code;
   }
 }
 

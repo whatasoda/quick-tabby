@@ -2,17 +2,69 @@
  * Messaging utilities for popup-to-background communication
  *
  * Provides type-safe wrappers around Chrome runtime messaging API.
+ * Includes retry logic for handling service worker termination.
  */
 
+import {
+  DEFAULT_RETRY_CONFIG,
+  type RetryConfig,
+  calculateBackoffDelay,
+  delay,
+  isRetryableError,
+} from "../../core/retry/index.ts";
 import type { ThumbnailConfig } from "../../core/settings/settings-types.ts";
 import type { LaunchInfo, MessageResponse, MessageType, TabInfo } from "../../shared/types.ts";
+import { MessagingError, toMessagingError } from "./messaging-errors.ts";
 
 /**
- * Send a message to the background script and return the response
+ * Send a message to the background script and return the response.
+ * This is the low-level function without retry logic.
  */
-export async function sendMessage(message: MessageType): Promise<MessageResponse | null> {
+async function sendMessageRaw(message: MessageType): Promise<MessageResponse | null> {
   const response = await chrome.runtime.sendMessage(message);
   return response as MessageResponse | null;
+}
+
+/**
+ * Send a message to the background script with retry logic.
+ * Automatically retries on recoverable errors (e.g., service worker termination).
+ *
+ * @param message - The message to send
+ * @param config - Optional retry configuration
+ * @returns The response from the background script
+ * @throws MessagingError if all retry attempts fail
+ */
+export async function sendMessage(
+  message: MessageType,
+  config: RetryConfig = DEFAULT_RETRY_CONFIG,
+): Promise<MessageResponse | null> {
+  let lastError: unknown;
+
+  for (let attempt = 0; attempt < config.maxAttempts; attempt++) {
+    try {
+      const response = await sendMessageRaw(message);
+
+      // Handle ERROR response type from background
+      if (response?.type === "ERROR") {
+        throw new MessagingError(response.message, "RESPONSE_ERROR");
+      }
+
+      return response;
+    } catch (error) {
+      lastError = error;
+
+      // Don't retry if it's not a retryable error or this is the last attempt
+      if (!isRetryableError(error) || attempt >= config.maxAttempts - 1) {
+        break;
+      }
+
+      // Wait before retrying with exponential backoff
+      const backoffDelay = calculateBackoffDelay(attempt, config);
+      await delay(backoffDelay);
+    }
+  }
+
+  throw toMessagingError(lastError);
 }
 
 /**
