@@ -38,7 +38,7 @@ export interface KeybindingsConfig {
 // Command Types
 // =============================================================================
 
-export type CommandName = "_execute_action" | "open-popup" | "move-tab-left" | "move-tab-right";
+export type CommandName = "open-popup" | "move-tab-left" | "move-tab-right";
 
 export interface CommandSettings {
   selectOnClose: boolean;
