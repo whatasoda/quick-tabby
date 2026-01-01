@@ -122,6 +122,31 @@ describe("CommandHandlerService", () => {
       await new Promise((resolve) => setTimeout(resolve, 0));
       expect(mockAction._popupOpened).toBe(true);
     });
+
+    test("should register action click listener", async () => {
+      const service = createCommandHandlerService(deps);
+
+      service.initialize();
+
+      // Trigger toolbar icon click
+      mockAction._triggerClick();
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      expect(mockAction._popupOpened).toBe(true);
+    });
+
+    test("should handle _execute_action command", async () => {
+      const service = createCommandHandlerService(deps);
+
+      service.initialize();
+
+      mockCommands._triggerCommand("_execute_action");
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      expect(mockAction._popupOpened).toBe(true);
+
+      const launchInfo = service.getLaunchInfo();
+      expect(launchInfo.command).toBe("_execute_action");
+      expect(launchInfo.mode).toBe("all"); // default mode for _execute_action
+    });
   });
 
   describe("getLaunchInfo", () => {
@@ -246,6 +271,42 @@ describe("CommandHandlerService", () => {
         selectFocused: boolean;
       };
       expect(lastMessage.type).toBe("CLOSE_POPUP");
+    });
+
+    test("should send close message when _execute_action triggered while popup is open", async () => {
+      const service = createCommandHandlerService(deps);
+      service.initialize();
+      const mockPort = createMockPort("popup");
+      service.setPopupPort(mockPort);
+
+      mockCommands._triggerCommand("_execute_action");
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      expect(mockPort._messages.length).toBeGreaterThan(0);
+      const lastMessage = mockPort._messages[mockPort._messages.length - 1] as {
+        type: string;
+        selectFocused: boolean;
+      };
+      expect(lastMessage.type).toBe("CLOSE_POPUP");
+      expect(lastMessage.selectFocused).toBe(true); // default for _execute_action
+    });
+
+    test("should send close message when toolbar icon clicked while popup is open", async () => {
+      const service = createCommandHandlerService(deps);
+      service.initialize();
+      const mockPort = createMockPort("popup");
+      service.setPopupPort(mockPort);
+
+      mockAction._triggerClick();
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      expect(mockPort._messages.length).toBeGreaterThan(0);
+      const lastMessage = mockPort._messages[mockPort._messages.length - 1] as {
+        type: string;
+        selectFocused: boolean;
+      };
+      expect(lastMessage.type).toBe("CLOSE_POPUP");
+      expect(lastMessage.selectFocused).toBe(true); // default for _execute_action
     });
   });
 });

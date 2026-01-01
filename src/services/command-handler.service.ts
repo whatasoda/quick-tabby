@@ -110,7 +110,7 @@ export function createCommandHandlerService(
       // Handle toolbar icon click
       deps.action.onClicked.addListener(async () => {
         const settings = await deps.settingsService.load();
-        const mode = settings.commandSettings["_execute_action"]?.mode ?? "all";
+        const mode = settings.commandSettings._execute_action?.mode ?? "all";
         await handleCommand("_execute_action", mode);
       });
 
@@ -119,7 +119,7 @@ export function createCommandHandlerService(
         switch (command) {
           case "_execute_action": {
             const settings = await deps.settingsService.load();
-            const mode = settings.commandSettings["_execute_action"]?.mode ?? "all";
+            const mode = settings.commandSettings._execute_action?.mode ?? "all";
             await handleCommand("_execute_action", mode);
             break;
           }
