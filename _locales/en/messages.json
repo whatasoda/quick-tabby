@@ -204,7 +204,7 @@
     "description": "Change shortcuts button text"
   },
   "options_shortcutsNote": {
-    "message": "Opens Chrome's extension shortcuts page. \"Select on re-press\" switches to the selected tab when pressing the shortcut again to close the popup.",
+    "message": "Opens Chrome's extension shortcuts page. \"Select on re-press\" switches to the selected tab when pressing the shortcut again to close the popup. Note: This feature is only available for \"Open popup (secondary)\" due to Chrome extension limitations.",
     "description": "Note about shortcuts configuration"
   },
   "options_privacy": {
