@@ -1,5 +1,5 @@
 import { onCleanup, onMount } from "solid-js";
-import { connectPopup } from "../../infrastructure/chrome/messaging.ts";
+import { createPopupConnection } from "../../infrastructure/chrome/messaging.ts";
 
 interface UsePopupPortOptions {
   onClosePopup: (selectFocused: boolean) => void;
@@ -8,20 +8,29 @@ interface UsePopupPortOptions {
 export function usePopupPort(options: UsePopupPortOptions) {
   const { onClosePopup } = options;
 
-  let port: chrome.runtime.Port | undefined;
+  let connection: ReturnType<typeof createPopupConnection> | undefined;
 
-  function handleMessage(message: { type: string; selectFocused?: boolean }) {
-    if (message.type === "CLOSE_POPUP") {
-      onClosePopup(message.selectFocused ?? false);
+  function handleMessage(message: unknown) {
+    if (
+      typeof message === "object" &&
+      message !== null &&
+      "type" in message &&
+      message.type === "CLOSE_POPUP"
+    ) {
+      const selectFocused =
+        "selectFocused" in message && typeof message.selectFocused === "boolean"
+          ? message.selectFocused
+          : false;
+      onClosePopup(selectFocused);
     }
   }
 
   onMount(() => {
-    port = connectPopup();
-    port.onMessage.addListener(handleMessage);
+    connection = createPopupConnection();
+    connection.onMessage(handleMessage);
   });
 
   onCleanup(() => {
-    port?.disconnect();
+    connection?.disconnect();
   });
 }

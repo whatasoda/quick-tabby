@@ -61,7 +61,9 @@ export function App() {
     const tabList = tabs();
     const tab = tabList?.[index];
     if (tab) {
-      switchToTab(tab.id);
+      void switchToTab(tab.id).catch((error) => {
+        console.error("Failed to switch tab:", error);
+      });
     }
   }
 

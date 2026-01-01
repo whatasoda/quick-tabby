@@ -31,9 +31,13 @@ export function useCaptureScreenshot({
       ...THUMBNAIL_QUALITIES[currentSettings.thumbnailQuality],
       blur: currentSettings.thumbnailBlurEnabled,
     };
-    void captureCurrentTab(currentWindow.id, thumbnailConfig).then(() => {
-      refetchTabs();
-    });
+    void captureCurrentTab(currentWindow.id, thumbnailConfig)
+      .then(() => {
+        refetchTabs();
+      })
+      .catch((error) => {
+        console.warn("Failed to capture screenshot:", error);
+      });
 
     return true;
   }, false);
