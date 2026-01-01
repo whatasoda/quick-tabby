@@ -132,7 +132,9 @@ export function ShortcutsSection(props: ShortcutsSectionProps) {
                     />
                   </Show>
                 </div>
-                <span class={styles.shortcutKey}>{shortcut.shortcut}</span>
+                <span class={styles.shortcutKey}>
+                  {shortcut.shortcut || t(MSG.OPTIONS_SHORTCUT_NOT_SET)}
+                </span>
               </div>
               <Show when={supportsSelectOnRepress(shortcut.name ?? "")}>
                 <div class={styles.shortcutSettings}>

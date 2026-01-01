@@ -207,6 +207,10 @@
     "message": "Chromeの拡張機能ショートカットページを開きます。「再押下で選択」は、ショートカットを再度押してポップアップを閉じる際に選択中のタブに切り替えます。※この機能はChromeの制限により「ポップアップを開く（セカンダリ）」でのみ利用可能です。",
     "description": "Note about shortcuts configuration"
   },
+  "options_shortcutNotSet": {
+    "message": "未設定",
+    "description": "Displayed when a keyboard shortcut is not configured"
+  },
   "options_privacy": {
     "message": "\u30d7\u30e9\u30a4\u30d0\u30b7\u30fc",
     "description": "Privacy section title"
