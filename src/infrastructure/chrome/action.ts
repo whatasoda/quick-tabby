@@ -5,6 +5,9 @@ export function createChromeAction(): ChromeActionAPI {
     async openPopup(): Promise<void> {
       await chrome.action.openPopup();
     },
+    async setPopup(options: { popup: string }): Promise<void> {
+      await chrome.action.setPopup(options);
+    },
     onClicked: {
       addListener(callback: (tab: chrome.tabs.Tab) => void): void {
         chrome.action.onClicked.addListener(callback);

@@ -165,6 +165,7 @@ export interface ChromeCommandsAPI {
 
 export interface ChromeActionAPI {
   openPopup(): Promise<void>;
+  setPopup(options: { popup: string }): Promise<void>;
   onClicked: ChromeEvent<(tab: chrome.tabs.Tab) => void>;
 }
 

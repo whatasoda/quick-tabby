@@ -94,6 +94,9 @@ async function setupColorSchemeDetection() {
 // =============================================================================
 
 (async () => {
+  // Set popup URL programmatically (required since default_popup is removed)
+  await chromeAPI.action.setPopup({ popup: "src/popup/index.html" });
+
   await thumbnailCache.initialize();
   await mruTracker.initialize();
   commandHandler.initialize();
