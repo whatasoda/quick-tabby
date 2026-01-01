@@ -354,8 +354,7 @@ export function createMockCommands(): ChromeCommandsAPI & {
 
     async getAll() {
       return [
-        { name: "_execute_action", shortcut: "Alt+Q" },
-        { name: "open-popup", shortcut: "Alt+Shift+P" },
+        { name: "open-popup", shortcut: "Alt+Q" },
         { name: "move-tab-left", shortcut: "Alt+Shift+H" },
         { name: "move-tab-right", shortcut: "Alt+Shift+L" },
       ];

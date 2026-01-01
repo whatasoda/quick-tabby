@@ -43,7 +43,6 @@ export function useDisplayModeControl(options: UseDisplayModeControlOptions) {
         return launchInfo.mode;
       }
 
-      // Opened via _execute_action (direct popup open)
       // Determine initial mode based on defaultMode setting
       switch (currentSettings.defaultMode) {
         case "all":

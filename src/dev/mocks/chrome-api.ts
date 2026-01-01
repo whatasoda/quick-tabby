@@ -86,19 +86,19 @@ const chromeWindowsMock = {
 const chromeCommandsMock = {
   getAll: async () => [
     {
-      name: "_execute_action",
+      name: "open-popup",
       description: "Open QuickTabby popup",
       shortcut: "Alt+Q",
     },
     {
-      name: "toggle-recent",
-      description: "Switch to most recent tab",
-      shortcut: "Alt+Shift+Q",
+      name: "move-tab-left",
+      description: "Switch to left tab",
+      shortcut: "Alt+Shift+H",
     },
     {
-      name: "toggle-recent-same-window",
-      description: "Switch to most recent tab in same window",
-      shortcut: "Alt+Shift+W",
+      name: "move-tab-right",
+      description: "Switch to right tab",
+      shortcut: "Alt+Shift+L",
     },
   ],
 };

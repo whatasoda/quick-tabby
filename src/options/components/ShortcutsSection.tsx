@@ -9,13 +9,12 @@ import { Button, Checkbox, RadioGroup, Section } from "../../shared/ui";
 /**
  * Fixed display order for commands in the options page.
  */
-const COMMAND_ORDER = ["_execute_action", "open-popup", "move-tab-left", "move-tab-right"];
+const COMMAND_ORDER = ["open-popup", "move-tab-left", "move-tab-right"];
 
 /**
  * Mapping from command names to i18n message keys for descriptions.
  */
 const COMMAND_DESCRIPTION_KEYS: Record<string, MessageKey> = {
-  _execute_action: MSG.MANIFEST_COMMAND_EXECUTE_ACTION,
   "open-popup": MSG.MANIFEST_COMMAND_OPEN_POPUP,
   "move-tab-left": MSG.MANIFEST_COMMAND_MOVE_TAB_LEFT,
   "move-tab-right": MSG.MANIFEST_COMMAND_MOVE_TAB_RIGHT,
@@ -71,7 +70,7 @@ const styles = {
 };
 
 function isPopupCommand(name: string): boolean {
-  return name === "_execute_action" || name === "open-popup";
+  return name === "open-popup";
 }
 
 interface ShortcutsSectionProps {

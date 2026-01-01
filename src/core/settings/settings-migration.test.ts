@@ -30,12 +30,27 @@ describe("migrateSettings", () => {
   });
 
   describe("needsPersist flag", () => {
-    test("should always return needsPersist false (no migration)", () => {
+    test("should return needsPersist false when no migration needed", () => {
       const stored = { popupSize: "large" as const };
 
       const result = migrateSettings(stored);
 
       expect(result.needsPersist).toBe(false);
+    });
+
+    test("should return needsPersist true when _execute_action is migrated", () => {
+      const stored = {
+        commandSettings: {
+          _execute_action: { selectOnClose: false, mode: "currentWindow" as const },
+        },
+      };
+
+      const result = migrateSettings(stored);
+
+      expect(result.needsPersist).toBe(true);
+      // _execute_action settings should be migrated to open-popup
+      expect(result.settings.commandSettings["open-popup"].selectOnClose).toBe(false);
+      expect(result.settings.commandSettings["open-popup"].mode).toBe("currentWindow");
     });
   });
 
@@ -101,13 +116,26 @@ describe("migrateSettings", () => {
     test("should merge custom commandSettings with defaults", () => {
       const stored = {
         commandSettings: {
-          _execute_action: { selectOnClose: false },
+          "open-popup": { selectOnClose: false },
         },
       };
 
       const result = migrateSettings(stored);
 
-      expect(result.settings.commandSettings._execute_action.selectOnClose).toBe(false);
+      expect(result.settings.commandSettings["open-popup"].selectOnClose).toBe(false);
+    });
+
+    test("should migrate _execute_action to open-popup", () => {
+      const stored = {
+        commandSettings: {
+          _execute_action: { selectOnClose: false, mode: "currentWindow" as const },
+        },
+      };
+
+      const result = migrateSettings(stored);
+
+      expect(result.settings.commandSettings["open-popup"].selectOnClose).toBe(false);
+      expect(result.settings.commandSettings["open-popup"].mode).toBe("currentWindow");
     });
   });
 });

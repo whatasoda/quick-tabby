@@ -73,7 +73,6 @@ export const MSG = {
   OPTIONS_PATTERN_PLACEHOLDER: "options_patternPlaceholder",
 
   // Manifest strings (used with __MSG_key__ format)
-  MANIFEST_COMMAND_EXECUTE_ACTION: "manifest_commandExecuteAction",
   MANIFEST_COMMAND_OPEN_POPUP: "manifest_commandOpenPopup",
   MANIFEST_COMMAND_MOVE_TAB_LEFT: "manifest_commandMoveTabLeft",
   MANIFEST_COMMAND_MOVE_TAB_RIGHT: "manifest_commandMoveTabRight",
