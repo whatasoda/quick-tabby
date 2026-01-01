@@ -211,8 +211,7 @@ export function createPopupConnection(
       return;
     }
 
-    const delayMs =
-      fullConfig.baseDelayMs * fullConfig.backoffMultiplier ** reconnectAttempts;
+    const delayMs = fullConfig.baseDelayMs * fullConfig.backoffMultiplier ** reconnectAttempts;
     const cappedDelay = Math.min(delayMs, fullConfig.maxDelayMs);
     reconnectAttempts++;
 

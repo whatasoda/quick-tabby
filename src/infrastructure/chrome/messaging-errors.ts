@@ -77,7 +77,10 @@ export function classifyError(error: unknown): MessagingErrorCode {
  * @param fallbackMessage - Message to use if error has no message
  * @returns A typed MessagingError
  */
-export function toMessagingError(error: unknown, fallbackMessage = "Messaging failed"): MessagingError {
+export function toMessagingError(
+  error: unknown,
+  fallbackMessage = "Messaging failed",
+): MessagingError {
   const code = classifyError(error);
   const message = error instanceof Error ? error.message : fallbackMessage;
   return new MessagingError(message, code, error);
