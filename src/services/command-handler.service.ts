@@ -107,12 +107,26 @@ export function createCommandHandlerService(
 
   return {
     initialize(): void {
+      // Handle toolbar icon click
+      deps.action.onClicked.addListener(async () => {
+        const settings = await deps.settingsService.load();
+        const mode = settings.commandSettings["_execute_action"]?.mode ?? "all";
+        await handleCommand("_execute_action", mode);
+      });
+
+      // Handle keyboard shortcuts
       deps.commands.onCommand.addListener(async (command) => {
         switch (command) {
+          case "_execute_action": {
+            const settings = await deps.settingsService.load();
+            const mode = settings.commandSettings["_execute_action"]?.mode ?? "all";
+            await handleCommand("_execute_action", mode);
+            break;
+          }
           case "open-popup": {
             const settings = await deps.settingsService.load();
             const mode = settings.commandSettings["open-popup"]?.mode ?? "all";
-            handleCommand("open-popup", mode);
+            await handleCommand("open-popup", mode);
             break;
           }
           case "move-tab-left":
