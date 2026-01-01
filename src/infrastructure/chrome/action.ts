@@ -5,5 +5,13 @@ export function createChromeAction(): ChromeActionAPI {
     async openPopup(): Promise<void> {
       await chrome.action.openPopup();
     },
+    onClicked: {
+      addListener(callback: (tab: chrome.tabs.Tab) => void): void {
+        chrome.action.onClicked.addListener(callback);
+      },
+      removeListener(callback: (tab: chrome.tabs.Tab) => void): void {
+        chrome.action.onClicked.removeListener(callback);
+      },
+    },
   };
 }

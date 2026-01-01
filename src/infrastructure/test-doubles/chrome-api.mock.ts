@@ -379,12 +379,31 @@ export function createMockCommands(): ChromeCommandsAPI & {
 
 export function createMockAction(): ChromeActionAPI & {
   _popupOpened: boolean;
+  _triggerClick: (tab?: chrome.tabs.Tab) => void;
 } {
+  const clickListeners: Set<(tab: chrome.tabs.Tab) => void> = new Set();
+
   return {
     _popupOpened: false,
 
+    _triggerClick(tab?: chrome.tabs.Tab) {
+      const mockTab = tab ?? ({ id: 1, windowId: 1 } as chrome.tabs.Tab);
+      for (const listener of clickListeners) {
+        listener(mockTab);
+      }
+    },
+
     async openPopup() {
       this._popupOpened = true;
+    },
+
+    onClicked: {
+      addListener(callback: (tab: chrome.tabs.Tab) => void) {
+        clickListeners.add(callback);
+      },
+      removeListener(callback: (tab: chrome.tabs.Tab) => void) {
+        clickListeners.delete(callback);
+      },
     },
   };
 }
