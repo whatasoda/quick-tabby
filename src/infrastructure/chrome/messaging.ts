@@ -124,6 +124,169 @@ export function connectPopup(): chrome.runtime.Port {
 }
 
 /**
+ * Managed popup connection with automatic reconnection support
+ */
+export interface PopupConnection {
+  /** Get the current port (null if disconnected) */
+  getPort(): chrome.runtime.Port | null;
+  /** Whether the connection is currently active */
+  isConnected(): boolean;
+  /** Manually trigger reconnection */
+  reconnect(): void;
+  /** Disconnect and stop reconnection attempts */
+  disconnect(): void;
+  /** Add a listener for connection state changes */
+  onConnectionChange(callback: (connected: boolean) => void): () => void;
+  /** Add a message listener */
+  onMessage(callback: (message: unknown) => void): () => void;
+}
+
+/**
+ * Configuration for popup connection
+ */
+export interface PopupConnectionConfig {
+  /** Maximum number of reconnection attempts */
+  maxReconnectAttempts: number;
+  /** Base delay in milliseconds before first reconnection */
+  baseDelayMs: number;
+  /** Maximum delay in milliseconds between reconnections */
+  maxDelayMs: number;
+  /** Multiplier for exponential backoff */
+  backoffMultiplier: number;
+}
+
+const DEFAULT_POPUP_CONNECTION_CONFIG: PopupConnectionConfig = {
+  maxReconnectAttempts: 3,
+  baseDelayMs: 100,
+  maxDelayMs: 2000,
+  backoffMultiplier: 2,
+};
+
+/**
+ * Create a managed popup connection with automatic reconnection.
+ * Handles service worker termination gracefully by attempting to reconnect.
+ *
+ * @param config - Optional connection configuration
+ * @returns A PopupConnection object for managing the connection
+ */
+export function createPopupConnection(
+  config: Partial<PopupConnectionConfig> = {},
+): PopupConnection {
+  const fullConfig = { ...DEFAULT_POPUP_CONNECTION_CONFIG, ...config };
+
+  let port: chrome.runtime.Port | null = null;
+  let reconnectAttempts = 0;
+  let reconnectTimeoutId: ReturnType<typeof setTimeout> | null = null;
+  let isDisconnecting = false;
+
+  const connectionListeners = new Set<(connected: boolean) => void>();
+  const messageListeners = new Set<(message: unknown) => void>();
+
+  function notifyConnectionChange(connected: boolean): void {
+    for (const listener of connectionListeners) {
+      listener(connected);
+    }
+  }
+
+  function handleMessage(message: unknown): void {
+    for (const listener of messageListeners) {
+      listener(message);
+    }
+  }
+
+  function handleDisconnect(): void {
+    port = null;
+    notifyConnectionChange(false);
+
+    // Don't reconnect if manually disconnecting
+    if (isDisconnecting) {
+      return;
+    }
+
+    attemptReconnect();
+  }
+
+  function attemptReconnect(): void {
+    if (reconnectAttempts >= fullConfig.maxReconnectAttempts) {
+      return;
+    }
+
+    const delayMs =
+      fullConfig.baseDelayMs * fullConfig.backoffMultiplier ** reconnectAttempts;
+    const cappedDelay = Math.min(delayMs, fullConfig.maxDelayMs);
+    reconnectAttempts++;
+
+    reconnectTimeoutId = setTimeout(() => {
+      reconnectTimeoutId = null;
+      if (!port && !isDisconnecting) {
+        connect();
+      }
+    }, cappedDelay);
+  }
+
+  function connect(): void {
+    try {
+      port = chrome.runtime.connect({ name: "popup" });
+      reconnectAttempts = 0;
+      port.onMessage.addListener(handleMessage);
+      port.onDisconnect.addListener(handleDisconnect);
+      notifyConnectionChange(true);
+    } catch {
+      port = null;
+      attemptReconnect();
+    }
+  }
+
+  // Initial connection
+  connect();
+
+  return {
+    getPort(): chrome.runtime.Port | null {
+      return port;
+    },
+
+    isConnected(): boolean {
+      return port !== null;
+    },
+
+    reconnect(): void {
+      if (port) {
+        return; // Already connected
+      }
+      reconnectAttempts = 0;
+      connect();
+    },
+
+    disconnect(): void {
+      isDisconnecting = true;
+
+      if (reconnectTimeoutId !== null) {
+        clearTimeout(reconnectTimeoutId);
+        reconnectTimeoutId = null;
+      }
+
+      if (port) {
+        port.disconnect();
+        port = null;
+      }
+
+      connectionListeners.clear();
+      messageListeners.clear();
+    },
+
+    onConnectionChange(callback: (connected: boolean) => void): () => void {
+      connectionListeners.add(callback);
+      return () => connectionListeners.delete(callback);
+    },
+
+    onMessage(callback: (message: unknown) => void): () => void {
+      messageListeners.add(callback);
+      return () => messageListeners.delete(callback);
+    },
+  };
+}
+
+/**
  * Open the extension options page
  */
 export function openOptionsPage(): void {
