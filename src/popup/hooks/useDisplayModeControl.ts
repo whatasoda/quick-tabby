@@ -33,10 +33,12 @@ export function useDisplayModeControl(options: UseDisplayModeControlOptions) {
 
     (async () => {
       // Check for launch info (from mode-fixed shortcuts)
-      const launchInfo = await getLaunchInfo();
+      const launchInfo = await getLaunchInfo().catch(() => null);
 
       if (launchInfo?.mode !== null && launchInfo?.mode !== undefined) {
-        void clearLaunchInfo();
+        void clearLaunchInfo().catch(() => {
+          // Ignore errors when clearing launch info
+        });
 
         return launchInfo.mode;
       }
@@ -51,9 +53,15 @@ export function useDisplayModeControl(options: UseDisplayModeControlOptions) {
         case "lastUsed":
           return await loadDisplayMode();
       }
-    })().then((initialDisplayMode) => {
-      setDisplayMode(initialDisplayMode);
-    });
+    })()
+      .then((initialDisplayMode) => {
+        setDisplayMode(initialDisplayMode);
+      })
+      .catch((error) => {
+        console.warn("Failed to determine display mode:", error);
+        // Fall back to showing all tabs
+        setDisplayMode("all");
+      });
 
     return true;
   }, false);
