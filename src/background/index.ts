@@ -112,13 +112,8 @@ async function setupColorSchemeDetection() {
 chromeAPI.runtime.onConnect.addListener((port) => {
   if (port.name === "popup") {
     commandHandler.setPopupPort(port);
-    // Clear popup so onClicked fires on re-press (for select-on-repress feature)
-    chromeAPI.action.setPopup({ popup: "" });
-
     port.onDisconnect.addListener(() => {
       commandHandler.setPopupPort(null);
-      // Restore popup for next open
-      chromeAPI.action.setPopup({ popup: "src/popup/index.html" });
     });
   }
 });
