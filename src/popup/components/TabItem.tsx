@@ -1,14 +1,18 @@
 import { Show } from "solid-js";
 import { css } from "../../../styled-system/css";
+import type { MatchRange } from "../../core/search";
 import { t } from "../../shared/i18n/index.ts";
 import { MSG } from "../../shared/i18n/message-keys.ts";
 import type { TabInfo } from "../../shared/types.ts";
+import { HighlightedText } from "./HighlightedText.tsx";
 
 interface TabItemProps {
   tab: TabInfo;
   isSelected: boolean;
   onSelect: () => void;
   showIndex?: boolean;
+  titleMatches?: MatchRange[];
+  urlMatches?: MatchRange[];
 }
 
 const styles = {
@@ -123,7 +127,18 @@ export function TabItem(props: TabItemProps) {
             (e.target as HTMLImageElement).style.display = "none";
           }}
         />
-        <div class={styles.tabTitle}>{props.tab.title || t(MSG.COMMON_UNTITLED)}</div>
+        <Show
+          when={props.titleMatches && props.titleMatches.length > 0}
+          fallback={
+            <div class={styles.tabTitle}>{props.tab.title || t(MSG.COMMON_UNTITLED)}</div>
+          }
+        >
+          <HighlightedText
+            class={styles.tabTitle}
+            text={props.tab.title || t(MSG.COMMON_UNTITLED)}
+            matches={props.titleMatches ?? []}
+          />
+        </Show>
       </div>
       <div class={styles.tabItemBody}>
         <div class={styles.tabThumbnailContainer}>
@@ -145,7 +160,16 @@ export function TabItem(props: TabItemProps) {
             <img class={styles.tabThumbnail} src={props.tab.thumbnailUrl} alt="" loading="lazy" />
           </Show>
         </div>
-        <div class={styles.tabUrl}>{props.tab.url}</div>
+        <Show
+          when={props.urlMatches && props.urlMatches.length > 0}
+          fallback={<div class={styles.tabUrl}>{props.tab.url}</div>}
+        >
+          <HighlightedText
+            class={styles.tabUrl}
+            text={props.tab.url}
+            matches={props.urlMatches ?? []}
+          />
+        </Show>
       </div>
       <Show when={props.showIndex}>
         <span class={styles.tabIndex}>#{props.tab.index + 1}</span>
