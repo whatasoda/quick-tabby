@@ -129,9 +129,7 @@ export function TabItem(props: TabItemProps) {
         />
         <Show
           when={props.titleMatches && props.titleMatches.length > 0}
-          fallback={
-            <div class={styles.tabTitle}>{props.tab.title || t(MSG.COMMON_UNTITLED)}</div>
-          }
+          fallback={<div class={styles.tabTitle}>{props.tab.title || t(MSG.COMMON_UNTITLED)}</div>}
         >
           <HighlightedText
             class={styles.tabTitle}

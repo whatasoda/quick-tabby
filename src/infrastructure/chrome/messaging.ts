@@ -6,11 +6,11 @@
  */
 
 import {
-  DEFAULT_RETRY_CONFIG,
-  type RetryConfig,
   calculateBackoffDelay,
+  DEFAULT_RETRY_CONFIG,
   delay,
   isRetryableError,
+  type RetryConfig,
 } from "../../core/retry/index.ts";
 import type { ThumbnailConfig } from "../../core/settings/settings-types.ts";
 import type { LaunchInfo, MessageResponse, MessageType, TabInfo } from "../../shared/types.ts";

@@ -101,13 +101,7 @@ export function usePopupKeyboard(options: UsePopupKeyboardOptions) {
     }
 
     // For onType mode: trigger search on character input
-    if (
-      onCharacterInput &&
-      e.key.length === 1 &&
-      !e.ctrlKey &&
-      !e.altKey &&
-      !e.metaKey
-    ) {
+    if (onCharacterInput && e.key.length === 1 && !e.ctrlKey && !e.altKey && !e.metaKey) {
       onCharacterInput(e.key);
       return;
     }
