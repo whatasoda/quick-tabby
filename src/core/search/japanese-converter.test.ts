@@ -7,6 +7,7 @@ import {
   containsRomaji,
   generateQueryVariants,
   getActiveVariants,
+  toHalfWidth,
 } from "./japanese-converter.ts";
 
 describe("containsJapanese", () => {
@@ -59,6 +60,39 @@ describe("containsRomaji", () => {
 
   test("should not detect numbers only", () => {
     expect(containsRomaji("12345")).toBe(false);
+  });
+
+  test("should not detect full-width letters", () => {
+    expect(containsRomaji("ｃｌａｕｄｅ")).toBe(false);
+    expect(containsRomaji("ＣＬＡＵＤＥ")).toBe(false);
+  });
+});
+
+describe("toHalfWidth", () => {
+  test("should convert full-width lowercase letters to half-width", () => {
+    expect(toHalfWidth("ｃｌａｕｄｅ")).toBe("claude");
+  });
+
+  test("should convert full-width uppercase letters to half-width", () => {
+    expect(toHalfWidth("ＣＬＡＵＤＥ")).toBe("CLAUDE");
+  });
+
+  test("should convert full-width numbers to half-width", () => {
+    expect(toHalfWidth("１２３４５")).toBe("12345");
+  });
+
+  test("should preserve half-width characters", () => {
+    expect(toHalfWidth("claude")).toBe("claude");
+    expect(toHalfWidth("12345")).toBe("12345");
+  });
+
+  test("should handle mixed full-width and half-width", () => {
+    expect(toHalfWidth("ｃlaude")).toBe("claude");
+    expect(toHalfWidth("Ｇoogle")).toBe("Google");
+  });
+
+  test("should preserve Japanese characters", () => {
+    expect(toHalfWidth("ｃぁうで")).toBe("cぁうで");
   });
 });
 
@@ -123,6 +157,20 @@ describe("generateQueryVariants", () => {
     const result = generateQueryVariants("toukyou");
     expect(result.hiragana).toBe("とうきょう");
     expect(result.katakana).toBe("トウキョウ");
+  });
+
+  test("should convert IME-typed romaji with full-width chars to half-width", () => {
+    // When typing "claude" in Japanese IME mode, it becomes "ｃぁうで"
+    const result = generateQueryVariants("ｃぁうで");
+    expect(result.original).toBe("ｃぁうで");
+    // Should convert to "claude" (full-width ｃ → c, ぁうで → aude)
+    expect(result.romaji).toBe("caude");
+  });
+
+  test("should normalize full-width letters in romaji conversion", () => {
+    // Full-width letters mixed with Japanese
+    const result = generateQueryVariants("Ｇｏｏｇｌｅタブ");
+    expect(result.romaji).toBe("Googletabu");
   });
 });
 

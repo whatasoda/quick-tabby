@@ -27,6 +27,14 @@ export function containsRomaji(str: string): boolean {
 }
 
 /**
+ * Convert full-width alphanumeric characters to half-width
+ * e.g., "ｃｌａｕｄｅ" → "claude", "１２３" → "123"
+ */
+export function toHalfWidth(str: string): string {
+  return str.replace(/[Ａ-Ｚａ-ｚ０-９]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0xfee0));
+}
+
+/**
  * Generate search query variants for bidirectional Japanese/Romaji search
  *
  * @param query - Original search query
@@ -51,8 +59,8 @@ export function generateQueryVariants(query: string): QueryVariants {
     hiragana = toHiragana(trimmed);
     katakana = toKatakana(trimmed);
   } else if (hasJapanese) {
-    // Contains Japanese: convert to romaji
-    romaji = toRomaji(trimmed);
+    // Contains Japanese: convert to romaji and normalize full-width chars
+    romaji = toHalfWidth(toRomaji(trimmed));
   }
 
   return { original: trimmed, hiragana, katakana, romaji };
