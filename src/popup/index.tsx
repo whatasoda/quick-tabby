@@ -176,6 +176,7 @@ export function App() {
                 selectedIndex={selectedIndex()}
                 onSelect={handleSelect}
                 showTabIndex={displayMode() === "currentWindow"}
+                hasSearchQuery={query().length > 0}
               />
 
               <Footer

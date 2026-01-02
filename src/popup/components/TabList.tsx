@@ -11,6 +11,7 @@ interface TabListProps {
   selectedIndex: number;
   onSelect: (index: number) => void;
   showTabIndex?: boolean;
+  hasSearchQuery?: boolean;
 }
 
 const TAB_ITEM_HEIGHT = 98;
@@ -60,10 +61,17 @@ export function TabList(props: TabListProps) {
     }
   });
 
+  // Only show "no results" message when there's an active search query
+  const showEmptyState = () => props.hasSearchQuery && props.tabs.length === 0;
+
   return (
     <Show
       when={props.tabs.length > 0}
-      fallback={<div class={styles.emptyState}>{t(MSG.POPUP_NO_RESULTS)}</div>}
+      fallback={
+        <Show when={showEmptyState()}>
+          <div class={styles.emptyState}>{t(MSG.POPUP_NO_RESULTS)}</div>
+        </Show>
+      }
     >
       <div class={styles.tabListContainer} ref={scrollElement}>
         <div class={styles.tabListInner} style={{ height: `${virtualizer.getTotalSize()}px` }}>
