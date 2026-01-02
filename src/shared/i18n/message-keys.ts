@@ -21,6 +21,8 @@ export const MSG = {
   POPUP_OPEN_SETTINGS: "popup_openSettings",
   POPUP_SELECT_TO_PREVIEW: "popup_selectToPreview",
   POPUP_NO_PREVIEW: "popup_noPreview",
+  POPUP_SEARCH_PLACEHOLDER: "popup_searchPlaceholder",
+  POPUP_NO_RESULTS: "popup_noResults",
 
   // Keybinding labels
   KEYBINDING_MOVE_DOWN: "keybinding_moveDown",
@@ -57,6 +59,10 @@ export const MSG = {
   OPTIONS_MODE_LAST_USED: "options_modeLastUsed",
   OPTIONS_MODE_ALL: "options_modeAll",
   OPTIONS_MODE_CURRENT: "options_modeCurrent",
+  OPTIONS_SEARCH_BAR_MODE: "options_searchBarMode",
+  OPTIONS_SEARCH_BAR_MODE_DESC: "options_searchBarModeDesc",
+  OPTIONS_SEARCH_MODE_ALWAYS: "options_searchModeAlways",
+  OPTIONS_SEARCH_MODE_ON_TYPE: "options_searchModeOnType",
   OPTIONS_POPUP_KEYBINDINGS: "options_popupKeybindings",
   OPTIONS_GLOBAL_SHORTCUTS: "options_globalShortcuts",
   OPTIONS_SELECT_ON_REPRESS: "options_selectOnRepress",

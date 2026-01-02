@@ -59,6 +59,14 @@
     "message": "No preview available",
     "description": "Message when no preview is available"
   },
+  "popup_searchPlaceholder": {
+    "message": "Search tabs...",
+    "description": "Placeholder text for search input"
+  },
+  "popup_noResults": {
+    "message": "No matching tabs",
+    "description": "Message when search returns no results"
+  },
   "keybinding_moveDown": {
     "message": "Move Down",
     "description": "Keybinding label for moving down"
@@ -186,6 +194,22 @@
   "options_modeCurrent": {
     "message": "Current Window",
     "description": "Current window mode option"
+  },
+  "options_searchBarMode": {
+    "message": "Search Bar",
+    "description": "Search bar mode setting label"
+  },
+  "options_searchBarModeDesc": {
+    "message": "Control when the search bar is visible",
+    "description": "Search bar mode setting description"
+  },
+  "options_searchModeAlways": {
+    "message": "Always Visible",
+    "description": "Always show search bar option"
+  },
+  "options_searchModeOnType": {
+    "message": "Show on Type",
+    "description": "Show search bar when typing option"
   },
   "options_popupKeybindings": {
     "message": "Popup Keybindings",
