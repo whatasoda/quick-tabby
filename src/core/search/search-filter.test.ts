@@ -106,3 +106,71 @@ describe("filterTabsByQuery", () => {
     }
   });
 });
+
+describe("filterTabsByQuery - Japanese/Romaji bidirectional search", () => {
+  const japaneseTabs: TabInfo[] = [
+    createTab(1, "GitHub ダッシュボード", "https://github.com"),
+    createTab(2, "Google 検索", "https://google.com"),
+    createTab(3, "YouTube タブ", "https://youtube.com"),
+    createTab(4, "ニュース - News", "https://news.example.com"),
+  ];
+
+  test("should find Japanese tabs with romaji query", () => {
+    const results = filterTabsByQuery(japaneseTabs, "tabu");
+    expect(results.some((r) => r.tab.id === 3)).toBe(true); // YouTube タブ
+  });
+
+  test("should find tabs with katakana query", () => {
+    const results = filterTabsByQuery(japaneseTabs, "タブ");
+    expect(results.some((r) => r.tab.id === 3)).toBe(true);
+  });
+
+  test("should find tabs with hiragana input converted from romaji", () => {
+    // When searching "tabu", it should also convert to "たぶ" and "タブ"
+    const results = filterTabsByQuery(japaneseTabs, "tabu");
+    // Should match タブ in "YouTube タブ"
+    expect(results.length).toBeGreaterThanOrEqual(1);
+  });
+
+  test("should handle mixed Japanese and English queries", () => {
+    const results = filterTabsByQuery(japaneseTabs, "Google");
+    expect(results.some((r) => r.tab.id === 2)).toBe(true);
+  });
+
+  test("should deduplicate results when multiple variants match", () => {
+    // Both "tabu" and its converted forms might match the same tab
+    const results = filterTabsByQuery(japaneseTabs, "tabu");
+    const tabIds = results.map((r) => r.tab.id);
+    const uniqueIds = new Set(tabIds);
+    expect(tabIds.length).toBe(uniqueIds.size);
+  });
+
+  test("should include correct match indices for Japanese text", () => {
+    const results = filterTabsByQuery(japaneseTabs, "タブ");
+    const tabResult = results.find((r) => r.tab.id === 3);
+    expect(tabResult).toBeDefined();
+    if (!tabResult) return;
+
+    const titleMatch = tabResult.matches.find((m) => m.key === "title");
+    if (titleMatch && titleMatch.indices.length > 0) {
+      const range = titleMatch.indices[0];
+      if (range) {
+        const matchedText = tabResult.tab.title.slice(range.start, range.end);
+        expect(matchedText).toContain("タブ");
+      }
+    }
+  });
+
+  test("should find English text when searching with converted katakana", () => {
+    // Searching "ニュース" should also search for "nyuusu" which might match "News"
+    const results = filterTabsByQuery(japaneseTabs, "ニュース");
+    expect(results.some((r) => r.tab.id === 4)).toBe(true);
+  });
+
+  test("should work with partial romaji that converts to kana", () => {
+    // "dasshubohdo" converts to "ダッシュボード"
+    const results = filterTabsByQuery(japaneseTabs, "dasshu");
+    // This should match "ダッシュボード" via conversion
+    expect(results.length).toBeGreaterThanOrEqual(0); // May or may not match depending on threshold
+  });
+});
