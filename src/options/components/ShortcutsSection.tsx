@@ -74,6 +74,14 @@ function isPopupCommand(name: string): boolean {
   return name === "_execute_action" || name === "open-popup";
 }
 
+/**
+ * Check if select-on-repress is supported for a command.
+ * _execute_action doesn't support this due to Chrome's extension popup behavior.
+ */
+function supportsSelectOnRepress(name: string): boolean {
+  return name === "open-popup";
+}
+
 interface ShortcutsSectionProps {
   settings: Settings;
   onUpdateCommandSetting: (
@@ -124,9 +132,11 @@ export function ShortcutsSection(props: ShortcutsSectionProps) {
                     />
                   </Show>
                 </div>
-                <span class={styles.shortcutKey}>{shortcut.shortcut}</span>
+                <span class={styles.shortcutKey}>
+                  {shortcut.shortcut || t(MSG.OPTIONS_SHORTCUT_NOT_SET)}
+                </span>
               </div>
-              <Show when={isPopupCommand(shortcut.name ?? "")}>
+              <Show when={supportsSelectOnRepress(shortcut.name ?? "")}>
                 <div class={styles.shortcutSettings}>
                   <Checkbox
                     checked={

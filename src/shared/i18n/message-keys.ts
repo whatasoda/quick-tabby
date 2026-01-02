@@ -62,6 +62,7 @@ export const MSG = {
   OPTIONS_SELECT_ON_REPRESS: "options_selectOnRepress",
   OPTIONS_CHANGE_SHORTCUTS: "options_changeShortcuts",
   OPTIONS_SHORTCUTS_NOTE: "options_shortcutsNote",
+  OPTIONS_SHORTCUT_NOT_SET: "options_shortcutNotSet",
   OPTIONS_PRIVACY: "options_privacy",
   OPTIONS_SKIP_SCREENSHOT: "options_skipScreenshot",
   OPTIONS_SKIP_SCREENSHOT_DESC: "options_skipScreenshotDesc",

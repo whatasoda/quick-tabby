@@ -9,6 +9,16 @@
 
 Each popup command has its own mode setting (All Windows or Current Window) that can be configured in Options.
 
+### Select on Re-press
+
+The "Open popup (secondary)" shortcut supports "Select on re-press" feature. When enabled, pressing the shortcut again while the popup is open will switch to the currently selected tab and close the popup.
+
+:::warning
+Due to Chrome extension limitations, "Select on re-press" is **only available for "Open popup (secondary)"**. The main "Open popup" shortcut (`Alt+Q`) does not support this feature because Chrome handles it differently.
+
+If you want to use this feature, configure "Open popup (secondary)" with your preferred shortcut in `chrome://extensions/shortcuts`.
+:::
+
 ## Popup Navigation
 
 | Shortcut | Action |
