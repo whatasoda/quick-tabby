@@ -1,4 +1,4 @@
-import { createMemo, createResource, createSignal, Show } from "solid-js";
+import { createEffect, createMemo, createResource, createSignal, Show } from "solid-js";
 import "./index.css";
 import { css } from "../../styled-system/css";
 import {
@@ -11,11 +11,13 @@ import { Footer } from "./components/Footer";
 import { KeybindingsModal } from "./components/KeybindingsModal";
 import { PopupWindow } from "./components/PopupWindow";
 import { PreviewPanel } from "./components/PreviewPanel";
+import { SearchBar } from "./components/SearchBar";
 import { TabList } from "./components/TabList";
 import { useCaptureScreenshot } from "./hooks/useCaptureScreenShot";
 import { useDisplayModeControl } from "./hooks/useDisplayModeControl";
 import { usePopupKeyboard } from "./hooks/usePopupKeyboard";
 import { usePopupPort } from "./hooks/usePopupPort";
+import { useSearch } from "./hooks/useSearch";
 import { useTabs } from "./hooks/useTabs";
 
 const styles = {
@@ -50,18 +52,42 @@ export function App() {
 
   const { tabs, refetchTabs } = useTabs({ windowInstance, displayMode });
 
+  // Search integration
+  const searchBarMode = createMemo(() => settings()?.searchBarMode ?? "onType");
+  const {
+    query,
+    setQuery,
+    clearQuery,
+    filteredTabs,
+    isSearchVisible,
+    showSearch,
+    inputRef,
+    setInputRef,
+  } = useSearch({
+    tabs,
+    searchBarMode,
+  });
+
+  // Reset selected index when search results change
+  createEffect(() => {
+    const results = filteredTabs();
+    if (results.length > 0 && selectedIndex() >= results.length) {
+      setSelectedIndex(Math.max(0, results.length - 1));
+    }
+  });
+
   // Get selected tab for preview display
   const selectedTab = createMemo(() => {
-    const tabList = tabs();
+    const results = filteredTabs();
     const index = selectedIndex();
-    return tabList?.[index] ?? null;
+    return results[index]?.tab ?? null;
   });
 
   function handleSelect(index: number) {
-    const tabList = tabs();
-    const tab = tabList?.[index];
-    if (tab) {
-      void switchToTab(tab.id).catch((error) => {
+    const results = filteredTabs();
+    const result = results[index];
+    if (result) {
+      void switchToTab(result.tab.id).catch((error) => {
         console.error("Failed to switch tab:", error);
       });
     }
@@ -71,13 +97,20 @@ export function App() {
     openOptionsPage();
   }
 
+  // Focus search input on "always" mode mount
+  createEffect(() => {
+    if (searchBarMode() === "always" && inputRef()) {
+      inputRef()?.focus();
+    }
+  });
+
   // Keyboard handling via hook
   usePopupKeyboard({
     settings: settings,
     onMoveDown: () => {
-      const tabList = tabs();
-      if (tabList) {
-        setSelectedIndex((i) => Math.min(i + 1, tabList.length - 1));
+      const results = filteredTabs();
+      if (results.length > 0) {
+        setSelectedIndex((i) => Math.min(i + 1, results.length - 1));
       }
     },
     onMoveUp: () => {
@@ -91,6 +124,19 @@ export function App() {
     },
     onToggleMode: () => {
       toggleMode();
+    },
+    hasSearchQuery: () => query().length > 0,
+    onClearSearch: () => {
+      clearQuery();
+      setSelectedIndex(1);
+    },
+    onCharacterInput: (char) => {
+      // For onType mode: show search and input character
+      if (searchBarMode() === "onType") {
+        showSearch();
+        setQuery(char);
+        setTimeout(() => inputRef()?.focus(), 0);
+      }
     },
   });
 
@@ -116,8 +162,17 @@ export function App() {
         <Show when={displayMode()}>
           {(displayMode) => (
             <div class={styles.mainContent}>
+              <Show when={isSearchVisible()}>
+                <SearchBar
+                  value={query()}
+                  onInput={setQuery}
+                  onClear={clearQuery}
+                  onRef={setInputRef}
+                />
+              </Show>
+
               <TabList
-                tabs={tabs() ?? []}
+                tabs={filteredTabs()}
                 selectedIndex={selectedIndex()}
                 onSelect={handleSelect}
                 showTabIndex={displayMode() === "currentWindow"}
