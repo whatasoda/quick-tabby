@@ -65,15 +65,11 @@ export function TabList(props: TabListProps) {
   const showEmptyState = () => props.hasSearchQuery && props.tabs.length === 0;
 
   return (
-    <Show
-      when={props.tabs.length > 0}
-      fallback={
-        <Show when={showEmptyState()}>
-          <div class={styles.emptyState}>{t(MSG.POPUP_NO_RESULTS)}</div>
-        </Show>
-      }
-    >
-      <div class={styles.tabListContainer} ref={scrollElement}>
+    <div class={styles.tabListContainer} ref={scrollElement}>
+      <Show when={showEmptyState()}>
+        <div class={styles.emptyState}>{t(MSG.POPUP_NO_RESULTS)}</div>
+      </Show>
+      <Show when={props.tabs.length > 0}>
         <div class={styles.tabListInner} style={{ height: `${virtualizer.getTotalSize()}px` }}>
           <For each={virtualizer.getVirtualItems()}>
             {(virtualItem) => {
@@ -112,7 +108,7 @@ export function TabList(props: TabListProps) {
             }}
           </For>
         </div>
-      </div>
-    </Show>
+      </Show>
+    </div>
   );
 }
