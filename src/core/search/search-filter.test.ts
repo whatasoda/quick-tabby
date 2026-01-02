@@ -42,15 +42,20 @@ describe("filterTabsByQuery", () => {
     expect(results.some((r) => r.tab.id === 1)).toBe(true); // GitHub
   });
 
-  test("should preserve MRU order in results", () => {
-    const results = filterTabsByQuery(tabs, "google");
-    const ids = results.map((r) => r.tab.id);
-    // Original order should be maintained for matched items
-    for (let i = 0; i < ids.length - 1; i++) {
-      const originalIdx1 = tabs.findIndex((t) => t.id === ids[i]);
-      const originalIdx2 = tabs.findIndex((t) => t.id === ids[i + 1]);
-      expect(originalIdx1).toBeLessThan(originalIdx2);
-    }
+  test("should sort results by relevance (best matches first)", () => {
+    // Create tabs where one has an exact title match, another has partial URL match
+    const testTabs: TabInfo[] = [
+      createTab(1, "Random Page", "https://example.com"),
+      createTab(2, "Some Site", "https://google.com/search"),
+      createTab(3, "Google", "https://example.org"),
+    ];
+
+    const results = filterTabsByQuery(testTabs, "google");
+
+    // "Google" exact title match should rank higher than URL-only match
+    expect(results.length).toBeGreaterThanOrEqual(2);
+    expect(results[0]?.tab.id).toBe(3); // Exact title match "Google"
+    expect(results[1]?.tab.id).toBe(2); // URL contains "google"
   });
 
   test("should include match indices for title", () => {

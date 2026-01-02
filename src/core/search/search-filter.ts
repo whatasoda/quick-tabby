@@ -1,5 +1,5 @@
 /**
- * Pure functions for filtering tabs while preserving MRU order
+ * Pure functions for filtering and sorting tabs by search relevance
  */
 import Fuse from "fuse.js";
 import type { TabInfo } from "../../shared/types.ts";
@@ -22,36 +22,27 @@ function convertFuseIndices(indices: readonly [number, number][]): MatchRange[] 
 }
 
 /**
- * Filter tabs by search query while preserving original (MRU) order
+ * Filter tabs by search query, sorted by match relevance
  *
  * @param tabs - Tabs in MRU order
  * @param query - Search query string
- * @returns Filtered tabs with match information, maintaining MRU order
+ * @returns Filtered tabs with match information, sorted by relevance (best match first)
  */
 export function filterTabsByQuery(tabs: TabInfo[], query: string): SearchResult[] {
   if (!query.trim()) {
-    // No query: return all tabs without match info
+    // No query: return all tabs in MRU order without match info
     return tabs.map((tab) => ({ tab, matches: [] }));
   }
 
   const fuse = createTabSearcher(tabs);
   const fuseResults = fuse.search(query);
 
-  // Create a map of tabId -> matches for O(1) lookup
-  const matchMap = new Map<number, SearchMatch[]>();
-  for (const result of fuseResults) {
-    const matches: SearchMatch[] = (result.matches ?? []).map((m) => ({
+  // Return results in Fuse.js score order (best matches first)
+  return fuseResults.map((result) => ({
+    tab: result.item,
+    matches: (result.matches ?? []).map((m) => ({
       key: m.key as "title" | "url",
       indices: convertFuseIndices(m.indices),
-    }));
-    matchMap.set(result.item.id, matches);
-  }
-
-  // Filter tabs maintaining MRU order, only include matched tabs
-  return tabs
-    .filter((tab) => matchMap.has(tab.id))
-    .map((tab) => ({
-      tab,
-      matches: matchMap.get(tab.id) ?? [],
-    }));
+    })),
+  }));
 }
