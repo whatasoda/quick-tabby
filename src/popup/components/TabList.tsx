@@ -73,18 +73,19 @@ export function TabList(props: TabListProps) {
         <div class={styles.tabListInner} style={{ height: `${virtualizer.getTotalSize()}px` }}>
           <For each={virtualizer.getVirtualItems()}>
             {(virtualItem) => {
-              const searchResult = props.tabs[virtualItem.index];
-              const titleMatches =
-                searchResult?.matches
-                  .filter((m) => m.key === "title")
+              // Use accessors to ensure reactivity when props.tabs changes
+              const searchResult = () => props.tabs[virtualItem.index];
+              const titleMatches = () =>
+                searchResult()
+                  ?.matches.filter((m) => m.key === "title")
                   .flatMap((m) => m.indices) ?? [];
-              const urlMatches =
-                searchResult?.matches
-                  .filter((m) => m.key === "url")
+              const urlMatches = () =>
+                searchResult()
+                  ?.matches.filter((m) => m.key === "url")
                   .flatMap((m) => m.indices) ?? [];
 
               return (
-                <Show when={searchResult}>
+                <Show when={searchResult()}>
                   {(result) => (
                     <div
                       class={styles.virtualItem}
@@ -98,8 +99,8 @@ export function TabList(props: TabListProps) {
                         isSelected={virtualItem.index === props.selectedIndex}
                         onSelect={() => props.onSelect(virtualItem.index)}
                         showIndex={props.showTabIndex}
-                        titleMatches={titleMatches}
-                        urlMatches={urlMatches}
+                        titleMatches={titleMatches()}
+                        urlMatches={urlMatches()}
                       />
                     </div>
                   )}
