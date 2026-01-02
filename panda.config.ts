@@ -87,6 +87,9 @@ export default defineConfig({
           overlay: {
             value: { base: "rgba(0, 0, 0, 0.4)", _dark: "rgba(0, 0, 0, 0.6)" },
           },
+          highlight: {
+            value: { base: "rgba(255, 214, 0, 0.4)", _dark: "rgba(255, 214, 0, 0.3)" },
+          },
         },
       },
     },
