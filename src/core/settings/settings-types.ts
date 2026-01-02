@@ -11,6 +11,7 @@ export type ThumbnailQuality = "standard" | "high" | "ultra";
 export type ThumbnailTTL = "1h" | "24h" | "7d" | "30d";
 export type ThemePreference = "light" | "dark" | "auto";
 export type DefaultMode = "all" | "currentWindow" | "lastUsed";
+export type SearchBarMode = "always" | "onType";
 
 // =============================================================================
 // Keybinding Types
@@ -68,6 +69,7 @@ export interface Settings {
   thumbnailBlurEnabled: boolean;
   defaultMode: DefaultMode;
   themePreference: ThemePreference;
+  searchBarMode: SearchBarMode;
   keybindings: KeybindingsConfig;
   commandSettings: Record<CommandName, CommandSettings>;
   screenshotSkipPatterns: string[];

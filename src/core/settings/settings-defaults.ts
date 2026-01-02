@@ -25,6 +25,7 @@ export const DEFAULT_SETTINGS: Settings = {
   thumbnailBlurEnabled: false,
   defaultMode: "lastUsed",
   themePreference: "auto",
+  searchBarMode: "onType",
   keybindings: {
     moveDown: [{ key: "j" }],
     moveUp: [{ key: "k" }],
