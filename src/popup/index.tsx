@@ -43,7 +43,7 @@ export function App() {
   const [settings] = createResource(loadSettings);
   const [windowInstance] = createResource(getWindowInstance);
 
-  const { displayMode, toggleMode } = useDisplayModeControl({
+  const { displayMode, toggleMode, searchBarMode } = useDisplayModeControl({
     settings: settings,
     onToggleMode: () => {
       setSelectedIndex(1);
@@ -53,7 +53,6 @@ export function App() {
   const { tabs, refetchTabs } = useTabs({ windowInstance, displayMode });
 
   // Search integration
-  const searchBarMode = createMemo(() => settings()?.searchBarMode ?? "onType");
   const {
     query,
     setQuery,

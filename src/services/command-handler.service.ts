@@ -95,8 +95,12 @@ export function createCommandHandlerService(
       return;
     }
 
-    // Open popup with specified mode
-    launchInfo = { mode, command };
+    // Get searchBarMode from command settings
+    const settings = await deps.settingsService.load();
+    const searchBarMode = settings.commandSettings[command]?.searchBarMode;
+
+    // Open popup with specified mode and searchBarMode
+    launchInfo = { mode, command, searchBarMode };
     try {
       await deps.action.openPopup();
     } catch {

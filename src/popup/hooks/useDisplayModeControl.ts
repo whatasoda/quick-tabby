@@ -1,5 +1,5 @@
 import { type Accessor, createEffect, createSignal } from "solid-js";
-import type { Settings } from "../../core/settings";
+import type { SearchBarMode, Settings } from "../../core/settings";
 import { clearLaunchInfo, getLaunchInfo } from "../../infrastructure/chrome";
 import { loadDisplayMode, saveDisplayMode } from "../../infrastructure/chrome/mode-storage";
 import type { DisplayMode } from "../../shared/types";
@@ -12,6 +12,7 @@ interface UseDisplayModeControlOptions {
 export function useDisplayModeControl(options: UseDisplayModeControlOptions) {
   const { settings, onToggleMode } = options;
   const [displayMode, setDisplayMode] = createSignal<DisplayMode | null>(null);
+  const [searchBarMode, setSearchBarMode] = createSignal<SearchBarMode>("onType");
 
   function toggleMode() {
     const newMode = displayMode() === "currentWindow" ? "all" : "currentWindow";
@@ -40,10 +41,22 @@ export function useDisplayModeControl(options: UseDisplayModeControlOptions) {
           // Ignore errors when clearing launch info
         });
 
+        // Set searchBarMode from launch info
+        if (launchInfo.searchBarMode) {
+          setSearchBarMode(launchInfo.searchBarMode);
+        }
+
         return launchInfo.mode;
       }
 
       // Opened via _execute_action (direct popup open)
+      // Use searchBarMode from _execute_action command settings
+      const executeActionSearchBarMode =
+        currentSettings.commandSettings._execute_action?.searchBarMode;
+      if (executeActionSearchBarMode) {
+        setSearchBarMode(executeActionSearchBarMode);
+      }
+
       // Determine initial mode based on defaultMode setting
       switch (currentSettings.defaultMode) {
         case "all":
@@ -66,5 +79,5 @@ export function useDisplayModeControl(options: UseDisplayModeControlOptions) {
     return true;
   }, false);
 
-  return { displayMode, toggleMode };
+  return { displayMode, toggleMode, searchBarMode };
 }
