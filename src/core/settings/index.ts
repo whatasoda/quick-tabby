@@ -18,6 +18,7 @@ export type {
   KeybindingList,
   KeybindingsConfig,
   PopupSize,
+  SearchBarMode,
   Settings,
   ThemePreference,
   ThumbnailConfig,

@@ -44,6 +44,7 @@ export type CommandName = "_execute_action" | "open-popup" | "move-tab-left" | "
 export interface CommandSettings {
   selectOnClose: boolean;
   mode?: "all" | "currentWindow";
+  searchBarMode?: SearchBarMode;
 }
 
 // =============================================================================
@@ -69,7 +70,6 @@ export interface Settings {
   thumbnailBlurEnabled: boolean;
   defaultMode: DefaultMode;
   themePreference: ThemePreference;
-  searchBarMode: SearchBarMode;
   keybindings: KeybindingsConfig;
   commandSettings: Record<CommandName, CommandSettings>;
   screenshotSkipPatterns: string[];
