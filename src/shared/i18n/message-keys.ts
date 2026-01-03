@@ -65,6 +65,8 @@ export const MSG = {
   OPTIONS_SEARCH_MODE_ON_TYPE: "options_searchModeOnType",
   OPTIONS_POPUP_KEYBINDINGS: "options_popupKeybindings",
   OPTIONS_GLOBAL_SHORTCUTS: "options_globalShortcuts",
+  OPTIONS_DISPLAY_MODE: "options_displayMode",
+  OPTIONS_SEARCH_BAR: "options_searchBar",
   OPTIONS_SELECT_ON_REPRESS: "options_selectOnRepress",
   OPTIONS_CHANGE_SHORTCUTS: "options_changeShortcuts",
   OPTIONS_SHORTCUTS_NOTE: "options_shortcutsNote",

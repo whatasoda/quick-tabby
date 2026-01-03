@@ -219,6 +219,14 @@
     "message": "Global Shortcuts",
     "description": "Global shortcuts section title"
   },
+  "options_displayMode": {
+    "message": "Display Mode",
+    "description": "Display mode setting label in shortcuts section"
+  },
+  "options_searchBar": {
+    "message": "Search Bar",
+    "description": "Search bar mode setting label in shortcuts section"
+  },
   "options_selectOnRepress": {
     "message": "Select on re-press",
     "description": "Select on re-press setting label"
