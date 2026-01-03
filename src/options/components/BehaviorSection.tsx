@@ -1,7 +1,6 @@
 import { Show } from "solid-js";
 import type {
   DefaultMode,
-  SearchBarMode,
   Settings,
   ThumbnailQuality,
 } from "../../core/settings/settings-types";
@@ -22,13 +21,6 @@ function getDefaultModeOptions(): RadioOption<DefaultMode>[] {
     { value: "lastUsed", label: t(MSG.OPTIONS_MODE_LAST_USED) },
     { value: "all", label: t(MSG.OPTIONS_MODE_ALL) },
     { value: "currentWindow", label: t(MSG.OPTIONS_MODE_CURRENT) },
-  ];
-}
-
-function getSearchBarModeOptions(): RadioOption<SearchBarMode>[] {
-  return [
-    { value: "always", label: t(MSG.OPTIONS_SEARCH_MODE_ALWAYS) },
-    { value: "onType", label: t(MSG.OPTIONS_SEARCH_MODE_ON_TYPE) },
   ];
 }
 
@@ -79,18 +71,6 @@ export function BehaviorSection(props: BehaviorSectionProps) {
           options={getDefaultModeOptions()}
           value={props.settings.defaultMode}
           onChange={(value) => props.onUpdateSetting("defaultMode", value)}
-        />
-      </FormField>
-
-      <FormField
-        label={t(MSG.OPTIONS_SEARCH_BAR_MODE)}
-        description={t(MSG.OPTIONS_SEARCH_BAR_MODE_DESC)}
-      >
-        <RadioGroup
-          name="searchBarMode"
-          options={getSearchBarModeOptions()}
-          value={props.settings.searchBarMode}
-          onChange={(value) => props.onUpdateSetting("searchBarMode", value)}
         />
       </FormField>
     </Section>

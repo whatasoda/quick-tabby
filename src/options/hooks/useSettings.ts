@@ -1,5 +1,10 @@
 import { createResource, createSignal } from "solid-js";
-import type { CommandName, KeybindingList, Settings } from "../../core/settings/settings-types";
+import type {
+  CommandName,
+  KeybindingList,
+  SearchBarMode,
+  Settings,
+} from "../../core/settings/settings-types";
 import { loadSettings, saveSettings } from "../../shared/settings";
 
 export function useSettings() {
@@ -37,7 +42,7 @@ export function useSettings() {
   async function updateCommandSetting(
     command: CommandName,
     key: keyof Settings["commandSettings"][CommandName],
-    value: boolean | "all" | "currentWindow",
+    value: boolean | "all" | "currentWindow" | SearchBarMode,
   ) {
     const current = settings();
     if (!current) return;

@@ -1,6 +1,6 @@
 import { createResource, For, Show } from "solid-js";
 import { css } from "../../../styled-system/css";
-import type { CommandName, Settings } from "../../core/settings/settings-types";
+import type { CommandName, SearchBarMode, Settings } from "../../core/settings/settings-types";
 import { getCommands, openShortcutsPage } from "../../infrastructure/chrome/messaging";
 import { t } from "../../shared/i18n/index.ts";
 import { type MessageKey, MSG } from "../../shared/i18n/message-keys.ts";
@@ -87,7 +87,7 @@ interface ShortcutsSectionProps {
   onUpdateCommandSetting: (
     command: CommandName,
     key: keyof Settings["commandSettings"][CommandName],
-    value: boolean | "all" | "currentWindow",
+    value: boolean | "all" | "currentWindow" | SearchBarMode,
   ) => void;
 }
 
@@ -102,6 +102,11 @@ export function ShortcutsSection(props: ShortcutsSectionProps) {
   const modeOptions = [
     { value: "all", label: t(MSG.OPTIONS_MODE_ALL) },
     { value: "currentWindow", label: t(MSG.OPTIONS_MODE_CURRENT) },
+  ];
+
+  const searchBarModeOptions = [
+    { value: "always", label: t(MSG.OPTIONS_SEARCH_MODE_ALWAYS) },
+    { value: "onType", label: t(MSG.OPTIONS_SEARCH_MODE_ON_TYPE) },
   ];
 
   return (
@@ -127,6 +132,21 @@ export function ShortcutsSection(props: ShortcutsSectionProps) {
                           shortcut.name as CommandName,
                           "mode",
                           value as "all" | "currentWindow",
+                        )
+                      }
+                    />
+                    <RadioGroup
+                      name={`searchBarMode-${shortcut.name}`}
+                      options={searchBarModeOptions}
+                      value={
+                        props.settings.commandSettings[shortcut.name as CommandName]?.searchBarMode ??
+                        "onType"
+                      }
+                      onChange={(value) =>
+                        props.onUpdateCommandSetting(
+                          shortcut.name as CommandName,
+                          "searchBarMode",
+                          value as SearchBarMode,
                         )
                       }
                     />
