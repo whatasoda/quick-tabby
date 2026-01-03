@@ -47,6 +47,8 @@ export function usePopupKeyboard(options: UsePopupKeyboardOptions) {
         return;
       }
       if (e.key === "Enter") {
+        // Skip if IME composition is in progress (e.g., Japanese input)
+        if (e.isComposing) return;
         e.preventDefault();
         onConfirm();
         return;
