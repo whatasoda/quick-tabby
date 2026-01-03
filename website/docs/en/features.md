@@ -17,6 +17,22 @@ Navigate through tabs without touching your mouse:
 - **Enter** - Switch to selected tab
 - **Esc** - Close popup
 
+### Fuzzy Search
+
+Quickly find tabs by typing part of the title or URL:
+
+- **Fuzzy matching** - Find tabs even with typos or partial matches
+- **Smart ranking** - Results sorted by relevance, best matches first
+- **Match highlighting** - See which parts of the title/URL matched your query
+- **Japanese support** - Type in Romaji to find tabs with Hiragana/Katakana titles (e.g., "nihon" matches "にほん" and "ニホン")
+
+The search bar can be configured per shortcut command in Options:
+
+| Mode | Behavior |
+|------|----------|
+| **Always** | Search bar is always visible and focused |
+| **On Type** | Search bar appears when you start typing |
+
 ### Multi-Window Support
 
 Switch between tabs across all browser windows, or focus on just the current window. Each popup command (`Alt+Q` and `Alt+Shift+P`) can be configured with its own mode setting in Options.

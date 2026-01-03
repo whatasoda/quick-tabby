@@ -59,6 +59,14 @@
     "message": "\u30d7\u30ec\u30d3\u30e5\u30fc\u306a\u3057",
     "description": "Message when no preview is available"
   },
+  "popup_searchPlaceholder": {
+    "message": "\u30bf\u30d6\u3092\u691c\u7d22...",
+    "description": "Placeholder text for search input"
+  },
+  "popup_noResults": {
+    "message": "\u4e00\u81f4\u3059\u308b\u30bf\u30d6\u304c\u3042\u308a\u307e\u305b\u3093",
+    "description": "Message when search returns no results"
+  },
   "keybinding_moveDown": {
     "message": "\u4e0b\u306b\u79fb\u52d5",
     "description": "Keybinding label for moving down"
@@ -187,6 +195,22 @@
     "message": "\u73fe\u5728\u306e\u30a6\u30a3\u30f3\u30c9\u30a6",
     "description": "Current window mode option"
   },
+  "options_searchBarMode": {
+    "message": "\u691c\u7d22\u30d0\u30fc",
+    "description": "Search bar mode setting label"
+  },
+  "options_searchBarModeDesc": {
+    "message": "\u691c\u7d22\u30d0\u30fc\u306e\u8868\u793a\u30bf\u30a4\u30df\u30f3\u30b0\u3092\u8a2d\u5b9a",
+    "description": "Search bar mode setting description"
+  },
+  "options_searchModeAlways": {
+    "message": "\u5e38\u306b\u8868\u793a",
+    "description": "Always show search bar option"
+  },
+  "options_searchModeOnType": {
+    "message": "\u5165\u529b\u6642\u306b\u8868\u793a",
+    "description": "Show search bar when typing option"
+  },
   "options_popupKeybindings": {
     "message": "\u30dd\u30c3\u30d7\u30a2\u30c3\u30d7\u306e\u30ad\u30fc\u30d0\u30a4\u30f3\u30c9",
     "description": "Popup keybindings section title"
@@ -194,6 +218,14 @@
   "options_globalShortcuts": {
     "message": "\u30b0\u30ed\u30fc\u30d0\u30eb\u30b7\u30e7\u30fc\u30c8\u30ab\u30c3\u30c8",
     "description": "Global shortcuts section title"
+  },
+  "options_displayMode": {
+    "message": "表示モード",
+    "description": "Display mode setting label in shortcuts section"
+  },
+  "options_searchBar": {
+    "message": "検索バー",
+    "description": "Search bar mode setting label in shortcuts section"
   },
   "options_selectOnRepress": {
     "message": "\u518d\u62bc\u4e0b\u3067\u9078\u629e",

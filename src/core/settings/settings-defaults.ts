@@ -33,8 +33,8 @@ export const DEFAULT_SETTINGS: Settings = {
     toggleMode: [{ key: "Tab" }],
   },
   commandSettings: {
-    _execute_action: { selectOnClose: true, mode: "all" },
-    "open-popup": { selectOnClose: true, mode: "currentWindow" },
+    _execute_action: { selectOnClose: true, mode: "all", searchBarMode: "onType" },
+    "open-popup": { selectOnClose: true, mode: "currentWindow", searchBarMode: "onType" },
     "move-tab-left": { selectOnClose: false },
     "move-tab-right": { selectOnClose: false },
   },

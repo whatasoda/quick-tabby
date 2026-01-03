@@ -36,6 +36,26 @@ If you want to use this feature, configure "Open popup (secondary)" with your pr
 | `Backspace` | Clear search character by character |
 | `Esc` | Clear search (if search is active) |
 
+### Fuzzy Matching
+
+The search uses fuzzy matching, so you can find tabs even with typos or partial matches. Results are sorted by relevance, with the best matches appearing first.
+
+### Japanese Input Support
+
+You can type in Romaji to find tabs with Hiragana or Katakana titles:
+
+| Type | Finds |
+|------|-------|
+| `nihon` | にほん, ニホン |
+| `tokyo` | とうきょう, トウキョウ |
+
+### Search Bar Mode
+
+Each popup command can be configured with its own search bar mode in Options:
+
+- **Always Visible**: Search bar is always shown and focused
+- **Show on Type**: Search bar appears when you start typing
+
 ## Tab Navigation
 
 | Shortcut | Action |

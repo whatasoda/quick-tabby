@@ -1,14 +1,17 @@
 import { createVirtualizer } from "@tanstack/solid-virtual";
 import { createEffect, For, Show } from "solid-js";
 import { css } from "../../../styled-system/css";
-import type { TabInfo } from "../../shared/types.ts";
+import type { SearchResult } from "../../core/search";
+import { t } from "../../shared/i18n/index.ts";
+import { MSG } from "../../shared/i18n/message-keys.ts";
 import { TabItem } from "./TabItem.tsx";
 
 interface TabListProps {
-  tabs: TabInfo[];
+  tabs: SearchResult[];
   selectedIndex: number;
   onSelect: (index: number) => void;
   showTabIndex?: boolean;
+  hasSearchQuery?: boolean;
 }
 
 const TAB_ITEM_HEIGHT = 98;
@@ -28,6 +31,14 @@ const styles = {
     top: 0,
     left: 0,
     width: "100%",
+  }),
+  emptyState: css({
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: "32px 16px",
+    color: "text.secondary",
+    fontSize: "sm",
   }),
 };
 
@@ -50,35 +61,55 @@ export function TabList(props: TabListProps) {
     }
   });
 
+  // Only show "no results" message when there's an active search query
+  const showEmptyState = () => props.hasSearchQuery && props.tabs.length === 0;
+
   return (
     <div class={styles.tabListContainer} ref={scrollElement}>
-      <div class={styles.tabListInner} style={{ height: `${virtualizer.getTotalSize()}px` }}>
-        <For each={virtualizer.getVirtualItems()}>
-          {(virtualItem) => {
-            const tab = props.tabs[virtualItem.index];
-            return (
-              <Show when={tab}>
-                {(tab) => (
-                  <div
-                    class={styles.virtualItem}
-                    style={{
-                      height: `${virtualItem.size}px`,
-                      transform: `translateY(${virtualItem.start}px)`,
-                    }}
-                  >
-                    <TabItem
-                      tab={tab()}
-                      isSelected={virtualItem.index === props.selectedIndex}
-                      onSelect={() => props.onSelect(virtualItem.index)}
-                      showIndex={props.showTabIndex}
-                    />
-                  </div>
-                )}
-              </Show>
-            );
-          }}
-        </For>
-      </div>
+      <Show when={showEmptyState()}>
+        <div class={styles.emptyState}>{t(MSG.POPUP_NO_RESULTS)}</div>
+      </Show>
+      <Show when={props.tabs.length > 0}>
+        <div class={styles.tabListInner} style={{ height: `${virtualizer.getTotalSize()}px` }}>
+          <For each={virtualizer.getVirtualItems()}>
+            {(virtualItem) => {
+              // Use accessors to ensure reactivity when props.tabs changes
+              const searchResult = () => props.tabs[virtualItem.index];
+              const titleMatches = () =>
+                searchResult()
+                  ?.matches.filter((m) => m.key === "title")
+                  .flatMap((m) => m.indices) ?? [];
+              const urlMatches = () =>
+                searchResult()
+                  ?.matches.filter((m) => m.key === "url")
+                  .flatMap((m) => m.indices) ?? [];
+
+              return (
+                <Show when={searchResult()}>
+                  {(result) => (
+                    <div
+                      class={styles.virtualItem}
+                      style={{
+                        height: `${virtualItem.size}px`,
+                        transform: `translateY(${virtualItem.start}px)`,
+                      }}
+                    >
+                      <TabItem
+                        tab={result().tab}
+                        isSelected={virtualItem.index === props.selectedIndex}
+                        onSelect={() => props.onSelect(virtualItem.index)}
+                        showIndex={props.showTabIndex}
+                        titleMatches={titleMatches()}
+                        urlMatches={urlMatches()}
+                      />
+                    </div>
+                  )}
+                </Show>
+              );
+            }}
+          </For>
+        </div>
+      </Show>
     </div>
   );
 }
