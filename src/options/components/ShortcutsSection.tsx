@@ -158,8 +158,8 @@ export function ShortcutsSection(props: ShortcutsSectionProps) {
                       name={`searchBarMode-${shortcut.name}`}
                       options={searchBarModeOptions}
                       value={
-                        props.settings.commandSettings[shortcut.name as CommandName]?.searchBarMode ??
-                        "onType"
+                        props.settings.commandSettings[shortcut.name as CommandName]
+                          ?.searchBarMode ?? "onType"
                       }
                       onChange={(value) =>
                         props.onUpdateCommandSetting(

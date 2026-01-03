@@ -1,9 +1,5 @@
 import { Show } from "solid-js";
-import type {
-  DefaultMode,
-  Settings,
-  ThumbnailQuality,
-} from "../../core/settings/settings-types";
+import type { DefaultMode, Settings, ThumbnailQuality } from "../../core/settings/settings-types";
 import { t } from "../../shared/i18n/index.ts";
 import { MSG } from "../../shared/i18n/message-keys.ts";
 import { Checkbox, FormField, RadioGroup, type RadioOption, Section } from "../../shared/ui";

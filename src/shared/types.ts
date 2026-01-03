@@ -4,7 +4,11 @@
  * Settings types are defined in core/settings/settings-types.ts
  */
 
-import type { CommandName, SearchBarMode, ThumbnailConfig } from "../core/settings/settings-types.ts";
+import type {
+  CommandName,
+  SearchBarMode,
+  ThumbnailConfig,
+} from "../core/settings/settings-types.ts";
 
 export interface TabInfo {
   id: number;
